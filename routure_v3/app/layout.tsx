@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { Geist } from "next/font/google";
+import { Geist, Geist_Mono } from "next/font/google";
 import { Playfair_Display } from "next/font/google";
 import localFont from "next/font/local";
 import { Header } from "@/components/layout/Header";
@@ -11,6 +11,11 @@ const geistSans = Geist({
   subsets: ["latin"],
 });
 
+const geistMono = Geist_Mono({
+  variable: "--font-geist-mono",
+  subsets: ["latin"],
+});
+
 const playfair = Playfair_Display({
   variable: "--font-playfair",
   subsets: ["latin"],
@@ -18,7 +23,18 @@ const playfair = Playfair_Display({
 });
 
 const argue = localFont({
-  src: "../public/fonts/Argue DEMO.otf",
+  src: [
+    {
+      path: "../public/fonts/Argue.woff2",
+      weight: "400",
+      style: "normal",
+    },
+    {
+      path: "../public/fonts/Argue DEMO.otf",
+      weight: "400",
+      style: "normal",
+    },
+  ],
   variable: "--font-argue",
   display: "swap",
 });
@@ -50,7 +66,7 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
-      <body className={`${geistSans.variable} ${playfair.variable} ${argue.variable} antialiased`}>
+      <body className={`${geistSans.variable} ${geistMono.variable} ${playfair.variable} ${argue.variable} antialiased`}>
         <Header />
         <main className="pt-16">
           {children}
