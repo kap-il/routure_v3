@@ -220,6 +220,28 @@ Contact Forms:
 
 ---
 
+### 5. Administrator Access
+
+**Purpose** For board members to add/remove articles, magazines, etc. through an easy to use UI.
+
+**Key Elements**:
+- Login page with username and password
+- Dashboard with list of articles, magazines, etc.
+- Add, edit, and delete functionality
+- File upload for images and PDFs
+- Preview functionality
+- Publish functionality
+
+**Integration Points**:
+- Authentication (username and password)
+- File upload (images and PDFs)
+- Preview functionality
+- Publish functionality
+
+**Technical Considerations**:
+- Use NextAuth.js for authentication
+- Use S3 for file storage, use Supabase for database and fetching files
+
 ## Recommended File Structure
 
 ```
