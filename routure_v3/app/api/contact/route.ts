@@ -1,13 +1,13 @@
 import { NextRequest, NextResponse } from 'next/server';
+import { submitContactForm } from '@/lib/supabase/queries';
 
 export async function POST(request: NextRequest) {
   try {
     const { name, email, subject, message } = await request.json();
 
-    // Validate required fields
-    if (!name || !email || !subject || !message) {
+    if (!name || !email || !message) {
       return NextResponse.json(
-        { error: 'All fields are required' },
+        { error: 'Name, email, and message are required' },
         { status: 400 }
       );
     }
@@ -19,12 +19,10 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    // TODO: Integrate with email service (Resend, SendGrid, etc.)
-    // For now, we'll just log the contact form submission
-    console.log('Contact form submission:', { name, email, subject, message });
+    // Combine subject into message if provided
+    const fullMessage = subject ? `[${subject}] ${message}` : message;
 
-    // Simulate API delay
-    await new Promise((resolve) => setTimeout(resolve, 500));
+    await submitContactForm({ name, email, message: fullMessage });
 
     return NextResponse.json(
       { message: 'Message sent successfully' },

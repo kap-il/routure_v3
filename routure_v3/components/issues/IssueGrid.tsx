@@ -1,4 +1,4 @@
-import { Issue } from '@/types/issue';
+import { Issue } from '@/lib/supabase/types';
 import { IssueCard } from './IssueCard';
 
 interface IssueGridProps {

@@ -1,8 +1,35 @@
 import Link from 'next/link';
+import Image from 'next/image';
+import { Issue } from '@/lib/supabase/types';
 
-export function HeroSection() {
+interface HeroSectionProps {
+  featuredIssue?: Issue | null;
+}
+
+function formatDate(dateStr: string) {
+  const date = new Date(dateStr + 'T00:00:00');
+  return date.toLocaleDateString('en-US', { month: 'long', year: 'numeric' });
+}
+
+export function HeroSection({ featuredIssue }: HeroSectionProps) {
+  const issueLabel = featuredIssue && featuredIssue.issue_number > 0
+    ? `Issue ${String(featuredIssue.issue_number).padStart(2, '0')}`
+    : null;
+  const dateLabel = featuredIssue ? formatDate(featuredIssue.publish_date) : null;
+
   return (
     <section className="relative min-h-[90vh] bg-black text-white overflow-hidden">
+      {/* Background cover image */}
+      {featuredIssue?.cover_image_url && (
+        <Image
+          src={featuredIssue.cover_image_url}
+          alt=""
+          fill
+          className="object-cover opacity-30"
+          priority
+        />
+      )}
+
       {/* Background gradient overlay */}
       <div className="absolute inset-0 bg-gradient-to-b from-black/60 via-black/40 to-black" />
 
@@ -28,22 +55,25 @@ export function HeroSection() {
       {/* Content */}
       <div className="relative z-10 mx-auto max-w-7xl px-6 lg:px-8 h-full min-h-[90vh] flex flex-col justify-center">
         <div className="max-w-3xl">
-          <p className="text-sm tracking-[0.3em] uppercase text-gray-400 mb-6 animate-fade-in">
-            Issue 01 — Winter 2026
-          </p>
+          {issueLabel && dateLabel && (
+            <p className="text-sm tracking-[0.3em] uppercase text-gray-400 mb-6 animate-fade-in">
+              {issueLabel} — {dateLabel}
+            </p>
+          )}
 
           <h1 className="font-argue text-5xl sm:text-6xl lg:text-7xl font-normal leading-[1.1] mb-8 animate-slide-up">
-            THE ART OF <br />
-            <span className="italic">QUIET LUXURY</span>
+            {featuredIssue ? featuredIssue.title.toUpperCase() : 'ROUTURE'}
           </h1>
 
-          <p className="text-lg sm:text-xl text-gray-300 max-w-xl mb-10 leading-relaxed animate-fade-in" style={{ animationDelay: '0.3s' }}>
-            Exploring the new era of understated elegance, where craftsmanship speaks louder than logos and timelessness trumps trends.
-          </p>
+          {featuredIssue?.description && (
+            <p className="text-lg sm:text-xl text-gray-300 max-w-xl mb-10 leading-relaxed animate-fade-in" style={{ animationDelay: '0.3s' }}>
+              {featuredIssue.description}
+            </p>
+          )}
 
           <div className="flex flex-col sm:flex-row gap-4 animate-fade-in" style={{ animationDelay: '0.5s' }}>
             <Link
-              href="/issues"
+              href={featuredIssue ? `/issues/${featuredIssue.slug}` : '/issues'}
               className="inline-flex items-center justify-center px-8 py-4 bg-white text-black text-sm font-medium tracking-wide uppercase hover:bg-gray-100 transition-colors"
             >
               Read Current Issue

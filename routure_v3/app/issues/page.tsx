@@ -1,16 +1,22 @@
 import { Metadata } from 'next';
 import { IssueCard } from '@/components/issues/IssueCard';
 import { IssueGrid } from '@/components/issues/IssueGrid';
-import { getCurrentIssue, getArchiveIssues } from '@/lib/data/issues';
+import { getIssues } from '@/lib/supabase/queries';
 
 export const metadata: Metadata = {
   title: 'Issues | Routure',
   description: 'Browse current and past issues of Routure magazine. Experience our interactive page-turning reader.',
 };
 
-export default function IssuesPage() {
-  const currentIssue = getCurrentIssue();
-  const archiveIssues = getArchiveIssues();
+export default async function IssuesPage() {
+  let allIssues: Awaited<ReturnType<typeof getIssues>> = [];
+  try {
+    allIssues = await getIssues();
+  } catch {
+    // Tables may not exist yet
+  }
+  const currentIssue = allIssues[0] ?? null;
+  const archiveIssues = allIssues.slice(1);
 
   return (
     <div className="min-h-screen bg-white">
@@ -27,27 +33,33 @@ export default function IssuesPage() {
       </section>
 
       {/* Current Issue - Featured */}
-      <section className="py-16 lg:py-24">
-        <div className="mx-auto max-w-7xl px-6 lg:px-8">
-          <IssueCard issue={currentIssue} featured />
-        </div>
-      </section>
+      {currentIssue && (
+        <section className="py-16 lg:py-24">
+          <div className="mx-auto max-w-7xl px-6 lg:px-8">
+            <IssueCard issue={currentIssue} featured />
+          </div>
+        </section>
+      )}
 
       {/* Divider */}
-      <div className="mx-auto max-w-7xl px-6 lg:px-8">
-        <div className="h-px bg-gray-200" />
-      </div>
+      {archiveIssues.length > 0 && (
+        <div className="mx-auto max-w-7xl px-6 lg:px-8">
+          <div className="h-px bg-gray-200" />
+        </div>
+      )}
 
       {/* Archive */}
-      <section className="py-16 lg:py-24">
-        <div className="mx-auto max-w-7xl px-6 lg:px-8">
-          <IssueGrid
-            issues={archiveIssues}
-            title="Archive"
-            subtitle="Past Issues"
-          />
-        </div>
-      </section>
+      {archiveIssues.length > 0 && (
+        <section className="py-16 lg:py-24">
+          <div className="mx-auto max-w-7xl px-6 lg:px-8">
+            <IssueGrid
+              issues={archiveIssues}
+              title="Archive"
+              subtitle="Past Issues"
+            />
+          </div>
+        </section>
+      )}
 
       {/* Newsletter CTA */}
       <section className="py-24 bg-black text-white">
