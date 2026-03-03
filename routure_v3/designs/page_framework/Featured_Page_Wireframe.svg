@@ -1,0 +1,117 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1440" height="1800" viewBox="0 0 1440 1800">
+  <defs>
+    <style>
+      text { font-family: 'Inter', 'Helvetica Neue', Arial, sans-serif; }
+      .serif { font-family: 'Playfair Display', 'Georgia', 'Times New Roman', serif; }
+    </style>
+    <linearGradient id="heroGrad" x1="0" y1="0" x2="1" y2="0.5">
+      <stop offset="0%" stop-color="#2a2a2a"/>
+      <stop offset="100%" stop-color="#1a1a1a"/>
+    </linearGradient>
+  </defs>
+
+  <!-- Background -->
+  <rect width="1440" height="1800" fill="#FAFAF8"/>
+
+  <!-- ===== NAVBAR ===== -->
+  <rect x="0" y="0" width="1440" height="80" fill="#FFFFFF"/>
+  <line x1="0" y1="80" x2="1440" y2="80" stroke="#E0E0E0" stroke-width="1"/>
+  <text x="80" y="50" class="serif" font-size="26" font-weight="700" fill="#111">THE REVIEW</text>
+  <text x="750" y="48" font-size="13" font-weight="400" fill="#555" letter-spacing="2">ISSUES</text>
+  <text x="870" y="48" font-size="13" font-weight="400" fill="#555" letter-spacing="2">SHOOTS</text>
+  <text x="990" y="48" font-size="13" font-weight="400" fill="#555" letter-spacing="2">ARTICLES</text>
+  <text x="1120" y="48" font-size="13" font-weight="400" fill="#555" letter-spacing="2">ABOUT</text>
+  <circle cx="1320" cy="42" r="10" fill="none" stroke="#555" stroke-width="1.5"/>
+  <line x1="1327" y1="49" x2="1335" y2="57" stroke="#555" stroke-width="1.5"/>
+
+  <!-- ===== HERO SECTION ===== -->
+  <!-- Full-width article image with title overlay -->
+  <rect x="80" y="120" width="1280" height="480" rx="2" fill="url(#heroGrad)"/>
+  <text x="500" y="370" class="serif" font-size="28" fill="#CCC" text-anchor="middle" opacity="0.6">Article Image</text>
+  <rect x="80" y="120" width="1280" height="480" rx="2" fill="none" stroke="#DDD" stroke-width="0.5"/>
+
+  <!-- Featured article title overlay on right -->
+  <rect x="860" y="120" width="500" height="480" fill="#111" opacity="0.75"/>
+  <text x="920" y="290" class="serif" font-size="14" fill="#AAA" letter-spacing="3">FEATURED</text>
+  <text x="920" y="340" class="serif" font-size="38" font-weight="700" fill="#FFFFFF">The Silent</text>
+  <text x="920" y="386" class="serif" font-size="38" font-weight="700" fill="#FFFFFF">Language of</text>
+  <text x="920" y="432" class="serif" font-size="38" font-weight="700" fill="#FFFFFF">Design</text>
+  <line x1="920" y1="455" x2="1000" y2="455" stroke="#FFF" stroke-width="1" opacity="0.5"/>
+  <text x="920" y="480" font-size="13" fill="#CCC">By Alexandra Chen</text>
+  <text x="920" y="560" font-size="11" fill="#AAA" letter-spacing="1.5">READ NOW →</text>
+
+  <!-- ===== FEATURED ARTICLE SUMMARY + CATEGORIES ===== -->
+  <line x1="80" y1="650" x2="1360" y2="650" stroke="#E0E0E0" stroke-width="0.5"/>
+
+  <!-- Left column: Featured article title + brief summary -->
+  <rect x="80" y="690" width="620" height="400" rx="2" fill="#FFFFFF" stroke="#EAEAEA" stroke-width="1"/>
+  <text x="120" y="740" class="serif" font-size="12" fill="#999" letter-spacing="2.5">EDITOR'S PICK</text>
+  <text x="120" y="785" class="serif" font-size="30" font-weight="700" fill="#1a1a1a">Reimagining</text>
+  <text x="120" y="822" class="serif" font-size="30" font-weight="700" fill="#1a1a1a">Urban Spaces</text>
+  <line x1="120" y1="845" x2="660" y2="845" stroke="#E0E0E0" stroke-width="0.5"/>
+  <text x="120" y="880" font-size="14" fill="#666" line-height="1.6">A deep exploration of how contemporary</text>
+  <text x="120" y="902" font-size="14" fill="#666">architects are reshaping the way we interact</text>
+  <text x="120" y="924" font-size="14" fill="#666">with public and private environments,</text>
+  <text x="120" y="946" font-size="14" fill="#666">balancing function with beauty.</text>
+  <text x="120" y="1000" font-size="13" fill="#999">Spring 2026 · 12 min read</text>
+  <text x="120" y="1055" font-size="11" fill="#1a1a1a" letter-spacing="1.5" font-weight="500">CONTINUE READING →</text>
+
+  <!-- Right column: Categories -->
+  <rect x="740" y="690" width="620" height="400" rx="2" fill="#FFFFFF" stroke="#EAEAEA" stroke-width="1"/>
+  <text x="780" y="740" class="serif" font-size="12" fill="#999" letter-spacing="2.5">CATEGORIES</text>
+
+  <!-- Category 1 -->
+  <text x="780" y="790" class="serif" font-size="20" font-weight="700" fill="#1a1a1a">Architecture</text>
+  <text x="1300" y="790" font-size="14" fill="#AAA" text-anchor="end">12 →</text>
+  <line x1="780" y1="810" x2="1320" y2="810" stroke="#EAEAEA" stroke-width="0.5"/>
+
+  <!-- Category 2 -->
+  <text x="780" y="850" class="serif" font-size="20" font-weight="700" fill="#1a1a1a">Photography</text>
+  <text x="1300" y="850" font-size="14" fill="#AAA" text-anchor="end">24 →</text>
+  <line x1="780" y1="870" x2="1320" y2="870" stroke="#EAEAEA" stroke-width="0.5"/>
+
+  <!-- Category 3 -->
+  <text x="780" y="910" class="serif" font-size="20" font-weight="700" fill="#1a1a1a">Fashion</text>
+  <text x="1300" y="910" font-size="14" fill="#AAA" text-anchor="end">18 →</text>
+  <line x1="780" y1="930" x2="1320" y2="930" stroke="#EAEAEA" stroke-width="0.5"/>
+
+  <!-- Category 4 -->
+  <text x="780" y="970" class="serif" font-size="20" font-weight="700" fill="#1a1a1a">Culture</text>
+  <text x="1300" y="970" font-size="14" fill="#AAA" text-anchor="end">31 →</text>
+  <line x1="780" y1="990" x2="1320" y2="990" stroke="#EAEAEA" stroke-width="0.5"/>
+
+  <!-- Category 5 -->
+  <text x="780" y="1030" class="serif" font-size="20" font-weight="700" fill="#1a1a1a">Travel</text>
+  <text x="1300" y="1030" font-size="14" fill="#AAA" text-anchor="end">9 →</text>
+  <line x1="780" y1="1050" x2="1320" y2="1050" stroke="#EAEAEA" stroke-width="0.5"/>
+
+  <!-- ===== LATEST ISSUE SECTION ===== -->
+  <line x1="80" y1="1140" x2="1360" y2="1140" stroke="#E0E0E0" stroke-width="0.5"/>
+  <text x="80" y="1190" font-size="11" font-weight="500" fill="#999" letter-spacing="3">LATEST ISSUE</text>
+
+  <!-- Issue Card -->
+  <rect x="80" y="1220" width="620" height="480" rx="2" fill="#1a1a1a"/>
+  <text x="390" y="1420" class="serif" font-size="36" font-weight="700" fill="#FFF" text-anchor="middle" opacity="0.9">Issue No. 24</text>
+  <text x="390" y="1460" class="serif" font-size="16" fill="#AAA" text-anchor="middle">Spring 2026</text>
+  <line x1="340" y1="1485" x2="440" y2="1485" stroke="#555" stroke-width="0.5"/>
+  <text x="390" y="1520" font-size="13" fill="#777" text-anchor="middle">8 Articles · 4 Photo Shoots</text>
+  <rect x="310" y="1555" width="160" height="40" rx="20" fill="none" stroke="#777" stroke-width="1"/>
+  <text x="390" y="1580" font-size="11" fill="#AAA" text-anchor="middle" letter-spacing="1.5">VIEW ISSUE</text>
+  <rect x="80" y="1220" width="620" height="480" rx="2" fill="none" stroke="#DDD" stroke-width="0.5"/>
+
+  <!-- Additional context cards -->
+  <rect x="740" y="1220" width="300" height="230" rx="2" fill="#F0EFED"/>
+  <text x="890" y="1310" class="serif" font-size="11" fill="#999" text-anchor="middle" letter-spacing="2">PREVIOUS</text>
+  <text x="890" y="1345" class="serif" font-size="18" font-weight="700" fill="#1a1a1a" text-anchor="middle">Issue No. 23</text>
+  <text x="890" y="1375" font-size="12" fill="#777" text-anchor="middle">Winter 2025</text>
+  <text x="890" y="1420" font-size="10" fill="#999" text-anchor="middle" letter-spacing="1">VIEW →</text>
+
+  <rect x="1060" y="1220" width="300" height="230" rx="2" fill="#F0EFED"/>
+  <text x="1210" y="1310" class="serif" font-size="11" fill="#999" text-anchor="middle" letter-spacing="2">ARCHIVE</text>
+  <text x="1210" y="1345" class="serif" font-size="18" font-weight="700" fill="#1a1a1a" text-anchor="middle">All Issues</text>
+  <text x="1210" y="1375" font-size="12" fill="#777" text-anchor="middle">24 Issues Published</text>
+  <text x="1210" y="1420" font-size="10" fill="#999" text-anchor="middle" letter-spacing="1">BROWSE →</text>
+
+  <!-- ===== PAGE LABEL ===== -->
+  <text x="720" y="1790" font-size="10" fill="#CCC" text-anchor="middle" letter-spacing="2">FEATURED PAGE</text>
+</svg>
