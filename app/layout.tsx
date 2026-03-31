@@ -64,6 +64,17 @@ export const metadata: Metadata = {
     ],
     apple: "/brand/favicon-light.png",
   },
+  openGraph: {
+    title: "Routure Fashion Magazine",
+    siteName: "Routure",
+    images: [{ url: "/images/icon-512.png", width: 512, height: 512 }],
+    type: "website",
+  },
+  twitter: {
+    card: "summary",
+    title: "Routure Fashion Magazine",
+    images: ["/images/icon-512.png"],
+  },
 };
 
 export default function RootLayout({
