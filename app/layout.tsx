@@ -67,13 +67,11 @@ export const metadata: Metadata = {
   openGraph: {
     title: "Routure Fashion Magazine",
     siteName: "Routure",
-    images: [{ url: "/images/icon-512.png", width: 512, height: 512 }],
     type: "website",
   },
   twitter: {
-    card: "summary",
+    card: "summary_large_image",
     title: "Routure Fashion Magazine",
-    images: ["/images/icon-512.png"],
   },
 };
 
