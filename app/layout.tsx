@@ -84,7 +84,7 @@ export default function RootLayout({
     <html lang="en" className="bg-[#FAFAF8]">
       <body className={`${geistSans.variable} ${geistMono.variable} ${playfair.variable} ${argue.variable} antialiased bg-[#FAFAF8]`}>
         <Header />
-        <main className="pt-16 bg-[#FAFAF8]">
+        <main className="bg-[#FAFAF8]" style={{ paddingTop: '88px' }}>
           {children}
         </main>
         <Footer />
