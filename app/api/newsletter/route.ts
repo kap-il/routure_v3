@@ -15,9 +15,6 @@ export async function POST(request: NextRequest) {
     // For now, we'll just simulate a successful subscription
     console.log('Newsletter subscription:', email);
 
-    // Simulate API delay
-    await new Promise((resolve) => setTimeout(resolve, 500));
-
     return NextResponse.json(
       { message: 'Successfully subscribed to newsletter' },
       { status: 200 }

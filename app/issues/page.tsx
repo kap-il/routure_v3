@@ -3,6 +3,8 @@ import { IssueCard } from '@/components/issues/IssueCard';
 import { IssueGrid } from '@/components/issues/IssueGrid';
 import { getIssues } from '@/lib/supabase/queries';
 
+export const revalidate = 120;
+
 export const metadata: Metadata = {
   title: 'Issues | Routure',
   description: 'Browse current and past issues of Routure magazine. Experience our interactive page-turning reader.',

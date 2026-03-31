@@ -5,6 +5,8 @@ import { mockIssue, mockMosaicImages } from '@/lib/data/mock';
 import { MosaicGrid } from '@/components/issues/mosaic/MosaicGrid';
 import type { IssueEditorialItem } from '@/lib/supabase/types';
 
+export const revalidate = 120;
+
 interface IssueViewProps {
   params: Promise<{ slug: string }>;
 }
@@ -141,19 +143,19 @@ export default async function IssueViewPage({ params }: IssueViewProps) {
       )}
 
       {/* Click hint */}
-      <div className="mx-auto max-w-[1280px] px-[80px] mb-6">
+      <div className="mx-auto max-w-[1280px] px-3 md:px-[80px] mb-6">
         <p className="text-right text-[9px] tracking-[1.5px] text-[#CCC] uppercase">
           CLICK ANY IMAGE TO VIEW
         </p>
       </div>
 
       {/* ===== MOSAIC GRID ===== */}
-      <div className="mx-auto max-w-[1280px] px-[80px] pb-20">
+      <div className="mx-auto max-w-[1280px] px-3 md:px-[80px] pb-20">
         <MosaicGrid images={mosaicImages} issueId={slug} gap={20} />
       </div>
 
       {/* ===== LEGEND ===== */}
-      <div className="mx-auto max-w-[1280px] px-[80px] pb-16">
+      <div className="mx-auto max-w-[1280px] px-3 md:px-[80px] pb-16">
         <div className="h-px bg-[#E0E0E0] mb-8" />
         <div className="flex flex-col gap-3">
           <div className="flex items-center gap-3">

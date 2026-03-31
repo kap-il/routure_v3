@@ -2,8 +2,8 @@
 
 import Link from 'next/link';
 import Image from 'next/image';
-import { useState, useCallback, useEffect } from 'react';
-import { createPortal } from 'react-dom';
+import dynamic from 'next/dynamic';
+import { useState, useCallback } from 'react';
 import type { MosaicImage } from '@/types/issue';
 
 interface MosaicTileProps {
@@ -12,83 +12,8 @@ interface MosaicTileProps {
   className?: string;
 }
 
-function ZoomOverlay({ src, alt, onClose }: {
-  src: string; alt: string; onClose: () => void;
-}) {
-  useEffect(() => {
-    document.body.style.overflow = 'hidden';
-    const handleKey = (e: KeyboardEvent) => {
-      if (e.key === 'Escape') onClose();
-    };
-    window.addEventListener('keydown', handleKey);
-    return () => {
-      document.body.style.overflow = '';
-      window.removeEventListener('keydown', handleKey);
-    };
-  }, [onClose]);
-
-  return createPortal(
-    <div
-      style={{
-        position: 'fixed',
-        top: 0,
-        left: 0,
-        right: 0,
-        bottom: 0,
-        zIndex: 99999,
-        backgroundColor: 'rgba(0,0,0,0.85)',
-        display: 'flex',
-        alignItems: 'center',
-        justifyContent: 'center',
-        cursor: 'zoom-out',
-        isolation: 'isolate',
-      }}
-      onClick={onClose}
-    >
-      <button
-        onClick={onClose}
-        style={{
-          position: 'absolute',
-          top: '1.25rem',
-          right: '1.25rem',
-          width: '2.5rem',
-          height: '2.5rem',
-          borderRadius: '50%',
-          backgroundColor: 'rgba(255,255,255,0.1)',
-          border: 'none',
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'center',
-          cursor: 'pointer',
-          zIndex: 10,
-        }}
-        aria-label="Close zoom"
-      >
-        <svg style={{ width: '1.25rem', height: '1.25rem', color: 'white' }} fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor">
-          <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
-        </svg>
-      </button>
-      <div
-        style={{ padding: '5rem 2rem 3rem' }}
-        onClick={(e) => e.stopPropagation()}
-      >
-        {/* eslint-disable-next-line @next/next/no-img-element */}
-        <img
-          src={src}
-          alt={alt}
-          style={{
-            maxWidth: '88vw',
-            maxHeight: '72vh',
-            width: 'auto',
-            height: 'auto',
-            objectFit: 'contain',
-          }}
-        />
-      </div>
-    </div>,
-    document.body
-  );
-}
+// Dynamically import ZoomOverlay — only loads when user actually zooms an image
+const ZoomOverlay = dynamic(() => import('@/components/ui/ZoomOverlay'), { ssr: false });
 
 export function MosaicTile({ image, issueId, className = '' }: MosaicTileProps) {
   const [zoomed, setZoomed] = useState(false);
@@ -123,6 +48,8 @@ export function MosaicTile({ image, issueId, className = '' }: MosaicTileProps) 
             height={Math.round(800 / image.aspectRatio)}
             className="w-full h-auto block group-hover:scale-[1.02] transition-transform duration-500"
             sizes="(max-width: 768px) 100vw, (max-width: 1280px) 50vw, 600px"
+            placeholder="blur"
+            blurDataURL="data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNjAwIiBoZWlnaHQ9IjQwMCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48cmVjdCB3aWR0aD0iMTAwJSIgaGVpZ2h0PSIxMDAlIiBmaWxsPSIjZThlOGU2Ii8+PC9zdmc+"
           />
         ) : (
           <div

@@ -63,7 +63,7 @@ export function Footer() {
           {/* Logo and description */}
           <div className="lg:col-span-2">
             <Image
-              src="/images/routure-logo.png"
+              src="/images/routure-logo.webp"
               alt="Routure"
               width={180}
               height={40}

@@ -1,9 +1,26 @@
 import type { Metadata } from 'next';
 import Link from 'next/link';
 import Image from 'next/image';
-import { getShootBySlug, getIssueForShoot } from '@/lib/supabase/queries';
+import { getShootBySlug, getIssueForShoot, getIssues, getIssueMosaicData } from '@/lib/supabase/queries';
 import { mockShootArticle } from '@/lib/data/mock';
 import type { ContentBlock } from '@/lib/supabase/types';
+
+export const revalidate = 300;
+
+export async function generateStaticParams() {
+  try {
+    const issues = await getIssues();
+    const allShoots: { slug: string }[] = [];
+    for (const issue of issues) {
+      const items = await getIssueMosaicData(issue.id);
+      const slugs = [...new Set(items.map(i => i.shootSlug))];
+      allShoots.push(...slugs.map(s => ({ slug: s })));
+    }
+    return allShoots;
+  } catch {
+    return [];
+  }
+}
 
 interface ShootArticlePageProps {
   params: Promise<{ slug: string }>;
@@ -68,7 +85,10 @@ export default async function ShootArticlePage({ params }: ShootArticlePageProps
   let useMock = true;
 
   try {
-    const shoot = await getShootBySlug(slug);
+    const [shoot, issue] = await Promise.all([
+      getShootBySlug(slug),
+      getIssueForShoot(slug),
+    ]);
     if (shoot && shoot.article && shoot.images.length > 0) {
       useMock = false;
       articleTitle = shoot.article.title;
@@ -91,7 +111,6 @@ export default async function ShootArticlePage({ params }: ShootArticlePageProps
         sections = [];
       }
 
-      const issue = await getIssueForShoot(slug);
       if (issue) backHref = `/issue/${issue.slug}`;
     }
   } catch {
@@ -149,7 +168,7 @@ export default async function ShootArticlePage({ params }: ShootArticlePageProps
       {/* ===== FULL SPREAD HERO ===== */}
       <section className="relative w-full" style={{ height: '700px' }}>
         {heroImageUrl ? (
-          <Image src={heroImageUrl} alt={articleTitle} fill className="object-cover" priority />
+          <Image src={heroImageUrl} alt={articleTitle} fill className="object-cover" priority sizes="100vw" fetchPriority="high" />
         ) : (
           <div className="absolute inset-0 bg-gradient-to-br from-[#252525] to-[#1a1a1a]" />
         )}
@@ -232,6 +251,9 @@ export default async function ShootArticlePage({ params }: ShootArticlePageProps
                     width={group.image.width}
                     height={group.image.height}
                     className="w-full h-auto"
+                    sizes="(max-width: 768px) 100vw, 45vw"
+                    placeholder="blur"
+                    blurDataURL="data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNjAwIiBoZWlnaHQ9IjQwMCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48cmVjdCB3aWR0aD0iMTAwJSIgaGVpZ2h0PSIxMDAlIiBmaWxsPSIjZThlOGU2Ii8+PC9zdmc+"
                   />
                 </div>
               )}
@@ -254,6 +276,7 @@ export default async function ShootArticlePage({ params }: ShootArticlePageProps
                     width={img.width}
                     height={img.height}
                     className="w-full h-auto"
+                    sizes="(max-width: 768px) 50vw, 33vw"
                   />
                 </div>
               ))}

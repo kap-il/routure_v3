@@ -1,5 +1,6 @@
 import { ImageResponse } from 'next/og';
 
+export const revalidate = 86400; // Regenerate once per day, not on every share/crawl
 export const runtime = 'edge';
 export const alt = 'Routure Fashion Magazine';
 export const size = { width: 1200, height: 630 };

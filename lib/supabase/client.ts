@@ -1,4 +1,4 @@
-import { createClient } from '@supabase/supabase-js';
+import { createClient, SupabaseClient } from '@supabase/supabase-js';
 
 function getSupabaseUrl() {
   const url = process.env.NEXT_PUBLIC_SUPABASE_URL;
@@ -13,9 +13,17 @@ export function getSupabaseClient() {
   return createClient(getSupabaseUrl(), key);
 }
 
-// Server-side Supabase client (uses secret key for admin operations)
+// Server-side Supabase client singleton (uses secret key for admin operations)
+let _serverClient: SupabaseClient | null = null;
+
 export function createServerClient() {
+  if (_serverClient) return _serverClient;
+
+  const url = process.env.NEXT_PUBLIC_SUPABASE_URL;
   const secretKey = process.env.SUPABASE_SECRET_KEY;
+  if (!url) throw new Error('NEXT_PUBLIC_SUPABASE_URL is not set');
   if (!secretKey) throw new Error('SUPABASE_SECRET_KEY is not set');
-  return createClient(getSupabaseUrl(), secretKey);
+
+  _serverClient = createClient(url, secretKey);
+  return _serverClient;
 }

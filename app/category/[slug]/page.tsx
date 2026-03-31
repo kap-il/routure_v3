@@ -3,8 +3,14 @@ import Link from 'next/link';
 import Image from 'next/image';
 import { getArticlesByCategory, CATEGORIES } from '@/lib/supabase/queries';
 
+export const revalidate = 300;
+
 interface CategoryPageProps {
   params: Promise<{ slug: string }>;
+}
+
+export async function generateStaticParams() {
+  return CATEGORIES.map(c => ({ slug: c.toLowerCase() }));
 }
 
 /** Map slug back to the canonical category name */

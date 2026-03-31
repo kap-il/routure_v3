@@ -202,15 +202,16 @@ export async function getFeaturedArticle(): Promise<{
 } | null> {
   const supabase = createServerClient();
 
+  // Fetch articles with their shoot slug in one query (eliminates N+1)
   const { data: articles, error } = await supabase
     .from('articles')
-    .select('title, shoot_id, author, content');
+    .select('title, author, content, shoot_id, shoots(slug)')
+    .not('shoot_id', 'is', null);
 
   if (error || !articles || articles.length === 0) return null;
 
-  const pick = articles[Math.floor(Math.random() * articles.length)];
+  const pick = articles[Math.floor(Math.random() * articles.length)] as any;
 
-  // Extract pullquote from content
   let pullquote: string | null = null;
   const content = typeof pick.content === 'string' ? JSON.parse(pick.content) : pick.content;
   if (Array.isArray(content)) {
@@ -218,16 +219,11 @@ export async function getFeaturedArticle(): Promise<{
     if (pq) pullquote = pq.text;
   }
 
-  // Get shoot slug
-  const { data: shoot } = await supabase
-    .from('shoots')
-    .select('slug')
-    .eq('id', pick.shoot_id)
-    .single();
+  const shootData = Array.isArray(pick.shoots) ? pick.shoots[0] : pick.shoots;
 
   return {
     title: pick.title,
-    shootSlug: shoot?.slug ?? '',
+    shootSlug: shootData?.slug ?? '',
     author: pick.author,
     pullquote,
   };
@@ -342,45 +338,43 @@ export async function getArticlesByCategory(category: string): Promise<CategoryA
   if (error) throw error;
   if (!articles || articles.length === 0) return [];
 
-  // Fetch shoot + issue data for each article
-  const results: CategoryArticle[] = [];
-  for (const article of articles) {
-    const { data: shoot } = await supabase
-      .from('shoots')
-      .select('slug, issue_id, shoot_images(*)')
-      .eq('id', article.shoot_id)
-      .single();
+  // Batch: get all shoots at once (3 queries instead of N+1)
+  const shootIds = [...new Set(articles.map(a => a.shoot_id))];
+  const { data: shoots } = await supabase
+    .from('shoots')
+    .select('id, slug, issue_id, shoot_images(image_url, position, is_article_page)')
+    .in('id', shootIds);
 
-    if (!shoot) continue;
+  // Batch: get all issues at once
+  const issueIds = [...new Set((shoots ?? []).map((s: any) => s.issue_id))];
+  const { data: issues } = await supabase
+    .from('issues')
+    .select('id, slug, title, issue_number')
+    .in('id', issueIds);
 
-    const { data: issue } = await supabase
-      .from('issues')
-      .select('slug, title, issue_number')
-      .eq('id', shoot.issue_id)
-      .single();
+  const shootMap = new Map((shoots ?? []).map((s: any) => [s.id, s]));
+  const issueMap = new Map((issues ?? []).map((i: any) => [i.id, i]));
 
-    if (!issue) continue;
+  return articles.map(article => {
+    const shoot = shootMap.get(article.shoot_id);
+    const issue = shoot ? issueMap.get(shoot.issue_id) : null;
+    const images = ((shoot?.shoot_images as any[]) ?? [])
+      .filter((img: any) => !img.is_article_page)
+      .sort((a: any, b: any) => a.position - b.position);
 
-    // Get hero image (first non-article-page image)
-    const images = ((shoot.shoot_images as ShootImage[]) ?? [])
-      .filter((img: ShootImage) => !img.is_article_page)
-      .sort((a: ShootImage, b: ShootImage) => a.position - b.position);
-
-    results.push({
+    return {
       id: article.id,
       title: article.title,
       slug: article.slug,
       author: article.author,
       category: article.category!,
-      shootSlug: shoot.slug,
-      issueSlug: issue.slug,
-      issueTitle: issue.title,
-      issueNumber: issue.issue_number,
+      shootSlug: shoot?.slug ?? '',
+      issueSlug: issue?.slug ?? '',
+      issueTitle: issue?.title ?? '',
+      issueNumber: issue?.issue_number ?? 0,
       heroImageUrl: images[0]?.image_url ?? null,
-    });
-  }
-
-  return results;
+    };
+  });
 }
 
 // ============================================================

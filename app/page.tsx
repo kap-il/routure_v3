@@ -34,6 +34,7 @@ export default async function Home() {
                   sizes="100vw"
                   className="object-cover"
                   priority
+                  fetchPriority="high"
                 />
               ) : (
                 <div className="absolute inset-0 bg-gradient-to-br from-[#2a2a2a] to-[#1a1a1a]" />
@@ -74,6 +75,7 @@ export default async function Home() {
                   sizes="890px"
                   className="object-cover"
                   priority
+                  fetchPriority="high"
                 />
               ) : (
                 <div className="absolute inset-0 bg-gradient-to-br from-[#2a2a2a] to-[#1a1a1a]" />
@@ -193,6 +195,7 @@ export default async function Home() {
                 fill
                 sizes="100vw"
                 className="object-cover"
+                loading="lazy"
               />
             )}
             <div className="absolute inset-0" style={{ background: 'linear-gradient(to bottom, rgba(0,0,0,0.85), rgba(0,0,0,0.4) 50%, transparent)' }} />
@@ -225,6 +228,7 @@ export default async function Home() {
                   fill
                   sizes="50vw"
                   className="object-cover"
+                  loading="lazy"
                 />
               )}
               <div className="absolute inset-0" style={{ background: 'linear-gradient(to bottom, rgba(0,0,0,0.9), rgba(0,0,0,0.6) 50%, rgba(0,0,0,0.3))' }} />
@@ -277,6 +281,7 @@ export default async function Home() {
                 fill
                 sizes="620px"
                 className="object-cover"
+                loading="lazy"
               />
             )}
             <div className="absolute inset-0" style={{ background: 'linear-gradient(to bottom, rgba(0,0,0,0.85), rgba(0,0,0,0.4) 50%, transparent)' }} />
@@ -309,6 +314,7 @@ export default async function Home() {
                   fill
                   sizes="300px"
                   className="object-cover"
+                  loading="lazy"
                 />
               )}
               <div className="absolute inset-0" style={{ background: 'linear-gradient(to bottom, rgba(0,0,0,0.9), rgba(0,0,0,0.6) 50%, rgba(0,0,0,0.3))' }} />

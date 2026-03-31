@@ -21,7 +21,7 @@ export function Header() {
         {/* Logo */}
         <Link href="/" className="flex items-center">
           <Image
-            src="/images/routure-logo.png"
+            src="/images/routure-logo.webp"
             alt="Routure"
             width={180}
             height={40}

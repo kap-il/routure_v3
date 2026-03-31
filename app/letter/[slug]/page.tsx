@@ -1,7 +1,23 @@
 import type { Metadata } from 'next';
 import Link from 'next/link';
 import Image from 'next/image';
-import { getLetterBySlug } from '@/lib/supabase/queries';
+import { getLetterBySlug, getIssues, getLettersByIssueId } from '@/lib/supabase/queries';
+
+export const revalidate = 3600;
+
+export async function generateStaticParams() {
+  try {
+    const issues = await getIssues();
+    const allLetters: { slug: string }[] = [];
+    for (const issue of issues) {
+      const letters = await getLettersByIssueId(issue.id);
+      allLetters.push(...letters.map(l => ({ slug: l.slug })));
+    }
+    return allLetters;
+  } catch {
+    return [];
+  }
+}
 
 interface LetterPageProps {
   params: Promise<{ slug: string }>;
@@ -163,6 +179,7 @@ export default async function LetterPage({ params }: LetterPageProps) {
                       width={image.width}
                       height={image.height}
                       className="w-full h-auto"
+                      sizes="(max-width: 768px) 100vw, 40vw"
                     />
                   </div>
                 )}

@@ -19,18 +19,13 @@ const geistMono = Geist_Mono({
 const playfair = Playfair_Display({
   variable: "--font-playfair",
   subsets: ["latin"],
-  weight: ["400", "500", "600", "700"],
+  weight: ["400", "700"],
 });
 
 const argue = localFont({
   src: [
     {
       path: "../public/fonts/Argue.woff2",
-      weight: "400",
-      style: "normal",
-    },
-    {
-      path: "../public/fonts/Argue DEMO.otf",
       weight: "400",
       style: "normal",
     },
@@ -49,6 +44,7 @@ export const viewport = {
 export const metadata: Metadata = {
   title: "Routure | A Curated Magazine Experience",
   description: "Exploring the intersection of culture, style, and contemporary life.",
+  manifest: "/manifest.json",
   icons: {
     icon: [
       {
@@ -82,6 +78,10 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en" className="bg-[#FAFAF8]">
+      <head>
+        <link rel="dns-prefetch" href="https://routure-issues.s3.us-east-1.amazonaws.com" />
+        <link rel="preconnect" href="https://routure-issues.s3.us-east-1.amazonaws.com" crossOrigin="anonymous" />
+      </head>
       <body className={`${geistSans.variable} ${geistMono.variable} ${playfair.variable} ${argue.variable} antialiased bg-[#FAFAF8]`}>
         <Header />
         <main className="bg-[#FAFAF8]" style={{ paddingTop: '88px' }}>

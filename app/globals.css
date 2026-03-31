@@ -51,9 +51,14 @@ body {
     Menlo, Consolas, "Liberation Mono", monospace;
 }
 
-/* Smooth scroll */
+/* Smooth scroll — only when user hasn't requested reduced motion */
+@media (prefers-reduced-motion: no-preference) {
+  html {
+    scroll-behavior: smooth;
+  }
+}
+
 html {
-  scroll-behavior: smooth;
   background: #FAFAF8;
   overflow-y: auto;
   scrollbar-width: none; /* Firefox */
@@ -113,3 +118,18 @@ html::-webkit-scrollbar {
 .stagger-children > *:nth-child(4) { animation-delay: 0.4s; }
 .stagger-children > *:nth-child(5) { animation-delay: 0.5s; }
 .stagger-children > *:nth-child(6) { animation-delay: 0.6s; }
+
+/* Respect user preference for reduced motion */
+@media (prefers-reduced-motion: reduce) {
+  .animate-fade-in,
+  .animate-slide-up,
+  .stagger-children > * {
+    animation: none !important;
+    opacity: 1 !important;
+    transform: none !important;
+  }
+
+  html {
+    scroll-behavior: auto !important;
+  }
+}
