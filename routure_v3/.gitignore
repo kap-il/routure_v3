@@ -43,6 +43,8 @@ Thumbs.db
 
 # Source magazine PDFs and extracted content
 Magazines/
+magazines/
+Routure_Magazine_Split/
 
 # Split page images from magazine processing
 Split_Check/
