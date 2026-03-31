@@ -69,5 +69,5 @@ problems/
 # Root manifest (pipeline artifact, not used by the app)
 manifest.json
 
-# Supabase local files
-supabase/
+# Supabase local files (leading slash so lib/supabase/ is NOT excluded)
+/supabase/
