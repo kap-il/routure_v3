@@ -66,9 +66,9 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
-      <body className={`${geistSans.variable} ${geistMono.variable} ${playfair.variable} ${argue.variable} antialiased`}>
+      <body className={`${geistSans.variable} ${geistMono.variable} ${playfair.variable} ${argue.variable} antialiased bg-[#FAFAF8]`}>
         <Header />
-        <main className="pt-16">
+        <main className="pt-16 bg-[#FAFAF8]">
           {children}
         </main>
         <Footer />

@@ -5,24 +5,22 @@ const footerLinks = {
   magazine: [
     { name: 'Current Issue', href: '/issues' },
     { name: 'Archive', href: '/issues' },
-    { name: 'Subscribe', href: '/community' },
+    { name: 'Subscribe', href: '/coming-soon' },
   ],
   shop: [
-    { name: 'All Products', href: '/shop' },
-    { name: 'New Arrivals', href: '/shop' },
-    { name: 'Best Sellers', href: '/shop' },
+    { name: 'All Products', href: '/coming-soon' },
+    { name: 'New Arrivals', href: '/coming-soon' },
+    { name: 'Best Sellers', href: '/coming-soon' },
   ],
   company: [
-    { name: 'About', href: '/community' },
-    { name: 'Contact', href: '/community' },
-    { name: 'Careers', href: '/community' },
+    { name: 'About', href: '/coming-soon' },
+    { name: 'Contact', href: '/coming-soon' },
+    { name: 'Careers', href: '/coming-soon' },
   ],
 };
 
 const socialLinks = [
-  { name: 'Instagram', href: '#', icon: InstagramIcon },
-  { name: 'Twitter', href: '#', icon: TwitterIcon },
-  { name: 'Facebook', href: '#', icon: FacebookIcon },
+  { name: 'Instagram', href: 'https://www.instagram.com/routuremagazine/', icon: InstagramIcon },
 ];
 
 function InstagramIcon({ className }: { className?: string }) {

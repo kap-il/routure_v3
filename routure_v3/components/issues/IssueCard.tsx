@@ -75,9 +75,6 @@ export function IssueCard({ issue, featured = false }: IssueCardProps) {
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M17 8l4 4m0 0l-4 4m4-4H3" />
                 </svg>
               </span>
-              {issue.page_count && (
-                <span className="text-sm text-gray-400">{issue.page_count} pages</span>
-              )}
             </div>
           </div>
         </article>

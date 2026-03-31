@@ -1,6 +1,6 @@
 'use client';
 
-import { useRef, useEffect, useState, useMemo } from 'react';
+import { useMemo } from 'react';
 import type { MosaicImage } from '@/types/issue';
 import { MosaicTile } from './MosaicTile';
 
@@ -11,248 +11,96 @@ interface MosaicGridProps {
 }
 
 /**
- * Row layout patterns for the mosaic.
- * Each pattern defines how many images it consumes and how they're arranged.
+ * Row layout types. Each row consumes N images and arranges them
+ * using flexbox with aspect-ratio-based widths (no cropping).
  */
-type RowPattern =
-  | { type: 'full'; count: 1 }
-  | { type: 'portrait-stacked'; count: 3 }  // tall left + 2 stacked right
-  | { type: 'three-equal'; count: 3 }
-  | { type: 'wide-tall'; count: 2 }          // wide left + tall portrait right
-  | { type: 'two-wide'; count: 2 }           // two equal-width panels
-  | { type: 'two-small'; count: 2 };         // two smaller images in a sub-row
-
-const rowPatterns: RowPattern[] = [
-  { type: 'full', count: 1 },
-  { type: 'portrait-stacked', count: 3 },
-  { type: 'three-equal', count: 3 },
-  { type: 'full', count: 1 },
-  { type: 'wide-tall', count: 2 },
-  { type: 'two-small', count: 2 },
-  { type: 'two-wide', count: 2 },
-  { type: 'full', count: 1 },
-];
+type RowType = 'full' | 'two' | 'three';
 
 interface MosaicRow {
-  pattern: RowPattern['type'];
+  type: RowType;
   images: MosaicImage[];
 }
 
-/** Assign images to row patterns procedurally */
+/**
+ * Pattern sequence for visual variety.
+ * Cycles through: full → 3 → 2 → full → 2 → 3 → 2 → full
+ */
+const patternSequence: { type: RowType; count: number }[] = [
+  { type: 'full', count: 1 },
+  { type: 'three', count: 3 },
+  { type: 'two', count: 2 },
+  { type: 'full', count: 1 },
+  { type: 'two', count: 2 },
+  { type: 'three', count: 3 },
+  { type: 'two', count: 2 },
+  { type: 'full', count: 1 },
+];
+
 function buildRows(images: MosaicImage[]): MosaicRow[] {
   const rows: MosaicRow[] = [];
   let cursor = 0;
   let patternIdx = 0;
 
   while (cursor < images.length) {
-    const pattern = rowPatterns[patternIdx % rowPatterns.length];
+    const pattern = patternSequence[patternIdx % patternSequence.length];
     const remaining = images.length - cursor;
 
-    // If not enough images for this pattern, adapt
-    if (remaining < pattern.count) {
-      // Use remaining images in the simplest layout
-      if (remaining === 1) {
-        rows.push({ pattern: 'full', images: [images[cursor]] });
-      } else if (remaining === 2) {
-        rows.push({ pattern: 'two-wide', images: images.slice(cursor, cursor + 2) });
-      } else {
-        rows.push({ pattern: 'three-equal', images: images.slice(cursor, cursor + 3) });
-      }
-      break;
-    }
+    // Adapt if not enough images for this pattern
+    const count = Math.min(pattern.count, remaining);
+    const type: RowType = count === 1 ? 'full' : count === 2 ? 'two' : 'three';
 
-    const slice = images.slice(cursor, cursor + pattern.count);
-    rows.push({ pattern: pattern.type, images: slice });
-    cursor += pattern.count;
+    rows.push({
+      type,
+      images: images.slice(cursor, cursor + count),
+    });
+
+    cursor += count;
     patternIdx++;
   }
 
   return rows;
 }
 
-export function MosaicGrid({ images, issueId, gap = 20 }: MosaicGridProps) {
+export function MosaicGrid({ images, issueId, gap = 16 }: MosaicGridProps) {
   const rows = useMemo(() => buildRows(images), [images]);
-  const containerRef = useRef<HTMLDivElement>(null);
-  const [visibleRows, setVisibleRows] = useState<Set<number>>(new Set([0, 1, 2]));
-
-  // Intersection observer for lazy rendering
-  useEffect(() => {
-    const container = containerRef.current;
-    if (!container) return;
-
-    const observer = new IntersectionObserver(
-      (entries) => {
-        entries.forEach((entry) => {
-          const idx = Number(entry.target.getAttribute('data-row-idx'));
-          if (entry.isIntersecting) {
-            setVisibleRows((prev) => new Set([...prev, idx]));
-          }
-        });
-      },
-      { rootMargin: '200px 0px', threshold: 0 }
-    );
-
-    const sentinels = container.querySelectorAll('[data-row-idx]');
-    sentinels.forEach((el) => observer.observe(el));
-
-    return () => observer.disconnect();
-  }, [rows]);
 
   return (
-    <div ref={containerRef} className="flex flex-col" style={{ gap }}>
+    <div className="flex flex-col" style={{ gap }}>
       {rows.map((row, idx) => (
-        <div
-          key={idx}
-          data-row-idx={idx}
-          style={{ minHeight: visibleRows.has(idx) ? undefined : '200px' }}
-        >
-          {visibleRows.has(idx) && (
-            <MosaicRowRenderer row={row} issueId={issueId} gap={gap} />
-          )}
-        </div>
+        <MosaicRowRenderer key={idx} row={row} issueId={issueId} gap={gap} />
       ))}
     </div>
   );
 }
 
-function MosaicRowRenderer({ row, issueId, gap }: { row: MosaicRow; issueId: string; gap: number }) {
-  switch (row.pattern) {
-    case 'full':
-      return <FullWidthRow image={row.images[0]} issueId={issueId} />;
-    case 'portrait-stacked':
-      return <PortraitStackedRow images={row.images} issueId={issueId} gap={gap} />;
-    case 'three-equal':
-      return <ThreeEqualRow images={row.images} issueId={issueId} gap={gap} />;
-    case 'wide-tall':
-      return <WideTallRow images={row.images} issueId={issueId} gap={gap} />;
-    case 'two-wide':
-      return <TwoWideRow images={row.images} issueId={issueId} gap={gap} />;
-    case 'two-small':
-      return <TwoSmallRow images={row.images} issueId={issueId} gap={gap} />;
-    default:
-      return null;
+function MosaicRowRenderer({
+  row,
+  issueId,
+  gap,
+}: {
+  row: MosaicRow;
+  issueId: string;
+  gap: number;
+}) {
+  if (row.type === 'full') {
+    return (
+      <MosaicTile image={row.images[0]} issueId={issueId} />
+    );
   }
-}
 
-// ============================================================
-// Row pattern components
-// ============================================================
-
-/** Single full-width image */
-function FullWidthRow({ image, issueId }: { image: MosaicImage; issueId: string }) {
-  // Taller for hero/cover images, shorter for closing spreads
-  const height = image.aspectRatio > 2.5 ? 440 : 560;
-  const articleBarHeight = image.hasArticle ? 80 : 0;
-
-  return (
-    <MosaicTile
-      image={image}
-      issueId={issueId}
-      style={{ width: '100%', height: height + articleBarHeight }}
-    />
-  );
-}
-
-/** Tall portrait left + two stacked landscape right */
-function PortraitStackedRow({ images, issueId, gap }: { images: MosaicImage[]; issueId: string; gap: number }) {
-  const [left, topRight, bottomRight] = images;
-  const totalHeight = 720;
-  const topArticleBar = topRight?.hasArticle ? 80 : 0;
-  const bottomArticleBar = bottomRight?.hasArticle ? 80 : 0;
-  const leftArticleBar = left?.hasArticle ? 80 : 0;
+  // For multi-image rows, distribute width proportional to aspect ratio
+  // so each image gets width proportional to how wide it is relative to its height.
+  // This means all images in a row will have the same rendered height.
+  const totalAR = row.images.reduce((sum, img) => sum + img.aspectRatio, 0);
 
   return (
     <div className="flex" style={{ gap }}>
-      {/* Left — tall portrait */}
-      <MosaicTile
-        image={left}
-        issueId={issueId}
-        style={{ width: '42%', height: totalHeight + leftArticleBar }}
-      />
-
-      {/* Right column — two stacked */}
-      <div className="flex flex-col flex-1" style={{ gap }}>
-        <MosaicTile
-          image={topRight}
-          issueId={issueId}
-          style={{ width: '100%', height: (totalHeight - gap) / 2 + topArticleBar }}
-        />
-        <MosaicTile
-          image={bottomRight}
-          issueId={issueId}
-          style={{ width: '100%', height: (totalHeight - gap) / 2 + bottomArticleBar }}
-        />
-      </div>
-    </div>
-  );
-}
-
-/** Three equal-width columns */
-function ThreeEqualRow({ images, issueId, gap }: { images: MosaicImage[]; issueId: string; gap: number }) {
-  return (
-    <div className="flex" style={{ gap }}>
-      {images.map((img) => (
-        <MosaicTile
-          key={img.id}
-          image={img}
-          issueId={issueId}
-          style={{ flex: 1, height: 480 }}
-        />
-      ))}
-    </div>
-  );
-}
-
-/** Wide image left + tall portrait right */
-function WideTallRow({ images, issueId, gap }: { images: MosaicImage[]; issueId: string; gap: number }) {
-  const [wide, tall] = images;
-
-  return (
-    <div className="flex" style={{ gap }}>
-      <MosaicTile
-        image={wide}
-        issueId={issueId}
-        style={{ width: '60%', height: 400 }}
-      />
-      <MosaicTile
-        image={tall}
-        issueId={issueId}
-        style={{ flex: 1, height: 640 }}
-        className="-mt-0"
-      />
-    </div>
-  );
-}
-
-/** Two equal-width wide panels */
-function TwoWideRow({ images, issueId, gap }: { images: MosaicImage[]; issueId: string; gap: number }) {
-  return (
-    <div className="flex" style={{ gap }}>
-      {images.map((img) => (
-        <MosaicTile
-          key={img.id}
-          image={img}
-          issueId={issueId}
-          style={{ flex: 1, height: 360 }}
-        />
-      ))}
-    </div>
-  );
-}
-
-/** Two smaller images side by side */
-function TwoSmallRow({ images, issueId, gap }: { images: MosaicImage[]; issueId: string; gap: number }) {
-  return (
-    <div className="flex" style={{ gap }}>
-      {images.map((img) => {
-        const articleBarHeight = img.hasArticle ? 60 : 0;
+      {row.images.map((img) => {
+        const widthPercent = (img.aspectRatio / totalAR) * 100;
         return (
-          <MosaicTile
-            key={img.id}
-            image={img}
-            issueId={issueId}
-            style={{ flex: 1, height: 220 + articleBarHeight }}
-          />
+          <div key={img.id} style={{ width: `${widthPercent}%` }}>
+            <MosaicTile image={img} issueId={issueId} />
+          </div>
         );
       })}
     </div>

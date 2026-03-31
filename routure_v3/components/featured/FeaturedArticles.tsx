@@ -1,5 +1,4 @@
 import Link from 'next/link';
-import Image from 'next/image';
 import { Article } from '@/lib/supabase/types';
 
 interface FeaturedArticlesProps {
@@ -40,26 +39,14 @@ export function FeaturedArticles({ articles }: FeaturedArticlesProps) {
               className="group"
             >
               <article className="flex flex-col h-full">
-                {/* Image */}
+                {/* Image placeholder */}
                 <div className="relative aspect-[4/3] bg-gray-100 mb-6 overflow-hidden">
-                  {article.featured_image_url ? (
-                    <Image
-                      src={article.featured_image_url}
-                      alt={article.title}
-                      fill
-                      className="object-cover group-hover:scale-105 transition-transform duration-700"
-                      sizes="(max-width: 768px) 100vw, 50vw"
-                    />
-                  ) : (
-                    <>
-                      <div className="absolute inset-0 bg-gradient-to-br from-gray-200 to-gray-300 group-hover:scale-105 transition-transform duration-700" />
-                      <div className="absolute inset-0 flex items-center justify-center">
-                        <span className="font-serif text-6xl text-gray-400/50 italic">
-                          {String(index + 1).padStart(2, '0')}
-                        </span>
-                      </div>
-                    </>
-                  )}
+                  <div className="absolute inset-0 bg-gradient-to-br from-gray-200 to-gray-300 group-hover:scale-105 transition-transform duration-700" />
+                  <div className="absolute inset-0 flex items-center justify-center">
+                    <span className="font-serif text-6xl text-gray-400/50 italic">
+                      {String(index + 1).padStart(2, '0')}
+                    </span>
+                  </div>
                 </div>
 
                 {/* Content */}
@@ -70,14 +57,6 @@ export function FeaturedArticles({ articles }: FeaturedArticlesProps) {
                         {article.author}
                       </span>
                     )}
-                    {article.publish_date && (
-                      <>
-                        <span className="w-1 h-1 rounded-full bg-gray-300" />
-                        <span className="text-xs text-gray-400">
-                          {new Date(article.publish_date + 'T00:00:00').toLocaleDateString('en-US', { month: 'short', year: 'numeric' })}
-                        </span>
-                      </>
-                    )}
                   </div>
 
                   <h3 className="font-serif text-2xl sm:text-3xl font-normal mb-3 group-hover:text-gray-600 transition-colors">
@@ -86,7 +65,7 @@ export function FeaturedArticles({ articles }: FeaturedArticlesProps) {
 
                   {article.content && (
                     <p className="text-gray-600 leading-relaxed line-clamp-3">
-                      {article.content.substring(0, 200)}
+                      {Array.isArray(article.content) ? article.content.map(b => b.text).join(' ').substring(0, 200) : ''}
                     </p>
                   )}
                 </div>

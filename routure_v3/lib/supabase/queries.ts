@@ -1,7 +1,16 @@
 import { createServerClient } from './client';
-import type { Issue, IssuePage, Article } from './types';
+import type { Issue, Shoot, ShootImage, Article, IssueMosaicItem, IssueEditorialItem, ShootWithImages, SectionType } from './types';
 
-// --- Issues ---
+/** Supabase returns a single object when FK is unique, or an array otherwise. */
+function resolveArticle(raw: unknown): Article | null {
+  if (!raw) return null;
+  if (Array.isArray(raw)) return raw.length > 0 ? raw[0] : null;
+  return raw as Article;
+}
+
+// ============================================================
+// Issues
+// ============================================================
 
 export async function getIssues(): Promise<Issue[]> {
   const supabase = createServerClient();
@@ -35,54 +44,209 @@ export async function getIssueBySlug(slug: string): Promise<Issue | null> {
     .single();
 
   if (error) {
-    if (error.code === 'PGRST116') return null; // Not found
+    if (error.code === 'PGRST116') return null;
     throw error;
   }
   return data;
 }
 
-export async function getIssuePages(issueId: string): Promise<IssuePage[]> {
+// ============================================================
+// Issue View: Mosaic Data
+// ============================================================
+
+/**
+ * Returns the full flattened image list for the mosaic layout engine.
+ * Joins shoots → shoot_images → articles (LEFT JOIN).
+ * Sorted by shoot.position ASC, then shoot_images.position ASC.
+ */
+export async function getIssueMosaicData(issueId: string): Promise<IssueMosaicItem[]> {
   const supabase = createServerClient();
-  const { data, error } = await supabase
-    .from('issue_pages')
-    .select('*')
+
+  // Fetch shoots with their images and optional article
+  const { data: shoots, error } = await supabase
+    .from('shoots')
+    .select('*, shoot_images(*), articles(*)')
     .eq('issue_id', issueId)
-    .order('page_number', { ascending: true });
+    .order('position', { ascending: true });
 
   if (error) throw error;
-  return data ?? [];
+  if (!shoots) return [];
+
+  const items: IssueMosaicItem[] = [];
+
+  // Include photo shoots and covers in the mosaic
+  const shootSections: SectionType[] = ['shoot', 'cover'];
+
+  for (const shoot of shoots) {
+    const sectionType = (shoot.section_type ?? 'shoot') as SectionType;
+    if (!shootSections.includes(sectionType)) continue;
+
+    const images = (shoot.shoot_images as ShootImage[] ?? [])
+      .sort((a: ShootImage, b: ShootImage) => a.position - b.position);
+    const article = resolveArticle(shoot.articles);
+    let isFirst = true;
+
+    for (const img of images) {
+      // Skip article text pages — only show photos in the mosaic
+      if (img.is_article_page) continue;
+
+      items.push({
+        id: img.id,
+        src: img.image_url,
+        thumbnailSrc: img.thumbnail_url,
+        aspectRatio: Number(img.aspect_ratio),
+        shootId: shoot.id,
+        shootSlug: shoot.slug,
+        shootTitle: shoot.title,
+        hasArticle: article !== null,
+        articleTitle: article?.title ?? null,
+        articleCategory: article?.category ?? null,
+        issuePosition: shoot.position,
+        imagePosition: img.position,
+        isHero: img.is_hero,
+        isFirstInShoot: isFirst,
+        isCover: sectionType === 'cover',
+      });
+      isFirst = false;
+    }
+  }
+
+  return items;
 }
 
-// --- Articles ---
-
-export async function getArticles(): Promise<Article[]> {
+/**
+ * Returns editorial sections (letters from board, TOC) for an issue.
+ * These are displayed as links on the issue page, not in the mosaic.
+ */
+export async function getIssueEditorialItems(issueId: string): Promise<IssueEditorialItem[]> {
   const supabase = createServerClient();
-  const { data, error } = await supabase
-    .from('articles')
-    .select('*')
-    .order('publish_date', { ascending: false });
+
+  const { data: shoots, error } = await supabase
+    .from('shoots')
+    .select('*, shoot_images(*), articles(*)')
+    .eq('issue_id', issueId)
+    .in('section_type', ['editorial', 'toc'])
+    .order('position', { ascending: true });
 
   if (error) throw error;
-  return data ?? [];
+  if (!shoots) return [];
+
+  return shoots.map(shoot => {
+    const article = resolveArticle(shoot.articles);
+    const images = (shoot.shoot_images as ShootImage[] ?? [])
+      .sort((a: ShootImage, b: ShootImage) => a.position - b.position);
+    const firstPhoto = images.find(img => !img.is_article_page);
+
+    return {
+      id: shoot.id,
+      slug: shoot.slug,
+      title: shoot.title,
+      sectionType: (shoot.section_type ?? 'shoot') as SectionType,
+      position: shoot.position,
+      hasArticle: article !== null,
+      articleTitle: article?.title ?? null,
+      thumbnailSrc: firstPhoto?.thumbnail_url ?? images[0]?.thumbnail_url ?? null,
+    };
+  });
 }
 
-export async function getFeaturedArticles(): Promise<Article[]> {
-  const supabase = createServerClient();
-  const { data, error } = await supabase
-    .from('articles')
-    .select('*')
-    .eq('is_featured', true)
-    .order('publish_date', { ascending: false });
+// ============================================================
+// Featured Shoot (random with article)
+// ============================================================
 
-  if (error) throw error;
-  return data ?? [];
+export async function getFeaturedShoot(): Promise<{
+  title: string;
+  slug: string;
+  heroImageUrl: string;
+  imageCount: number;
+} | null> {
+  const supabase = createServerClient();
+
+  const { data: shoots, error } = await supabase
+    .from('shoots')
+    .select('*, shoot_images(*)')
+    .eq('section_type', 'shoot')
+    .order('position', { ascending: true });
+
+  if (error || !shoots || shoots.length === 0) return null;
+
+  // Pick a random shoot that has photos
+  const candidates = shoots.filter(s => {
+    const photos = ((s.shoot_images as ShootImage[]) ?? []).filter(img => !img.is_article_page);
+    return photos.length > 0;
+  });
+
+  if (candidates.length === 0) return null;
+  const shoot = candidates[Math.floor(Math.random() * candidates.length)];
+  const photos = ((shoot.shoot_images as ShootImage[]) ?? [])
+    .filter((img: ShootImage) => !img.is_article_page)
+    .sort((a: ShootImage, b: ShootImage) => a.position - b.position);
+
+  return {
+    title: shoot.title,
+    slug: shoot.slug,
+    heroImageUrl: photos[0].image_url,
+    imageCount: photos.length,
+  };
 }
 
-export async function getArticleBySlug(slug: string): Promise<Article | null> {
+// ============================================================
+// Featured Article (random, with pullquote)
+// ============================================================
+
+export async function getFeaturedArticle(): Promise<{
+  title: string;
+  shootSlug: string;
+  author: string | null;
+  pullquote: string | null;
+} | null> {
   const supabase = createServerClient();
-  const { data, error } = await supabase
+
+  const { data: articles, error } = await supabase
     .from('articles')
-    .select('*')
+    .select('title, shoot_id, author, content');
+
+  if (error || !articles || articles.length === 0) return null;
+
+  const pick = articles[Math.floor(Math.random() * articles.length)];
+
+  // Extract pullquote from content
+  let pullquote: string | null = null;
+  const content = typeof pick.content === 'string' ? JSON.parse(pick.content) : pick.content;
+  if (Array.isArray(content)) {
+    const pq = content.find((b: { type: string }) => b.type === 'pullquote');
+    if (pq) pullquote = pq.text;
+  }
+
+  // Get shoot slug
+  const { data: shoot } = await supabase
+    .from('shoots')
+    .select('slug')
+    .eq('id', pick.shoot_id)
+    .single();
+
+  return {
+    title: pick.title,
+    shootSlug: shoot?.slug ?? '',
+    author: pick.author,
+    pullquote,
+  };
+}
+
+// ============================================================
+// Shoot Pages
+// ============================================================
+
+/**
+ * Returns a shoot with all its images and its article (or null).
+ * Used by both /shoot/:slug and /shoot/:slug/article.
+ */
+export async function getShootBySlug(slug: string): Promise<ShootWithImages | null> {
+  const supabase = createServerClient();
+
+  const { data, error } = await supabase
+    .from('shoots')
+    .select('*, shoot_images(*), articles(*)')
     .eq('slug', slug)
     .single();
 
@@ -90,10 +254,196 @@ export async function getArticleBySlug(slug: string): Promise<Article | null> {
     if (error.code === 'PGRST116') return null;
     throw error;
   }
-  return data;
+
+  if (!data) return null;
+
+  const images = (data.shoot_images as ShootImage[] ?? [])
+    .sort((a: ShootImage, b: ShootImage) => a.position - b.position);
+  const article = resolveArticle(data.articles);
+
+  return {
+    id: data.id,
+    issue_id: data.issue_id,
+    slug: data.slug,
+    title: data.title,
+    position: data.position,
+    section_type: (data.section_type ?? 'shoot') as SectionType,
+    credits: data.credits ?? null,
+    created_at: data.created_at,
+    images,
+    article,
+  };
 }
 
-// --- Contact ---
+/**
+ * Get the issue that a shoot belongs to (for back-navigation).
+ */
+export async function getIssueForShoot(shootSlug: string): Promise<Issue | null> {
+  const supabase = createServerClient();
+
+  const { data: shoot, error: shootError } = await supabase
+    .from('shoots')
+    .select('issue_id')
+    .eq('slug', shootSlug)
+    .single();
+
+  if (shootError || !shoot) return null;
+
+  const { data: issue, error: issueError } = await supabase
+    .from('issues')
+    .select('*')
+    .eq('id', shoot.issue_id)
+    .single();
+
+  if (issueError) return null;
+  return issue;
+}
+
+// ============================================================
+// Categories
+// ============================================================
+
+/** Canonical category list */
+export const CATEGORIES = [
+  'Architecture',
+  'Sustainability',
+  'Experimentalism',
+  'Commercialism',
+  'Community',
+] as const;
+
+export type CategoryName = (typeof CATEGORIES)[number];
+
+export interface CategoryArticle {
+  id: string;
+  title: string;
+  slug: string;
+  author: string | null;
+  category: string;
+  shootSlug: string;
+  issueSlug: string;
+  issueTitle: string;
+  issueNumber: number;
+  heroImageUrl: string | null;
+}
+
+/**
+ * Returns all articles that match a given category,
+ * joined with their shoot slug + issue metadata + hero image.
+ */
+export async function getArticlesByCategory(category: string): Promise<CategoryArticle[]> {
+  const supabase = createServerClient();
+
+  const { data: articles, error } = await supabase
+    .from('articles')
+    .select('id, title, slug, author, category, shoot_id')
+    .ilike('category', category);
+
+  if (error) throw error;
+  if (!articles || articles.length === 0) return [];
+
+  // Fetch shoot + issue data for each article
+  const results: CategoryArticle[] = [];
+  for (const article of articles) {
+    const { data: shoot } = await supabase
+      .from('shoots')
+      .select('slug, issue_id, shoot_images(*)')
+      .eq('id', article.shoot_id)
+      .single();
+
+    if (!shoot) continue;
+
+    const { data: issue } = await supabase
+      .from('issues')
+      .select('slug, title, issue_number')
+      .eq('id', shoot.issue_id)
+      .single();
+
+    if (!issue) continue;
+
+    // Get hero image (first non-article-page image)
+    const images = ((shoot.shoot_images as ShootImage[]) ?? [])
+      .filter((img: ShootImage) => !img.is_article_page)
+      .sort((a: ShootImage, b: ShootImage) => a.position - b.position);
+
+    results.push({
+      id: article.id,
+      title: article.title,
+      slug: article.slug,
+      author: article.author,
+      category: article.category!,
+      shootSlug: shoot.slug,
+      issueSlug: issue.slug,
+      issueTitle: issue.title,
+      issueNumber: issue.issue_number,
+      heroImageUrl: images[0]?.image_url ?? null,
+    });
+  }
+
+  return results;
+}
+
+// ============================================================
+// Letters
+// ============================================================
+
+export interface LetterWithContent {
+  id: string;
+  slug: string;
+  title: string;
+  images: { image_url: string; thumbnail_url: string; width: number; height: number; position: number }[];
+  content: { type: string; text: string }[];
+}
+
+export async function getLetterBySlug(slug: string): Promise<LetterWithContent | null> {
+  const supabase = createServerClient();
+
+  const { data: letter, error } = await supabase
+    .from('letters')
+    .select('id, slug, title')
+    .eq('slug', slug)
+    .single();
+
+  if (error || !letter) return null;
+
+  const [{ data: images }, { data: contentRows }] = await Promise.all([
+    supabase
+      .from('letter_images')
+      .select('image_url, thumbnail_url, width, height, position')
+      .eq('letter_id', letter.id)
+      .order('position', { ascending: true }),
+    supabase
+      .from('letter_content')
+      .select('content')
+      .eq('letter_id', letter.id)
+      .single(),
+  ]);
+
+  let content = contentRows?.content ?? [];
+  if (typeof content === 'string') content = JSON.parse(content);
+
+  return {
+    ...letter,
+    images: images ?? [],
+    content,
+  };
+}
+
+export async function getLettersByIssueId(issueId: string): Promise<{ id: string; slug: string; title: string }[]> {
+  const supabase = createServerClient();
+  const { data, error } = await supabase
+    .from('letters')
+    .select('id, slug, title')
+    .eq('issue_id', issueId)
+    .order('position', { ascending: true });
+
+  if (error) throw error;
+  return data ?? [];
+}
+
+// ============================================================
+// Contact
+// ============================================================
 
 export async function submitContactForm(data: {
   name: string;

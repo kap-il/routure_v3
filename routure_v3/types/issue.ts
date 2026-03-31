@@ -1,45 +1,43 @@
-// Re-export Supabase types as the canonical issue types
-export type { Issue, IssuePage, Article } from '@/lib/supabase/types';
+// Re-export Supabase types as the canonical types
+export type {
+  Issue,
+  Shoot,
+  ShootImage,
+  Article,
+  ContentBlock,
+  ContentBlockType,
+  ContactSubmission,
+  IssueMosaicItem,
+  IssueEditorialItem,
+  SectionType,
+  ShootWithImages,
+} from '@/lib/supabase/types';
 
-// Extended types for page framework (shoots, categories, content sections)
-export interface ArticleSection {
-  type: 'text' | 'image';
-  content: string;
-}
-
-export interface Shoot {
-  slug: string;
-  title: string;
-  coverImage: string;
-  images: string[];
-}
-
-export interface TableOfContentsItem {
-  title: string;
-  page: number;
-  category?: string;
-}
+// Extended types for page framework (used by mock data and layout components)
 
 export interface Category {
   name: string;
   articles: { title: string; slug: string; issueSlug: string }[];
 }
 
-// --- Page Framework Types ---
+// --- Legacy page framework types (used by mock data) ---
 
-/** A single image tile in the Issue View mosaic */
+/** A single image tile in the Issue View mosaic (mock data shape) */
 export interface MosaicImage {
   id: string;
   src: string;
-  aspectRatio: number; // width / height
+  aspectRatio: number;
   shootId: string;
+  shootTitle?: string;
   hasArticle: boolean;
   articleTitle?: string;
   articleCategory?: string;
   issuePosition: number;
+  isFirstInShoot?: boolean;
+  isCover?: boolean;
 }
 
-/** Shoot data for the Shoot with Article view */
+/** Shoot data for the Shoot with Article view (mock data shape) */
 export interface ShootWithArticleData {
   shootId: string;
   title: string;
@@ -51,11 +49,11 @@ export interface ShootWithArticleData {
     title: string;
     subtitle?: string;
     author: string;
-    sections: string[]; // paragraphs of text
+    sections: string[];
   };
 }
 
-/** Shoot data for the Shoot Concept (no article) view */
+/** Shoot data for the Shoot Concept (no article) view (mock data shape) */
 export interface ShootConceptData {
   shootId: string;
   title: string;

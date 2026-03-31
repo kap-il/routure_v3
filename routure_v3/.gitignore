@@ -36,3 +36,38 @@ Thumbs.db
 
 # Claude Code worktrees
 .claude/
+
+# ===================
+# Non-production assets
+# ===================
+
+# Source magazine PDFs and extracted content
+Magazines/
+
+# Split page images from magazine processing
+Split_Check/
+
+# Design references and mockups
+designs/
+
+# Internal documentation
+docs/
+
+# Pipeline processing scripts (Python, configs, venv)
+scripts/
+
+# Pipeline output artifacts
+output/
+output_savour/
+
+# Temporary extracted content
+tmp/
+
+# Bug/issue screenshots
+problems/
+
+# Root manifest (pipeline artifact, not used by the app)
+manifest.json
+
+# Supabase local files
+supabase/

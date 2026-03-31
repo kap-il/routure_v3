@@ -1,94 +1,70 @@
 'use client';
 
 import Link from 'next/link';
+import Image from 'next/image';
 import type { MosaicImage } from '@/types/issue';
 
 interface MosaicTileProps {
   image: MosaicImage;
   issueId: string;
-  style?: React.CSSProperties;
   className?: string;
 }
 
-/** Gradient palette for placeholder tiles — each tile gets a unique visual identity */
-const gradients = [
-  'from-[#2c2c2c] to-[#1a1a1a]',
-  'from-[#3d3d3d] to-[#222]',
-  'from-[#4a4a4a] to-[#2a2a2a]',
-  'from-[#383838] to-[#1e1e1e]',
-  'from-[#555] to-[#333]',
-  'from-[#3a3a3a] to-[#1c1c1c]',
-  'from-[#444] to-[#252525]',
-  'from-[#505050] to-[#2e2e2e]',
-];
-
-function getGradient(position: number) {
-  return gradients[position % gradients.length];
-}
-
-export function MosaicTile({ image, issueId, style, className = '' }: MosaicTileProps) {
+export function MosaicTile({ image, issueId, className = '' }: MosaicTileProps) {
   const href = image.hasArticle
     ? `/shoot/${image.shootId}/article`
     : `/shoot/${image.shootId}`;
 
-  const gradient = getGradient(image.issuePosition);
+  const Wrapper = image.isCover ? 'div' : Link;
+  const wrapperProps = image.isCover ? {} : { href };
 
   return (
-    <Link
-      href={href}
-      className={`group relative block rounded-[3px] overflow-hidden ${className}`}
-      style={style}
+    <Wrapper
+      {...wrapperProps as any}
+      className={`group relative block overflow-hidden rounded-[3px] ${className}`}
     >
-      {/* Image placeholder with gradient */}
-      <div className={`absolute inset-0 bg-gradient-to-br ${gradient}`} />
-
-      {/* Image label number */}
-      <div className="absolute inset-0 flex flex-col items-center justify-center">
-        {image.issuePosition === 1 ? (
-          <>
-            <span className="font-serif text-[28px] text-white/80">
-              Cover Spread
-            </span>
-            <span className="text-[11px] tracking-[2px] text-[#999] mt-2">
-              {String(image.issuePosition).padStart(2, '0')}
-            </span>
-          </>
-        ) : (
-          <>
-            <span className="font-serif text-[20px] text-white/70">
-              Image
-            </span>
-            <span className="text-[11px] tracking-[2px] text-[#888] mt-2">
-              {String(image.issuePosition).padStart(2, '0')}
-            </span>
-          </>
-        )}
-      </div>
-
-      {/* Click hint arrow */}
-      <div className="absolute top-4 right-4">
-        <div className="w-7 h-7 rounded-full bg-white/15 flex items-center justify-center opacity-60 group-hover:opacity-100 transition-opacity">
-          <span className="text-[12px] text-white">↗</span>
-        </div>
-      </div>
+      {/* Actual image from S3 — uses natural aspect ratio */}
+      {image.src ? (
+        <Image
+          src={image.src}
+          alt={image.articleTitle ?? `Image ${image.issuePosition}`}
+          width={800}
+          height={Math.round(800 / image.aspectRatio)}
+          className="w-full h-auto block group-hover:scale-[1.02] transition-transform duration-500"
+          sizes="(max-width: 768px) 100vw, (max-width: 1280px) 50vw, 600px"
+        />
+      ) : (
+        <div
+          className="w-full bg-[#E0E0E0]"
+          style={{ aspectRatio: image.aspectRatio }}
+        />
+      )}
 
       {/* Hover overlay */}
-      <div className="absolute inset-0 bg-white/5 opacity-0 group-hover:opacity-100 transition-opacity" />
+      <div className="absolute inset-0 bg-black/0 group-hover:bg-black/10 transition-colors duration-300" />
 
-      {/* Article title bar — only when hasArticle */}
-      {image.hasArticle && (
-        <div className="absolute bottom-0 left-0 right-0 h-[68px] bg-[#111]/[0.88] flex items-center px-7">
-          <span className="font-serif text-[11px] tracking-[2px] text-[#999] uppercase mr-6">
-            {image.articleCategory}
-          </span>
-          <span className="font-serif text-[18px] font-bold text-white flex-1 truncate">
-            {image.articleTitle}
-          </span>
-          <span className="text-[10px] text-[#777] ml-4 shrink-0">
-            → Read
+      {/* Click hint arrow (non-cover only) */}
+      {!image.isCover && (
+        <div className="absolute top-3 right-3">
+          <div className="w-7 h-7 rounded-full bg-white/20 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
+            <span className="text-[12px] text-white">↗</span>
+          </div>
+        </div>
+      )}
+
+      {/* Shoot title bar — on first image of every shoot (not covers) */}
+      {image.isFirstInShoot && !image.isCover && (
+        <div className="absolute bottom-0 left-0 right-0 bg-[#111]/[0.88] flex items-center px-5 py-3">
+          <span className="font-serif text-[15px] font-bold text-white truncate">
+            {image.shootTitle ?? image.shootId}
+            {image.hasArticle && image.articleTitle && (
+              <span className="font-normal text-[#999]">
+                {' '}/ Feature: {image.articleTitle}
+              </span>
+            )}
           </span>
         </div>
       )}
-    </Link>
+    </Wrapper>
   );
 }

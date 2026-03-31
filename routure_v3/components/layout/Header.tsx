@@ -2,21 +2,33 @@
 
 import Link from 'next/link';
 import Image from 'next/image';
+import { useRouter } from 'next/navigation';
 import { useState } from 'react';
 
 const navigation = [
   { name: 'Issues', href: '/issues' },
-  { name: 'Shop', href: '/shop' },
-  { name: 'Community', href: '/community' },
+  { name: 'Shop', href: '/coming-soon' },
+  { name: 'Community', href: '/coming-soon' },
 ];
 
 export function Header() {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const router = useRouter();
 
   return (
-    <header className="fixed top-0 left-0 right-0 z-50 bg-white/95 backdrop-blur-sm border-b border-gray-100">
+    <header className="fixed top-0 left-0 right-0 z-50 bg-white/95 backdrop-blur-sm border-b border-[#EEEEE8]">
       <nav className="mx-auto flex max-w-7xl items-center justify-between px-6 py-4 lg:px-8">
-        {/* Logo */}
+        {/* Back + Logo */}
+        <div className="flex items-center gap-4">
+          <button
+            onClick={() => router.back()}
+            className="-ml-2 p-1 text-gray-400 hover:text-gray-900 transition-colors"
+            aria-label="Go back"
+          >
+            <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor">
+              <path strokeLinecap="round" strokeLinejoin="round" d="M10.5 19.5L3 12m0 0l7.5-7.5M3 12h18" />
+            </svg>
+          </button>
         <Link href="/" className="flex items-center">
           <Image
             src="/images/routure-logo.png"
@@ -27,6 +39,7 @@ export function Header() {
             priority
           />
         </Link>
+        </div>
 
         {/* Desktop Navigation */}
         <div className="hidden md:flex md:items-center md:gap-x-12">
