@@ -39,6 +39,13 @@ const argue = localFont({
   display: "swap",
 });
 
+export const viewport = {
+  width: 'device-width',
+  initialScale: 1,
+  viewportFit: 'cover' as const,
+  themeColor: '#FAFAF8',
+};
+
 export const metadata: Metadata = {
   title: "Routure | A Curated Magazine Experience",
   description: "Exploring the intersection of culture, style, and contemporary life.",
@@ -65,7 +72,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en">
+    <html lang="en" className="bg-[#FAFAF8]">
       <body className={`${geistSans.variable} ${geistMono.variable} ${playfair.variable} ${argue.variable} antialiased bg-[#FAFAF8]`}>
         <Header />
         <main className="pt-16 bg-[#FAFAF8]">
