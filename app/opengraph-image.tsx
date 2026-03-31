@@ -24,7 +24,7 @@ export default async function Image() {
           src="https://routuremag.vercel.app/images/routure-logo.png"
           alt=""
           width={400}
-          height={90}
+          height={121}
         />
       </div>
     ),
