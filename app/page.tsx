@@ -1,5 +1,6 @@
 import Link from 'next/link';
 import Image from 'next/image';
+import IntroSplash from '@/components/IntroSplash';
 import { getIssues, getFeaturedShoot, getFeaturedArticle } from '@/lib/supabase/queries';
 
 export const revalidate = 60; // re-randomize every 60s
@@ -17,6 +18,7 @@ export default async function Home() {
     featuredArticle = article;
   } catch { /* fallback to mock */ }
   return (
+    <IntroSplash>
     <div className="min-h-screen bg-[#FAFAF8]">
       {/* ===== HERO — Featured Shoot ===== */}
       <section>
@@ -354,5 +356,6 @@ export default async function Home() {
         </div>
       </section>
     </div>
+    </IntroSplash>
   );
 }

@@ -4,6 +4,7 @@ import { Playfair_Display } from "next/font/google";
 import localFont from "next/font/local";
 import { Header } from "@/components/layout/Header";
 import { Footer } from "@/components/layout/Footer";
+import IntroSplash from "@/components/IntroSplash";
 import "./globals.css";
 
 const geistSans = Geist({
@@ -79,6 +80,14 @@ export default function RootLayout({
   return (
     <html lang="en" className="bg-[#FAFAF8]">
       <head>
+        <script dangerouslySetInnerHTML={{ __html: `
+          if (window.location.pathname === '/') {
+            var s = document.createElement('style');
+            s.id = 'intro-block';
+            s.textContent = 'body{visibility:hidden!important}html{background:#000!important}';
+            document.head.appendChild(s);
+          }
+        `}} />
         <link rel="dns-prefetch" href="https://routure-issues.s3.us-east-1.amazonaws.com" />
         <link rel="preconnect" href="https://routure-issues.s3.us-east-1.amazonaws.com" crossOrigin="anonymous" />
       </head>
