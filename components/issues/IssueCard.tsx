@@ -24,7 +24,7 @@ export function IssueCard({ issue, featured = false }: IssueCardProps) {
 
   if (featured) {
     return (
-      <Link href={`/issues/${issue.slug}`} className="group block">
+      <Link href={`/issue/${issue.slug}`} className="group block">
         <article className="grid md:grid-cols-2 gap-8 lg:gap-12">
           {/* Cover */}
           <div className="relative aspect-[3/4] bg-gray-100 overflow-hidden">
@@ -83,7 +83,7 @@ export function IssueCard({ issue, featured = false }: IssueCardProps) {
   }
 
   return (
-    <Link href={`/issues/${issue.slug}`} className="group block">
+    <Link href={`/issue/${issue.slug}`} className="group block">
       <article>
         {/* Cover */}
         <div className="relative aspect-[3/4] bg-gray-100 mb-6 overflow-hidden">
