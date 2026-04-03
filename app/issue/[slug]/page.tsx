@@ -150,7 +150,7 @@ export default async function IssueViewPage({ params }: IssueViewProps) {
       </div>
 
       {/* ===== MOSAIC GRID ===== */}
-      <div className="mx-auto max-w-[1280px] px-3 md:px-[80px] pb-20">
+      <div className="mx-auto max-w-[1600px] px-3 md:px-10 pb-20">
         <MosaicGrid images={mosaicImages} issueId={slug} gap={20} />
       </div>
 

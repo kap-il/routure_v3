@@ -166,7 +166,7 @@ export default async function Home() {
                   href={`/category/${cat.name.toLowerCase()}`}
                   className="flex items-center justify-between py-4 md:py-5 border-b border-[#EAEAEA] last:border-b-0 group"
                 >
-                  <span className="font-serif text-[17px] md:text-[20px] font-bold text-[#1a1a1a] group-hover:text-[#666] transition-colors">
+                  <span className="text-[17px] md:text-[20px] font-bold text-[#1a1a1a] group-hover:text-[#666] transition-colors" style={{ fontFamily: 'Cochin, Georgia, serif' }}>
                     {cat.name}
                   </span>
                   <span className="text-[14px] text-[#AAA]">
