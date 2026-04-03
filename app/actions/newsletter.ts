@@ -40,7 +40,7 @@ export async function subscribeNewsletter(email: string) {
 
     // Send welcome email
     if (process.env.RESEND_API_KEY) {
-      const unsubUrl = `https://routuremag.vercel.app/api/unsubscribe?email=${btoa(cleanEmail)}`;
+      const unsubUrl = `https://routuremag.com/api/unsubscribe?email=${btoa(cleanEmail)}`;
       try {
         const res = await fetch('https://api.resend.com/emails', {
           method: 'POST',
@@ -63,7 +63,7 @@ export async function subscribeNewsletter(email: string) {
   <p style="font-size: 14px; line-height: 1.8; color: #555; margin: 0 0 30px;">
     In the meantime, explore our latest issue:
   </p>
-  <a href="https://routuremag.vercel.app/issues" style="display: inline-block; padding: 12px 28px; background: #000; color: #fff; text-decoration: none; font-size: 12px; letter-spacing: 2px; text-transform: uppercase;">Browse Issues</a>
+  <a href="https://routuremag.com/issues" style="display: inline-block; padding: 12px 28px; background: #000; color: #fff; text-decoration: none; font-size: 12px; letter-spacing: 2px; text-transform: uppercase;">Browse Issues</a>
   <div style="border-top: 1px solid #E0E0E0; margin-top: 40px; padding-top: 16px;">
     <p style="font-size: 11px; color: #CCC; margin: 0;">
       You're receiving this because you subscribed at routuremag.com.<br/>

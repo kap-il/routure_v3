@@ -60,7 +60,7 @@ export const metadata: Metadata = {
         type: "image/png",
       },
     ],
-    apple: "/brand/favicon-share.png",
+    apple: "/brand/og-image.png",
   },
   openGraph: {
     title: "Routure Fashion Magazine",

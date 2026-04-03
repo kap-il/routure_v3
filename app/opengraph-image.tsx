@@ -16,15 +16,15 @@ export default async function Image() {
           display: 'flex',
           alignItems: 'center',
           justifyContent: 'center',
-          backgroundColor: '#E8E8E6',
+          backgroundColor: '#000000',
         }}
       >
         {/* eslint-disable-next-line @next/next/no-img-element */}
         <img
-          src="https://routuremag.vercel.app/images/routure-logo.png"
+          src="https://routuremag.com/brand/og-image.png"
           alt=""
-          width={400}
-          height={121}
+          width={1200}
+          height={630}
         />
       </div>
     ),
