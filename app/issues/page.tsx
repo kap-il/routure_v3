@@ -21,7 +21,7 @@ export default async function IssuesPage() {
   const archiveIssues = allIssues.slice(1);
 
   return (
-    <div className="min-h-screen bg-white">
+    <div className="min-h-screen">
       {/* Hero Section */}
       <section className="pt-12 pb-8 border-b border-gray-100">
         <div className="mx-auto max-w-7xl px-6 lg:px-8">

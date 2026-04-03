@@ -103,7 +103,7 @@ export default async function LetterPage({ params }: LetterPageProps) {
 
   if (!letter) {
     return (
-      <div className="min-h-screen bg-[#FAFAF8] flex items-center justify-center">
+      <div className="min-h-screen flex items-center justify-center">
         <p className="text-[#999]">Letter not found.</p>
       </div>
     );
@@ -112,7 +112,7 @@ export default async function LetterPage({ params }: LetterPageProps) {
   const creators = splitIntoCreatorLetters(letter.content);
 
   return (
-    <div className="min-h-screen bg-[#FAFAF8]">
+    <div className="min-h-screen">
       {/* Header */}
       <div className="mx-auto max-w-[1280px] px-6 sm:px-[80px] pt-14 pb-8">
         <p className="text-[11px] tracking-[3px] uppercase text-[#999] font-serif mb-4">

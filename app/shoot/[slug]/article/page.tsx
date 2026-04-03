@@ -164,7 +164,7 @@ export default async function ShootArticlePage({ params }: ShootArticlePageProps
   const leftoverImages = imageUrls.slice(imgIdx);
 
   return (
-    <div className="min-h-screen bg-[#FAFAF8]">
+    <div className="min-h-screen">
       {/* ===== FULL SPREAD HERO ===== */}
       <section className="relative w-full" style={{ height: '700px' }}>
         {heroImageUrl ? (

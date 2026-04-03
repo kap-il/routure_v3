@@ -12,7 +12,7 @@ export const metadata: Metadata = {
 
 export default function CommunityPage() {
   return (
-    <main className="min-h-screen bg-white text-black" style={{ marginTop: '-88px', paddingTop: '88px' }}>
+    <main className="min-h-screen text-black">
       {/* Hero */}
       <section className="px-6 pt-32 pb-20 md:px-12 lg:px-24">
         <div className="max-w-[1400px] mx-auto">

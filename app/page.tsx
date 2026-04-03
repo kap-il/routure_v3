@@ -19,7 +19,7 @@ export default async function Home() {
   } catch { /* fallback to mock */ }
   return (
     <IntroSplash>
-    <div className="min-h-screen bg-[#FAFAF8]">
+    <div className="min-h-screen">
       {/* ===== HERO — Featured Shoot ===== */}
       <section>
         <div className="mx-auto max-w-[1280px] px-5 md:px-[80px]">

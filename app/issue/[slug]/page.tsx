@@ -84,7 +84,7 @@ export default async function IssueViewPage({ params }: IssueViewProps) {
   const mosaicImages = useMock ? mockMosaicImages : realItems;
 
   return (
-    <div className="min-h-screen bg-[#F5F4F2]">
+    <div className="min-h-screen">
       {/* ===== ISSUE HEADER ===== */}
       <header className="pt-10 pb-8 text-center">
         <p className="text-[11px] tracking-[4px] uppercase text-[#AAA] font-serif mb-4">

@@ -37,7 +37,7 @@ export default async function CategoryPage({ params }: CategoryPageProps) {
   } catch { /* fallback empty */ }
 
   return (
-    <div className="min-h-screen bg-[#FAFAF8]">
+    <div className="min-h-screen">
       {/* Header */}
       <header className="pt-8 md:pt-12 pb-8 md:pb-10 text-center px-5 md:px-0">
         <p className="text-[10px] md:text-[11px] tracking-[4px] uppercase text-[#AAA] font-serif mb-4">

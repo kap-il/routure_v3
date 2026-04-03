@@ -111,7 +111,7 @@ export default async function ShootConceptPage({ params }: ShootConceptPageProps
   const galleryRows = buildGalleryRows(galleryImages);
 
   return (
-    <div className="min-h-screen bg-[#FAFAF8]">
+    <div className="min-h-screen">
       {/* ===== FULL-WIDTH HERO ===== */}
       <section className="mx-6 sm:mx-[80px] mt-4 rounded-sm overflow-hidden">
         {heroImage ? (
