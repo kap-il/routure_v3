@@ -59,7 +59,20 @@ export function MosaicTile({ image, issueId, className = '' }: MosaicTileProps) 
         )}
 
         {/* Hover overlay */}
-        <div className="absolute inset-0 bg-black/0 group-hover:bg-black/10 transition-colors duration-300" />
+        <div className="absolute inset-0 bg-black/0 group-hover:bg-black/40 transition-colors duration-300 flex flex-col items-center justify-center gap-4">
+          {!image.isCover && (
+            <>
+              {image.hasArticle && image.articleTitle && (
+                <p className="opacity-0 group-hover:opacity-100 transition-opacity duration-300 font-serif text-[16px] italic text-white text-center max-w-[80%] leading-relaxed">
+                  &ldquo;{image.articleTitle}&rdquo;
+                </p>
+              )}
+              <span className="opacity-0 group-hover:opacity-100 transition-opacity duration-300 px-6 py-3 rounded-full border border-white text-[12px] tracking-[1.5px] uppercase text-white font-medium">
+                {image.hasArticle ? 'Read More' : 'View Shoot'}
+              </span>
+            </>
+          )}
+        </div>
 
         {/* Zoom button — visible on hover, top-right */}
         {image.src && (
