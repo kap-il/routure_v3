@@ -1,5 +1,7 @@
 import { redirect } from 'next/navigation';
 
+export const revalidate = 3600;
+
 interface ArticlePageProps {
   params: Promise<{ slug: string; articleSlug: string }>;
 }

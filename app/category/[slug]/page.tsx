@@ -3,7 +3,7 @@ import Link from 'next/link';
 import Image from 'next/image';
 import { getArticlesByCategory, CATEGORIES } from '@/lib/supabase/queries';
 
-export const revalidate = 300;
+export const revalidate = 3600;
 
 interface CategoryPageProps {
   params: Promise<{ slug: string }>;

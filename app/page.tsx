@@ -3,7 +3,7 @@ import Image from 'next/image';
 import IntroSplash from '@/components/IntroSplash';
 import { getIssues, getFeaturedShoot, getFeaturedArticle } from '@/lib/supabase/queries';
 
-export const revalidate = 60; // re-randomize every 60s
+export const revalidate = 3600;
 
 export default async function Home() {
   let latestIssue: { title: string; slug: string; issue_number: number; cover_image_url: string | null; description: string | null } | null = null;

@@ -5,7 +5,7 @@ import { getShootBySlug, getIssueForShoot, getIssues, getIssueMosaicData } from 
 import { mockShootArticle } from '@/lib/data/mock';
 import type { ContentBlock } from '@/lib/supabase/types';
 
-export const revalidate = 300;
+export const revalidate = 3600;
 
 export async function generateStaticParams() {
   try {

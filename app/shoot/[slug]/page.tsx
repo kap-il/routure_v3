@@ -4,7 +4,7 @@ import Image from 'next/image';
 import { getShootBySlug, getIssueForShoot, getIssues, getIssueMosaicData } from '@/lib/supabase/queries';
 import { mockShootConcept } from '@/lib/data/mock';
 
-export const revalidate = 300;
+export const revalidate = 3600;
 
 export async function generateStaticParams() {
   try {

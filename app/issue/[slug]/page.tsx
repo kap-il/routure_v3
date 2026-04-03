@@ -5,7 +5,7 @@ import { mockIssue, mockMosaicImages } from '@/lib/data/mock';
 import { MosaicGrid } from '@/components/issues/mosaic/MosaicGrid';
 import type { IssueEditorialItem } from '@/lib/supabase/types';
 
-export const revalidate = 120;
+export const revalidate = 3600;
 
 interface IssueViewProps {
   params: Promise<{ slug: string }>;

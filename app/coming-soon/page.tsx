@@ -1,6 +1,8 @@
 import type { Metadata } from 'next';
 import Link from 'next/link';
 
+export const revalidate = 3600;
+
 export const metadata: Metadata = {
   title: 'Coming Soon | Routure',
 };

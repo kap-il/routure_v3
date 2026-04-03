@@ -1,6 +1,8 @@
 import { redirect } from 'next/navigation';
 import { getIssues } from '@/lib/supabase/queries';
 
+export const revalidate = 3600;
+
 interface IssuePageProps {
   params: Promise<{ slug: string }>;
 }

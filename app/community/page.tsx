@@ -3,6 +3,8 @@ import NewsletterForm from '@/components/community/NewsletterForm';
 import ContactForm from '@/components/community/ContactForm';
 import SocialLinks from '@/components/community/SocialLinks';
 
+export const revalidate = 3600;
+
 export const metadata: Metadata = {
   title: 'Community — Routure',
   description: 'Join the Routure community. Subscribe, follow, and get in touch.',
