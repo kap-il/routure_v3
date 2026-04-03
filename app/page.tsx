@@ -41,6 +41,7 @@ export default async function Home() {
               ) : (
                 <div className="absolute inset-0 bg-gradient-to-br from-[#2a2a2a] to-[#1a1a1a]" />
               )}
+              <div className="absolute inset-0 pointer-events-none" style={{ background: 'linear-gradient(to bottom, rgba(0,0,0,0.3) 0%, transparent 15%), linear-gradient(to top, rgba(0,0,0,0.3) 0%, transparent 15%), linear-gradient(to right, rgba(0,0,0,0.3) 0%, transparent 15%)' }} />
             </div>
             <div className="flex items-center" style={{ backgroundColor: '#111111' }}>
               <div className="px-6 py-8">
@@ -82,6 +83,7 @@ export default async function Home() {
               ) : (
                 <div className="absolute inset-0 bg-gradient-to-br from-[#2a2a2a] to-[#1a1a1a]" />
               )}
+              <div className="absolute inset-0 pointer-events-none" style={{ background: 'linear-gradient(to bottom, rgba(0,0,0,0.3) 0%, transparent 15%), linear-gradient(to top, rgba(0,0,0,0.3) 0%, transparent 15%), linear-gradient(to right, rgba(0,0,0,0.3) 0%, transparent 15%)' }} />
             </div>
             <div className="w-[390px] shrink-0 flex items-center" style={{ backgroundColor: '#111111' }}>
               <div className="px-14 py-12">
