@@ -35,6 +35,13 @@ body {
   font-feature-settings: "kern" 1, "liga" 1;
   padding-top: env(safe-area-inset-top);
   padding-bottom: env(safe-area-inset-bottom);
+  overscroll-behavior: none;
+}
+
+/* Headings use Cochin */
+h1, h2, h3, h4, h5, h6 {
+  font-family: Cochin, "Times New Roman", Georgia, serif !important;
+  font-weight: 700;
 }
 
 /* Custom utility classes */
@@ -60,12 +67,21 @@ body {
 
 html {
   background: #FAFAF8;
-  overflow-y: auto;
+  overflow: hidden;
+  height: 100%;
   scrollbar-width: none; /* Firefox */
-  -webkit-overflow-scrolling: touch;
+  overscroll-behavior: none;
 }
 
-html::-webkit-scrollbar {
+body {
+  height: 100%;
+  overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
+  scrollbar-width: none;
+}
+
+html::-webkit-scrollbar,
+body::-webkit-scrollbar {
   display: none; /* Chrome, Safari, iOS */
 }
 

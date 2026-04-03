@@ -16,16 +16,15 @@ export default function IntroSplash({
   const [phase, setPhase] = useState<'idle' | 'slash' | 'slashDone' | 'split' | 'done'>('idle');
 
   useEffect(() => {
-    // Show body so the black overlay is visible, but keep html bg black
     const blocker = document.getElementById('intro-block');
-    if (blocker) {
-      blocker.textContent = 'html{background:#000!important}';
-    }
-    if (skip) {
+    // No blocker = client-side navigation, skip the animation
+    if (!blocker || skip) {
       setPhase('done');
       blocker?.remove();
       return;
     }
+    // Show body so the black overlay is visible, but keep html bg black
+    blocker.textContent = 'html{background:#000!important}';
     const t1 = setTimeout(() => setPhase('slash'), 600);
     const t2 = setTimeout(() => setPhase('slashDone'), 1230);
     const t3 = setTimeout(() => {

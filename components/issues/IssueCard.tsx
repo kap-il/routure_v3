@@ -58,7 +58,7 @@ export function IssueCard({ issue, featured = false }: IssueCardProps) {
               {issueLabel} — {dateLabel}
             </p>
 
-            <h2 className="font-serif text-4xl sm:text-5xl lg:text-6xl font-normal mb-4 group-hover:text-gray-600 transition-colors">
+            <h2 className="font-serif text-4xl sm:text-5xl lg:text-6xl font-normal mb-4 group-hover:text-gray-600 transition-colors uppercase">
               {issue.title}
             </h2>
 
@@ -110,7 +110,7 @@ export function IssueCard({ issue, featured = false }: IssueCardProps) {
           {issueLabel} — {dateLabel}
         </p>
 
-        <h3 className="font-serif text-2xl font-normal mb-2 group-hover:text-gray-600 transition-colors">
+        <h3 className="font-serif text-2xl font-normal mb-2 group-hover:text-gray-600 transition-colors uppercase">
           {issue.title}
         </h3>
 

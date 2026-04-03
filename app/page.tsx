@@ -205,7 +205,7 @@ export default async function Home() {
               <p className="text-[10px] tracking-[3px] uppercase text-[#AAA] font-serif mb-3">
                 LATEST ISSUE
               </p>
-              <h3 className="font-serif text-[28px] font-bold text-white mb-2">
+              <h3 className="font-serif text-[28px] font-bold text-white mb-2 uppercase">
                 {latestIssue?.title ?? 'Cosmic'}
               </h3>
               <p className="font-serif text-[13px] text-[#CCC] mb-4">
@@ -238,7 +238,7 @@ export default async function Home() {
                 <p className="text-[9px] tracking-[2px] uppercase text-[#AAA] font-serif mb-2">
                   PREVIOUS
                 </p>
-                <h4 className="font-serif text-[15px] font-bold text-white mb-1">
+                <h4 className="font-serif text-[15px] font-bold text-white mb-1 uppercase">
                   {previousIssue?.title ?? 'Savour'}
                 </h4>
                 <p className="text-[11px] text-[#CCC] mb-3">
@@ -291,7 +291,7 @@ export default async function Home() {
               <p className="text-[11px] tracking-[3px] uppercase text-[#AAA] font-serif mb-4">
                 LATEST ISSUE
               </p>
-              <h3 className="font-serif text-[36px] font-bold text-white mb-2">
+              <h3 className="font-serif text-[36px] font-bold text-white mb-2 uppercase">
                 {latestIssue?.title ?? 'Cosmic'}
               </h3>
               <p className="font-serif text-[15px] text-[#CCC] mb-6">
@@ -324,7 +324,7 @@ export default async function Home() {
                 <p className="text-[11px] tracking-[2px] uppercase text-[#AAA] font-serif mb-3">
                   PREVIOUS
                 </p>
-                <h4 className="font-serif text-[18px] font-bold text-white mb-1">
+                <h4 className="font-serif text-[18px] font-bold text-white mb-1 uppercase">
                   {previousIssue?.title ?? 'Savour'}
                 </h4>
                 <p className="text-[12px] text-[#CCC] mb-4">

@@ -90,7 +90,7 @@ export default async function IssueViewPage({ params }: IssueViewProps) {
         <p className="text-[11px] tracking-[4px] uppercase text-[#AAA] font-serif mb-4">
           ISSUE NO. {issueNumber}
         </p>
-        <h1 className="font-serif text-[48px] font-bold text-[#1a1a1a] mb-3">
+        <h1 className="font-serif text-[48px] font-bold text-[#1a1a1a] mb-3 uppercase">
           {issueTitle}
         </h1>
         <div className="mx-auto w-14 h-px bg-[#1a1a1a] mb-4" />
