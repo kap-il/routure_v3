@@ -37,8 +37,8 @@ function LinkedInIcon({ className }: { className?: string }) {
 
 const socialLinks = [
   { name: 'Instagram', href: 'https://www.instagram.com/routuremagazine/', icon: InstagramIcon },
-  { name: 'TikTok', href: 'https://tiktok.com/@routuremag', icon: TikTokIcon },
-  { name: 'LinkedIn', href: 'https://linkedin.com/company/routure', icon: LinkedInIcon },
+  { name: 'TikTok', href: 'https://www.tiktok.com/@routure', icon: TikTokIcon },
+  { name: 'LinkedIn', href: 'https://www.linkedin.com/company/routure-magazine/', icon: LinkedInIcon },
 ];
 
 function InstagramIcon({ className }: { className?: string }) {

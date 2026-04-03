@@ -31,14 +31,14 @@ const socialPlatforms = [
   },
   {
     name: 'TikTok',
-    handle: '@routuremag',
-    href: 'https://tiktok.com/@routuremag',
+    handle: '@routure',
+    href: 'https://www.tiktok.com/@routure',
     icon: TikTokIcon,
   },
   {
     name: 'LinkedIn',
     handle: 'Routure Magazine',
-    href: 'https://linkedin.com/company/routure',
+    href: 'https://www.linkedin.com/company/routure-magazine/',
     icon: LinkedInIcon,
   },
 ];
