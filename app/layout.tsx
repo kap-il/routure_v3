@@ -65,10 +65,12 @@ export const metadata: Metadata = {
     title: "Routure Fashion Magazine",
     siteName: "Routure",
     type: "website",
+    images: [{ url: "/brand/favicon-share.png", width: 383, height: 383 }],
   },
   twitter: {
-    card: "summary_large_image",
+    card: "summary",
     title: "Routure Fashion Magazine",
+    images: ["/brand/favicon-share.png"],
   },
 };
 
