@@ -43,6 +43,7 @@ export const viewport = {
 };
 
 export const metadata: Metadata = {
+  metadataBase: new URL("https://routuremag.com"),
   title: "Routure | A Curated Magazine Experience",
   description: "Exploring the intersection of culture, style, and contemporary life.",
   manifest: "/manifest.json",
@@ -65,12 +66,12 @@ export const metadata: Metadata = {
     title: "Routure Fashion Magazine",
     siteName: "Routure",
     type: "website",
-    images: [{ url: "/brand/favicon-share.png", width: 383, height: 383 }],
+    images: [{ url: "https://routuremag.com/brand/og-image.png", width: 1200, height: 630 }],
   },
   twitter: {
     card: "summary",
     title: "Routure Fashion Magazine",
-    images: ["/brand/favicon-share.png"],
+    images: ["https://routuremag.com/brand/og-image.png"],
   },
 };
 
