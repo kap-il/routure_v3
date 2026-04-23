@@ -19,20 +19,11 @@ export default async function Home() {
     featuredShoots = shoots;
     featuredArticle = article;
   } catch { /* fallback to mock */ }
-  const featuredShoot: FeaturedShoot | null = featuredShoots[0] ?? null;
   const todayFmt = new Date().toLocaleDateString('en-GB', {
     weekday: 'long', day: 'numeric', month: 'long', year: 'numeric',
   });
   const issueNo = latestIssue ? String(latestIssue.issue_number).padStart(2, '0') : '02';
   const issueTitle = latestIssue?.title ?? 'Cosmic';
-
-  const tickerItems = [
-    `Issue ${issueNo} · ${issueTitle} — now reading`,
-    featuredShoot ? `New shoot · ${featuredShoot.title}` : 'New shoots in the archive',
-    'Letters from the Creators',
-    'Subscribe · Spring dispatch',
-    previousIssue ? `Archive · ${String(previousIssue.issue_number).padStart(2, '0')} ${previousIssue.title}` : 'Archive · every issue',
-  ];
 
   return (
     <IntroSplash>
@@ -50,23 +41,9 @@ export default async function Home() {
       {/* ===== HERO — Featured Shoot, split layout with cycling ===== */}
       <FeaturedHero shoots={featuredShoots} issueNo={issueNo} issueTitle={issueTitle} />
 
-      {/* ===== TICKER RIBBON ===== */}
-      <div className="mt-9 border-y border-[color:var(--rule)] bg-[#FAFAF8] overflow-hidden">
-        <div className="marquee py-2.5" aria-hidden="true">
-          {[
-            ...tickerItems,
-            ...tickerItems,
-          ].map((t, i) => (
-            <span
-              key={i}
-              className="font-mono text-[10.5px] tracking-[0.2em] uppercase text-[color:var(--gray-700)] inline-flex items-center"
-            >
-              <span className="inline-block w-1.5 h-1.5 rounded-full bg-[color:var(--ink)] mr-3.5 align-middle" />
-              {t}
-            </span>
-          ))}
-        </div>
-      </div>
+      {/* Ticker ribbon is intentionally disabled on the home page for now;
+          the component lives at components/home/TickerRibbon.tsx and takes the
+          `tickerItems` array when we want to bring it back. */}
 
       {/* ===== FEATURED ARTICLE + CATEGORIES ===== */}
       <section className="mx-auto max-w-[1440px] px-6 md:px-10 pt-20 md:pt-24">
