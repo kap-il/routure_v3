@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
-import { Playfair_Display } from "next/font/google";
+import { Playfair_Display, Cormorant_Garamond, IBM_Plex_Mono } from "next/font/google";
 import localFont from "next/font/local";
 import { Header } from "@/components/layout/Header";
 import { Footer } from "@/components/layout/Footer";
@@ -21,6 +21,19 @@ const playfair = Playfair_Display({
   variable: "--font-playfair",
   subsets: ["latin"],
   weight: ["400", "700"],
+});
+
+const cormorant = Cormorant_Garamond({
+  variable: "--font-cormorant",
+  subsets: ["latin"],
+  weight: ["400", "500", "600", "700"],
+  style: ["normal", "italic"],
+});
+
+const plexMono = IBM_Plex_Mono({
+  variable: "--font-plex-mono",
+  subsets: ["latin"],
+  weight: ["300", "400", "500"],
 });
 
 const argue = localFont({
@@ -94,7 +107,7 @@ export default function RootLayout({
         <link rel="dns-prefetch" href="https://routure-issues.s3.us-east-1.amazonaws.com" />
         <link rel="preconnect" href="https://routure-issues.s3.us-east-1.amazonaws.com" crossOrigin="anonymous" />
       </head>
-      <body className={`${geistSans.variable} ${geistMono.variable} ${playfair.variable} ${argue.variable} antialiased bg-[#FAFAF8]`}>
+      <body className={`${geistSans.variable} ${geistMono.variable} ${playfair.variable} ${cormorant.variable} ${plexMono.variable} ${argue.variable} antialiased bg-[#FAFAF8]`}>
         <Header />
         <main className="bg-[#FAFAF8]" style={{ paddingTop: '88px' }}>
           {children}
