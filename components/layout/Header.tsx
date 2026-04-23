@@ -2,8 +2,7 @@
 
 import Link from 'next/link';
 import Image from 'next/image';
-import { useRouter } from 'next/navigation';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 
 const navigation = [
   { name: 'Issues', href: '/issues' },
@@ -13,13 +12,28 @@ const navigation = [
 
 export function Header() {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
-  const router = useRouter();
+  const [scrolled, setScrolled] = useState(false);
+
+  useEffect(() => {
+    const onScroll = () => setScrolled(window.scrollY > 8);
+    onScroll();
+    window.addEventListener('scroll', onScroll, { passive: true });
+    return () => window.removeEventListener('scroll', onScroll);
+  }, []);
 
   return (
-    <header className="fixed top-0 left-0 right-0 z-50 bg-white border-b border-[#EEEEE8]">
-      <nav className="mx-auto flex max-w-7xl items-center justify-between px-6 py-4 lg:px-8">
+    <header
+      className="fixed top-0 left-0 right-0 z-50 transition-[background-color,border-color] duration-200"
+      style={{
+        backgroundColor: scrolled ? 'rgba(250,250,248,0.92)' : '#FAFAF8',
+        backdropFilter: scrolled ? 'saturate(140%) blur(10px)' : undefined,
+        WebkitBackdropFilter: scrolled ? 'saturate(140%) blur(10px)' : undefined,
+        borderBottom: `1px solid ${scrolled ? 'var(--rule)' : 'transparent'}`,
+      }}
+    >
+      <nav className="mx-auto flex max-w-[1440px] items-center justify-between px-6 md:px-10 h-[72px] gap-6">
         {/* Logo — R mark + ROUTURE wordmark (Argue Regular, uppercase) */}
-        <Link href="/" className="flex items-center gap-2.5" aria-label="Routure — Home">
+        <Link href="/" className="flex items-center gap-2.5 flex-shrink-0" aria-label="Routure — Home">
           <Image
             src="/routure_icon_black_resize.png"
             alt=""
@@ -34,16 +48,23 @@ export function Header() {
         </Link>
 
         {/* Desktop Navigation */}
-        <div className="hidden md:flex md:items-center md:gap-x-12">
+        <div className="hidden md:flex items-center gap-7 justify-end">
           {navigation.map((item) => (
             <Link
               key={item.name}
               href={item.href}
-              className="text-sm font-argue font-bold tracking-wide text-gray-900 hover:text-gray-700 transition-colors uppercase"
+              className="font-mono text-[11px] tracking-[0.22em] uppercase text-[color:var(--ink)] whitespace-nowrap hover:opacity-70 transition-opacity"
             >
               {item.name}
             </Link>
           ))}
+          <span className="w-px h-3 bg-[color:var(--gray-200)]" aria-hidden="true" />
+          <Link
+            href="/#newsletter"
+            className="font-mono text-[11px] tracking-[0.22em] uppercase text-[color:var(--gray-700)] whitespace-nowrap hover:text-[color:var(--ink)] transition-colors"
+          >
+            Subscribe →
+          </Link>
         </div>
 
         {/* Mobile menu button */}
@@ -71,18 +92,25 @@ export function Header() {
 
       {/* Mobile menu */}
       {mobileMenuOpen && (
-        <div className="md:hidden bg-white border-t border-gray-100">
-          <div className="px-6 py-4 space-y-4">
+        <div className="md:hidden bg-[#FAFAF8] border-t border-[color:var(--rule)]">
+          <div className="px-6 py-5 space-y-4">
             {navigation.map((item) => (
               <Link
                 key={item.name}
                 href={item.href}
-                className="block text-base font-argue tracking-wide text-gray-900 hover:text-gray-700 uppercase"
+                className="block font-mono text-[12px] tracking-[0.22em] uppercase text-[color:var(--ink)]"
                 onClick={() => setMobileMenuOpen(false)}
               >
                 {item.name}
               </Link>
             ))}
+            <Link
+              href="/#newsletter"
+              className="block font-mono text-[12px] tracking-[0.22em] uppercase text-[color:var(--gray-700)]"
+              onClick={() => setMobileMenuOpen(false)}
+            >
+              Subscribe →
+            </Link>
           </div>
         </div>
       )}

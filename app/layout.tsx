@@ -109,7 +109,7 @@ export default function RootLayout({
       </head>
       <body className={`${geistSans.variable} ${geistMono.variable} ${playfair.variable} ${cormorant.variable} ${plexMono.variable} ${argue.variable} antialiased bg-[#FAFAF8]`}>
         <Header />
-        <main className="bg-[#FAFAF8]" style={{ paddingTop: '88px' }}>
+        <main className="bg-[#FAFAF8]" style={{ paddingTop: '72px' }}>
           {children}
         </main>
         <Footer />
