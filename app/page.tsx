@@ -23,6 +23,14 @@ export default async function Home() {
   const issueNo = latestIssue ? String(latestIssue.issue_number).padStart(2, '0') : '02';
   const issueTitle = latestIssue?.title ?? 'Cosmic';
 
+  const tickerItems = [
+    `Issue ${issueNo} · ${issueTitle} — now reading`,
+    featuredShoot ? `New shoot · ${featuredShoot.title}` : 'New shoots in the archive',
+    'Letters from the Creators',
+    'Subscribe · Spring dispatch',
+    previousIssue ? `Archive · ${String(previousIssue.issue_number).padStart(2, '0')} ${previousIssue.title}` : 'Archive · every issue',
+  ];
+
   return (
     <IntroSplash>
     <div className="min-h-screen">
@@ -103,6 +111,24 @@ export default async function Home() {
           </div>
         </div>
       </section>
+
+      {/* ===== TICKER RIBBON ===== */}
+      <div className="mt-9 border-y border-[color:var(--rule)] bg-[#FAFAF8] overflow-hidden">
+        <div className="marquee py-2.5" aria-hidden="true">
+          {[
+            ...tickerItems,
+            ...tickerItems,
+          ].map((t, i) => (
+            <span
+              key={i}
+              className="font-mono text-[10.5px] tracking-[0.2em] uppercase text-[color:var(--gray-700)] inline-flex items-center"
+            >
+              <span className="inline-block w-1.5 h-1.5 rounded-full bg-[color:var(--ink)] mr-3.5 align-middle" />
+              {t}
+            </span>
+          ))}
+        </div>
+      </div>
 
       {/* ===== FEATURED ARTICLE + CATEGORIES ===== */}
       <section className="mx-auto max-w-[1280px] px-5 md:px-[80px] py-8 md:py-10">
