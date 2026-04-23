@@ -1,5 +1,5 @@
 import { createServerClient } from './client';
-import type { Issue, Shoot, ShootImage, Article, IssueMosaicItem, IssueEditorialItem, ShootWithImages, SectionType } from './types';
+import type { Issue, Shoot, ShootImage, Article, ContentBlock, IssueMosaicItem, IssueEditorialItem, ShootWithImages, SectionType } from './types';
 
 /** Supabase returns a single object when FK is unique, or an array otherwise. */
 function resolveArticle(raw: unknown): Article | null {
@@ -290,6 +290,104 @@ export async function getShootBySlug(slug: string): Promise<ShootWithImages | nu
     images,
     article,
   };
+}
+
+// ============================================================
+// Weekly Reading — top articles by traffic (fallback to newest)
+// ============================================================
+
+export type WeeklyRead = {
+  title: string;
+  author: string | null;
+  shootSlug: string;
+  heroImageUrl: string | null;
+  readMinutes: number;
+  views: number;
+};
+
+const WORDS_PER_MINUTE = 220;
+
+function countWords(content: ContentBlock[] | null): number {
+  if (!content || !Array.isArray(content)) return 0;
+  let words = 0;
+  for (const block of content) {
+    if (typeof block?.text === 'string') {
+      words += block.text.trim().split(/\s+/).filter(Boolean).length;
+    }
+  }
+  return words;
+}
+
+function readMinutesFor(content: ContentBlock[] | null): number {
+  const words = countWords(content);
+  return Math.max(1, Math.ceil(words / WORDS_PER_MINUTE));
+}
+
+export async function getWeeklyReads(limit = 4): Promise<WeeklyRead[]> {
+  const supabase = createServerClient();
+
+  // 1) Last-7-day view counts, grouped by shoot slug (which is what the
+  //    article URL uses). We pull the raw rows and bucket in JS — the table
+  //    is narrow and the 7-day window bounded, so this stays cheap.
+  const since = new Date(Date.now() - 7 * 24 * 60 * 60 * 1000).toISOString();
+  const { data: viewRows } = await supabase
+    .from('page_views')
+    .select('slug')
+    .eq('kind', 'article')
+    .gte('viewed_at', since);
+
+  const viewCounts = new Map<string, number>();
+  for (const row of (viewRows ?? []) as { slug: string }[]) {
+    viewCounts.set(row.slug, (viewCounts.get(row.slug) ?? 0) + 1);
+  }
+
+  // 2) Fetch all articles with their shoot (slug + hero image) in one go.
+  const { data: articles, error } = await supabase
+    .from('articles')
+    .select('title, author, content, created_at, shoots(slug, shoot_images(image_url, position, is_article_page))')
+    .not('shoot_id', 'is', null);
+  if (error || !articles) return [];
+
+  type RawArticle = {
+    title: string;
+    author: string | null;
+    content: ContentBlock[] | string | null;
+    created_at: string;
+    shoots: { slug: string; shoot_images: Array<{ image_url: string; position: number; is_article_page: boolean }> } | Array<{ slug: string; shoot_images: Array<{ image_url: string; position: number; is_article_page: boolean }> }> | null;
+  };
+
+  const normalized: WeeklyRead[] = (articles as RawArticle[]).map((a) => {
+    const shoot = Array.isArray(a.shoots) ? a.shoots[0] : a.shoots;
+    const shootSlug = shoot?.slug ?? '';
+    const heroImageUrl = (shoot?.shoot_images ?? [])
+      .filter((img) => !img.is_article_page)
+      .sort((x, y) => x.position - y.position)[0]?.image_url ?? null;
+    const content: ContentBlock[] | null =
+      typeof a.content === 'string' ? safeParseContent(a.content) : (a.content ?? null);
+    return {
+      title: a.title,
+      author: a.author,
+      shootSlug,
+      heroImageUrl,
+      readMinutes: readMinutesFor(content),
+      views: viewCounts.get(shootSlug) ?? 0,
+    };
+  }).filter((r) => r.shootSlug.length > 0);
+
+  // 3) Sort: views DESC, then newest first as a tiebreaker (by created_at
+  //    already baked in via the source order — articles come back newest-ish
+  //    from Supabase). Slice to `limit`.
+  normalized.sort((x, y) => y.views - x.views);
+  return normalized.slice(0, Math.max(1, limit));
+}
+
+function safeParseContent(raw: string): ContentBlock[] | null {
+  try {
+    const parsed = JSON.parse(raw);
+    return Array.isArray(parsed) ? (parsed as ContentBlock[]) : null;
+  } catch {
+    return null;
+  }
 }
 
 /**
