@@ -8,7 +8,7 @@ import { useState } from 'react';
 const navigation = [
   { name: 'Issues', href: '/issues' },
   { name: 'Shop', href: '/coming-soon' },
-  { name: 'Community', href: '/community' },
+  { name: 'Community', href: '/coming-soon' },
 ];
 
 export function Header() {

@@ -15,13 +15,13 @@ export default function UnsubscribedPage() {
           You've been unsubscribed
         </h1>
         <p className="text-[14px] text-[#666] leading-relaxed mb-8">
-          You won't receive any more emails from us. If this was a mistake, you can resubscribe anytime from our community page.
+          You won't receive any more emails from us. If this was a mistake, you can resubscribe anytime from our homepage.
         </p>
         <Link
-          href="/community"
+          href="/"
           className="inline-block px-6 py-3 bg-black text-white text-sm tracking-wider uppercase hover:bg-gray-900 transition-colors"
         >
-          Back to Community
+          Back to Home
         </Link>
       </div>
     </div>
