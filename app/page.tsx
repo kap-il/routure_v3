@@ -1,6 +1,7 @@
 import Link from 'next/link';
 import Image from 'next/image';
 import IntroSplash from '@/components/IntroSplash';
+import NewsletterInline from '@/components/home/NewsletterInline';
 import { getIssues, getFeaturedShoot, getFeaturedArticle } from '@/lib/supabase/queries';
 
 export const revalidate = 3600;
@@ -232,181 +233,140 @@ export default async function Home() {
       </section>
 
       {/* ===== LATEST ISSUE SECTION ===== */}
-      <div className="mx-auto max-w-[1280px] px-5 md:px-[80px]">
-        <div className="h-px bg-[#E0E0E0]" />
-      </div>
+      <section id="latest" className="mx-auto max-w-[1440px] px-6 md:px-10 pt-20 md:pt-24">
+        <div className="mb-9">
+          <div className="flex justify-between items-end gap-5">
+            <div>
+              <div className="eyebrow mb-4">From the Archive</div>
+              <h2 className="font-serif text-[32px] md:text-[44px] tracking-[-0.015em] text-[color:var(--ink)] font-semibold leading-[1.05]">
+                Read an issue
+              </h2>
+            </div>
+            <Link href="/issues" className="readmore hidden sm:inline-flex">
+              Browse all <span className="arrow">→</span>
+            </Link>
+          </div>
+          <div className="hairline mt-7" />
+        </div>
 
-      <section className="mx-auto max-w-[1280px] px-5 md:px-[80px] py-8 md:py-10">
-        {/* --- MOBILE ISSUES --- */}
-        <div className="md:hidden flex flex-col gap-4">
+        <div className="grid grid-cols-1 md:grid-cols-[1.3fr_1fr] gap-6">
+          {/* Big latest tile */}
           <Link
             href={`/issue/${latestIssue?.slug ?? 'cosmic'}`}
-            className="group relative rounded-sm overflow-hidden bg-[#1a1a1a]"
-            style={{ height: '320px' }}
+            className="tile relative block rounded-sm overflow-hidden bg-[#111] min-h-[360px] md:h-[540px]"
           >
             {latestIssue?.cover_image_url && (
               <Image
                 src={latestIssue.cover_image_url}
                 alt={latestIssue.title}
                 fill
-                sizes="100vw"
+                sizes="(min-width: 768px) 60vw, 100vw"
                 className="object-cover"
                 loading="lazy"
               />
             )}
-            <div className="absolute inset-0" style={{ background: 'linear-gradient(to bottom, rgba(0,0,0,0.85), rgba(0,0,0,0.4) 50%, transparent)' }} />
-            <div className="relative z-10 pt-8 px-6">
-              <p className="text-[10px] tracking-[3px] uppercase text-[#AAA] font-serif mb-3">
-                LATEST ISSUE
-              </p>
-              <h3 className="font-serif text-[28px] font-bold text-white mb-2 uppercase">
-                {latestIssue?.title ?? 'Cosmic'}
+            <div className="overlay absolute inset-0" />
+            <div className="absolute top-6 md:top-8 left-6 md:left-8 right-6 md:right-8 text-white">
+              <div className="flex items-center gap-2.5 mb-3.5">
+                <span className="w-2 h-2 rounded-full bg-white" />
+                <span className="font-mono text-[10.5px] tracking-[0.28em] uppercase text-white/85">
+                  Latest Issue
+                </span>
+              </div>
+              <div className="font-mono text-[10px] tracking-[0.24em] uppercase text-white/55 mb-2">
+                Issue No. {issueNo}
+              </div>
+              <h3 className="font-serif text-[44px] md:text-[68px] tracking-[-0.02em] font-semibold text-white leading-none uppercase">
+                {issueTitle}
               </h3>
-              <p className="font-serif text-[13px] text-[#CCC] mb-4">
-                Issue No. {latestIssue?.issue_number ?? 2}
-              </p>
-              <span className="inline-block px-5 py-2 rounded-full border border-white/40 text-[10px] tracking-[1.5px] text-white/80">
-                VIEW ISSUE →
-              </span>
+            </div>
+            <div className="absolute left-6 md:left-8 right-6 md:right-8 bottom-6 md:bottom-8 flex items-end justify-between">
+              <span className="btn-ghost">Open issue <span>→</span></span>
             </div>
           </Link>
 
-          <div className="grid grid-cols-2 gap-4">
+          {/* Right column: previous + archive paper */}
+          <div className="grid grid-rows-[1fr_1fr] gap-6">
             <Link
               href={`/issue/${previousIssue?.slug ?? 'savour'}`}
-              className="group relative rounded-sm overflow-hidden bg-[#1a1a1a]"
-              style={{ height: '180px' }}
+              className="tile relative block rounded-sm overflow-hidden bg-[#111] min-h-[220px]"
             >
               {previousIssue?.cover_image_url && (
                 <Image
                   src={previousIssue.cover_image_url}
                   alt={previousIssue.title}
                   fill
-                  sizes="50vw"
+                  sizes="(min-width: 768px) 30vw, 100vw"
                   className="object-cover"
                   loading="lazy"
                 />
               )}
-              <div className="absolute inset-0" style={{ background: 'linear-gradient(to bottom, rgba(0,0,0,0.9), rgba(0,0,0,0.6) 50%, rgba(0,0,0,0.3))' }} />
-              <div className="relative z-10 pt-5 px-4">
-                <p className="text-[9px] tracking-[2px] uppercase text-[#AAA] font-serif mb-2">
-                  PREVIOUS
-                </p>
-                <h4 className="font-serif text-[15px] font-bold text-white mb-1 uppercase">
+              <div className="overlay absolute inset-0" />
+              <div className="absolute top-6 left-6 right-6 text-white">
+                <div className="font-mono text-[10px] tracking-[0.28em] uppercase text-white/60 mb-2.5">
+                  Previous · No. {previousIssue ? String(previousIssue.issue_number).padStart(2, '0') : '01'}
+                </div>
+                <h4 className="font-serif text-[28px] md:text-[38px] tracking-[-0.015em] font-semibold text-white leading-none uppercase">
                   {previousIssue?.title ?? 'Savour'}
                 </h4>
-                <p className="text-[11px] text-[#CCC] mb-3">
-                  Issue No. {previousIssue?.issue_number ?? 1}
-                </p>
-                <span className="inline-block px-3 py-1 rounded-full border border-white/40 text-[9px] tracking-[1px] text-white/80">
-                  VIEW →
+              </div>
+              <div className="absolute left-6 right-6 bottom-5 flex items-center justify-end">
+                <span className="readmore text-white/85">
+                  View <span className="arrow">→</span>
                 </span>
               </div>
             </Link>
 
             <Link
               href="/issues"
-              className="group rounded-sm bg-[#F0EFED] flex flex-col items-center justify-center text-center"
-              style={{ height: '180px' }}
+              className="tile-light relative block rounded-sm overflow-hidden paper min-h-[220px]"
             >
-              <p className="text-[9px] tracking-[2px] uppercase text-[#999] font-serif mb-3">
-                ARCHIVE
-              </p>
-              <h4 className="font-serif text-[15px] font-bold text-[#1a1a1a] mb-2">
-                All Issues
-              </h4>
-              <span className="text-[9px] tracking-[1px] text-[#999]">
-                BROWSE →
-              </span>
+              <div className="absolute inset-0 p-7 flex flex-col justify-between">
+                <div>
+                  <div className="eyebrow mb-3">Archive</div>
+                  <h4 className="font-serif text-[26px] md:text-[34px] tracking-[-0.015em] text-[color:var(--ink)] font-semibold leading-[1.02] max-w-[14ch]">
+                    Every issue, every shoot, every letter.
+                  </h4>
+                </div>
+                <div className="flex justify-between items-end">
+                  <div>
+                    <div className="font-mono text-[10px] tracking-[0.24em] uppercase text-[color:var(--gray-500)] mb-1">
+                      Vol. I–II
+                    </div>
+                    <div className="font-serif text-[14px] text-[color:var(--gray-700)]">
+                      since 2025
+                    </div>
+                  </div>
+                  <span className="readmore">Browse <span className="arrow">→</span></span>
+                </div>
+              </div>
             </Link>
           </div>
         </div>
+      </section>
 
-        {/* --- DESKTOP ISSUES --- */}
-        <div className="hidden md:flex">
-        <div className="grid grid-cols-[620px_1fr] gap-5 w-full">
-          <Link
-            href={`/issue/${latestIssue?.slug ?? 'cosmic'}`}
-            className="group relative rounded-sm overflow-hidden bg-[#1a1a1a]"
-            style={{ height: '480px' }}
-          >
-            {latestIssue?.cover_image_url && (
-              <Image
-                src={latestIssue.cover_image_url}
-                alt={latestIssue.title}
-                fill
-                sizes="620px"
-                className="object-cover"
-                loading="lazy"
-              />
-            )}
-            <div className="absolute inset-0" style={{ background: 'linear-gradient(to bottom, rgba(0,0,0,0.85), rgba(0,0,0,0.4) 50%, transparent)' }} />
-            <div className="relative z-10 pt-12 px-10">
-              <p className="text-[11px] tracking-[3px] uppercase text-[#AAA] font-serif mb-4">
-                LATEST ISSUE
-              </p>
-              <h3 className="font-serif text-[36px] font-bold text-white mb-2 uppercase">
-                {latestIssue?.title ?? 'Cosmic'}
-              </h3>
-              <p className="font-serif text-[15px] text-[#CCC] mb-6">
-                Issue No. {latestIssue?.issue_number ?? 2}
-              </p>
-              <span className="inline-block px-6 py-2 rounded-full border border-white/40 text-[11px] tracking-[1.5px] text-white/80 group-hover:border-white group-hover:text-white transition-colors">
-                VIEW ISSUE →
-              </span>
+      {/* ===== NEWSLETTER — dark dispatch ===== */}
+      <section id="newsletter" className="mt-20 md:mt-24 bg-[#0A0A0A] text-white">
+        <div className="mx-auto max-w-[1440px] px-6 md:px-10 py-20 md:py-24">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-10 md:gap-20 items-end">
+            <div>
+              <div className="font-mono text-[10.5px] tracking-[0.28em] uppercase text-white/45 mb-5">
+                The Dispatch · Quarterly
+              </div>
+              <h2 className="font-serif text-[40px] md:text-[72px] tracking-[-0.02em] leading-[0.98] text-white font-semibold max-w-[14ch]">
+                Slow reading, in your inbox.
+              </h2>
             </div>
-          </Link>
-
-          <div className="grid grid-cols-2 gap-5">
-            <Link
-              href={`/issue/${previousIssue?.slug ?? 'savour'}`}
-              className="group relative rounded-sm overflow-hidden bg-[#1a1a1a]"
-              style={{ height: '230px' }}
-            >
-              {previousIssue?.cover_image_url && (
-                <Image
-                  src={previousIssue.cover_image_url}
-                  alt={previousIssue.title}
-                  fill
-                  sizes="300px"
-                  className="object-cover"
-                  loading="lazy"
-                />
-              )}
-              <div className="absolute inset-0" style={{ background: 'linear-gradient(to bottom, rgba(0,0,0,0.9), rgba(0,0,0,0.6) 50%, rgba(0,0,0,0.3))' }} />
-              <div className="relative z-10 pt-8 px-6">
-                <p className="text-[11px] tracking-[2px] uppercase text-[#AAA] font-serif mb-3">
-                  PREVIOUS
-                </p>
-                <h4 className="font-serif text-[18px] font-bold text-white mb-1 uppercase">
-                  {previousIssue?.title ?? 'Savour'}
-                </h4>
-                <p className="text-[12px] text-[#CCC] mb-4">
-                  Issue No. {previousIssue?.issue_number ?? 1}
-                </p>
-                <span className="inline-block px-4 py-1.5 rounded-full border border-white/40 text-[10px] tracking-[1px] text-white/80 group-hover:border-white group-hover:text-white transition-colors">
-                  VIEW →
-                </span>
-              </div>
-            </Link>
-
-            <Link
-              href="/issues"
-              className="group rounded-sm bg-[#F0EFED] flex flex-col items-center justify-center text-center"
-              style={{ height: '230px' }}
-            >
-              <p className="text-[11px] tracking-[2px] uppercase text-[#999] font-serif mb-4">
-                ARCHIVE
+            <div>
+              <p className="font-serif italic text-[16px] md:text-[19px] text-white/75 leading-[1.55] max-w-[44ch] mb-7">
+                A letter from the desk each quarter — new issues, unreleased photographs, and the occasional notebook page.
               </p>
-              <h4 className="font-serif text-[18px] font-bold text-[#1a1a1a] mb-2">
-                All Issues
-              </h4>
-              <span className="text-[10px] tracking-[1px] text-[#999] group-hover:text-[#333] transition-colors">
-                BROWSE →
-              </span>
-            </Link>
+              <NewsletterInline />
+              <div className="font-mono text-[10px] tracking-[0.2em] uppercase text-white/35 mt-4.5">
+                No spam · unsubscribe with one click
+              </div>
+            </div>
           </div>
-        </div>
         </div>
       </section>
     </div>
