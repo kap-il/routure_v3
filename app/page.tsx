@@ -17,104 +17,92 @@ export default async function Home() {
     featuredShoot = shoot;
     featuredArticle = article;
   } catch { /* fallback to mock */ }
+  const todayFmt = new Date().toLocaleDateString('en-GB', {
+    weekday: 'long', day: 'numeric', month: 'long', year: 'numeric',
+  });
+  const issueNo = latestIssue ? String(latestIssue.issue_number).padStart(2, '0') : '02';
+  const issueTitle = latestIssue?.title ?? 'Cosmic';
+
   return (
     <IntroSplash>
     <div className="min-h-screen">
-      {/* ===== HERO — Featured Shoot ===== */}
+      {/* ===== MASTHEAD — dateline + tagline + issue marker ===== */}
+      <div className="mx-auto max-w-[1440px] px-6 md:px-10 pt-7">
+        <div className="grid grid-cols-1 md:grid-cols-[1fr_auto_1fr] items-center gap-4 md:gap-6 text-center md:text-left">
+          <div className="eyebrow">{todayFmt}</div>
+          <div className="eyebrow eyebrow-ink tracking-[0.28em]">A Curated Magazine Experience</div>
+          <div className="eyebrow md:text-right">No. {issueNo} · {issueTitle}</div>
+        </div>
+        <div className="hairline-ink mt-5" />
+      </div>
+
+      {/* ===== HERO — Featured Shoot, split layout ===== */}
       <section>
-        <div className="mx-auto max-w-[1280px] px-5 md:px-[80px]">
-          {/* Mobile: stacked image + black bar | Desktop: side by side */}
-
-          {/* --- MOBILE HERO --- */}
-          <div className="md:hidden mt-6 rounded-sm overflow-hidden">
-            <div className="relative w-full" style={{ aspectRatio: '4/5' }}>
+        <div className="mx-auto max-w-[1440px] px-6 md:px-10 mt-8 md:mt-8">
+          <div className="grid grid-cols-1 md:grid-cols-[minmax(0,1.6fr)_minmax(0,1fr)] rounded-sm overflow-hidden md:h-[560px]">
+            {/* Image side */}
+            <Link
+              href={featuredShoot ? `/shoot/${featuredShoot.slug}` : '/issues'}
+              className="tile relative block min-h-[360px] md:min-h-0 overflow-hidden"
+            >
               {featuredShoot ? (
                 <Image
                   src={featuredShoot.heroImageUrl}
                   alt={featuredShoot.title}
                   fill
-                  sizes="100vw"
+                  sizes="(min-width: 768px) 62vw, 100vw"
                   className="object-cover"
                   priority
                   fetchPriority="high"
                 />
               ) : (
-                <div className="absolute inset-0 bg-gradient-to-br from-[#2a2a2a] to-[#1a1a1a]" />
+                <div className="absolute inset-0 bg-gradient-to-br from-[#2b2a28] to-[#0e0d0b]" />
               )}
-              <div className="absolute inset-0 pointer-events-none" style={{ background: 'linear-gradient(to bottom, rgba(0,0,0,0.3) 0%, transparent 15%), linear-gradient(to top, rgba(0,0,0,0.3) 0%, transparent 15%), linear-gradient(to right, rgba(0,0,0,0.3) 0%, transparent 15%)' }} />
-            </div>
-            <div className="flex items-center" style={{ backgroundColor: '#111111' }}>
-              <div className="px-6 py-8">
-                <p className="text-[10px] tracking-[3px] uppercase text-[#AAA] font-serif mb-4">
-                  FEATURED SHOOT
-                </p>
-                <h1 className="font-serif text-[28px] font-bold leading-[1.2] text-white mb-4">
-                  {featuredShoot?.title ?? 'Explore Our Shoots'}
-                </h1>
-                <div className="w-16 h-px bg-white/50 mb-4" />
-                {featuredShoot && (
-                  <p className="text-[12px] text-[#999] mb-8">
-                    {featuredShoot.imageCount} photographs
-                  </p>
-                )}
-                <Link
-                  href={featuredShoot ? `/shoot/${featuredShoot.slug}` : '/issues'}
-                  className="text-[10px] tracking-[1.5px] text-[#AAA] hover:text-white transition-colors"
-                >
-                  VIEW SHOOT →
-                </Link>
+              <div className="absolute inset-0 pointer-events-none" style={{ background: 'linear-gradient(to right, rgba(0,0,0,0.28), transparent 40%)' }} />
+              <div className="absolute top-6 left-6 flex items-center gap-2.5 text-white/80">
+                <span className="w-2 h-2 rounded-full bg-white" />
+                <span className="font-mono text-[10px] tracking-[0.28em] uppercase">Now reading</span>
               </div>
-            </div>
-          </div>
+            </Link>
 
-          {/* --- DESKTOP HERO --- */}
-          <div className="hidden md:flex relative mt-10 rounded-sm overflow-hidden" style={{ height: '480px' }}>
-            <div className="relative flex-1 min-w-0">
-              {featuredShoot ? (
-                <Image
-                  src={featuredShoot.heroImageUrl}
-                  alt={featuredShoot.title}
-                  fill
-                  sizes="890px"
-                  className="object-cover"
-                  priority
-                  fetchPriority="high"
-                />
-              ) : (
-                <div className="absolute inset-0 bg-gradient-to-br from-[#2a2a2a] to-[#1a1a1a]" />
-              )}
-              <div className="absolute inset-0 pointer-events-none" style={{ background: 'linear-gradient(to bottom, rgba(0,0,0,0.3) 0%, transparent 15%), linear-gradient(to top, rgba(0,0,0,0.3) 0%, transparent 15%), linear-gradient(to right, rgba(0,0,0,0.3) 0%, transparent 15%)' }} />
-            </div>
-            <div className="w-[390px] shrink-0 flex items-center" style={{ backgroundColor: '#111111' }}>
-              <div className="px-14 py-12">
-                <p className="text-[11px] tracking-[3px] uppercase text-[#AAA] mb-6 font-serif">
-                  FEATURED SHOOT
-                </p>
-                <h1 className="font-serif text-[38px] font-bold leading-[1.2] text-white mb-6">
+            {/* Dark meta side */}
+            <div className="bg-[#0F0E0D] text-white flex flex-col justify-between p-8 md:p-12">
+              <div>
+                <div className="font-mono text-[10.5px] tracking-[0.28em] uppercase text-white/50 mb-7">
+                  Featured Shoot
+                </div>
+                <h1 className="font-serif text-[44px] md:text-[64px] leading-[1.02] tracking-[-0.015em] font-semibold text-white mb-6">
                   {featuredShoot?.title ?? 'Explore Our Shoots'}
                 </h1>
-                <div className="w-20 h-px bg-white/50 mb-6" />
-                {featuredShoot && (
-                  <p className="text-[13px] text-[#999] mb-12">
-                    {featuredShoot.imageCount} photographs
-                  </p>
-                )}
+                <div className="w-10 h-px bg-white/35 mb-6" />
+                <div className="grid grid-cols-2 gap-5 mb-6">
+                  <MetaPair label="Photographer" value={featuredShoot ? '—' : '—'} />
+                  <MetaPair label="Location" value={featuredShoot ? '—' : '—'} />
+                  <MetaPair
+                    label="Frames"
+                    value={featuredShoot ? String(featuredShoot.imageCount).padStart(2, '0') : '—'}
+                  />
+                  <MetaPair label="Issue" value={`No. ${issueNo}`} />
+                </div>
+              </div>
+              <div className="flex items-center justify-between">
                 <Link
                   href={featuredShoot ? `/shoot/${featuredShoot.slug}` : '/issues'}
-                  className="text-[11px] tracking-[1.5px] text-[#AAA] hover:text-white transition-colors"
+                  className="readmore"
+                  style={{ color: 'rgba(255,255,255,0.9)' }}
                 >
-                  VIEW SHOOT →
+                  View shoot <span className="arrow">→</span>
                 </Link>
+                <div className="flex gap-1.5">
+                  {[0, 1, 2].map((i) => (
+                    <span key={i} className="block h-px w-[18px]" style={{ background: i === 0 ? '#fff' : 'rgba(255,255,255,0.25)' }} />
+                  ))}
+                </div>
               </div>
             </div>
           </div>
         </div>
       </section>
-
-      {/* ===== DIVIDER ===== */}
-      <div className="mx-auto max-w-[1280px] px-5 md:px-[80px] mt-8 md:mt-12">
-        <div className="h-px bg-[#E0E0E0]" />
-      </div>
 
       {/* ===== FEATURED ARTICLE + CATEGORIES ===== */}
       <section className="mx-auto max-w-[1280px] px-5 md:px-[80px] py-8 md:py-10">
@@ -359,5 +347,18 @@ export default async function Home() {
       </section>
     </div>
     </IntroSplash>
+  );
+}
+
+function MetaPair({ label, value }: { label: string; value: string }) {
+  return (
+    <div>
+      <div className="font-mono text-[9.5px] tracking-[0.24em] uppercase text-white/40 mb-1.5">
+        {label}
+      </div>
+      <div className="font-serif text-[18px] font-medium text-white tracking-[-0.005em]">
+        {value}
+      </div>
+    </div>
   );
 }
