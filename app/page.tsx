@@ -135,7 +135,7 @@ export default async function Home() {
       <section className="mx-auto max-w-[1440px] px-6 md:px-10 pt-20 md:pt-24">
         <div className="grid grid-cols-1 md:grid-cols-[minmax(0,1.35fr)_minmax(0,1fr)] gap-8 md:gap-10">
           {/* Featured article card */}
-          <article className="card relative p-8 md:p-13">
+          <article className="card relative p-8 md:p-[52px]">
             <div className="flex justify-between items-center mb-7">
               <span className="eyebrow">
                 Featured Article{featuredArticle ? ' · Issue' : ''}
@@ -362,7 +362,7 @@ export default async function Home() {
                 A letter from the desk each quarter — new issues, unreleased photographs, and the occasional notebook page.
               </p>
               <NewsletterInline />
-              <div className="font-mono text-[10px] tracking-[0.2em] uppercase text-white/35 mt-4.5">
+              <div className="font-mono text-[10px] tracking-[0.2em] uppercase text-white/35 mt-[18px]">
                 No spam · unsubscribe with one click
               </div>
             </div>
