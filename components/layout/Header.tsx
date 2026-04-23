@@ -2,6 +2,7 @@
 
 import Link from 'next/link';
 import Image from 'next/image';
+import { usePathname, useRouter } from 'next/navigation';
 import { useEffect, useState } from 'react';
 
 const navigation = [
@@ -10,9 +11,13 @@ const navigation = [
   { name: 'Community', href: '/coming-soon' },
 ];
 
+const HEADER_OFFSET = 88;
+
 export function Header() {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
+  const pathname = usePathname();
+  const router = useRouter();
 
   useEffect(() => {
     const onScroll = () => setScrolled(window.scrollY > 8);
@@ -20,6 +25,23 @@ export function Header() {
     window.addEventListener('scroll', onScroll, { passive: true });
     return () => window.removeEventListener('scroll', onScroll);
   }, []);
+
+  function scrollToNewsletter(e: React.MouseEvent) {
+    if (pathname === '/') {
+      e.preventDefault();
+      const target = document.getElementById('newsletter');
+      if (!target) return;
+      const top = target.getBoundingClientRect().top + window.scrollY - HEADER_OFFSET;
+      const prefersReduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+      window.scrollTo({ top, behavior: prefersReduce ? 'auto' : 'smooth' });
+      setMobileMenuOpen(false);
+    } else {
+      // Cross-page: let Next navigate to / with the hash, then browser jumps.
+      setMobileMenuOpen(false);
+      router.push('/#newsletter');
+      e.preventDefault();
+    }
+  }
 
   return (
     <header
@@ -61,6 +83,7 @@ export function Header() {
           <span className="w-px h-3 bg-[color:var(--gray-200)]" aria-hidden="true" />
           <Link
             href="/#newsletter"
+            onClick={scrollToNewsletter}
             className="font-mono text-[11px] tracking-[0.22em] uppercase text-[color:var(--gray-700)] whitespace-nowrap hover:text-[color:var(--ink)] transition-colors"
           >
             Subscribe →
@@ -106,8 +129,8 @@ export function Header() {
             ))}
             <Link
               href="/#newsletter"
+              onClick={scrollToNewsletter}
               className="block font-mono text-[12px] tracking-[0.22em] uppercase text-[color:var(--gray-700)]"
-              onClick={() => setMobileMenuOpen(false)}
             >
               Subscribe →
             </Link>

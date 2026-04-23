@@ -283,7 +283,10 @@ export default async function Home() {
       </section>
 
       {/* ===== NEWSLETTER — dark dispatch ===== */}
-      <section id="newsletter" className="mt-20 md:mt-24 bg-[#0A0A0A] text-white">
+      <section
+        id="newsletter"
+        className="mt-20 md:mt-24 bg-[#0A0A0A] text-white scroll-mt-[88px]"
+      >
         <div className="mx-auto max-w-[1440px] px-6 md:px-10 py-20 md:py-24">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-10 md:gap-20 items-end">
             <div>
