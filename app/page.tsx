@@ -131,65 +131,103 @@ export default async function Home() {
       </div>
 
       {/* ===== FEATURED ARTICLE + CATEGORIES ===== */}
-      <section className="mx-auto max-w-[1280px] px-5 md:px-[80px] py-8 md:py-10">
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6 md:gap-10">
+      <section className="mx-auto max-w-[1440px] px-6 md:px-10 pt-20 md:pt-24">
+        <div className="grid grid-cols-1 md:grid-cols-[minmax(0,1.35fr)_minmax(0,1fr)] gap-8 md:gap-10">
           {/* Featured article card */}
-          <div className="border border-[#EAEAEA] rounded-sm bg-white p-6 md:p-10">
-            <p className="text-[11px] md:text-[12px] tracking-[2.5px] uppercase text-[#999] font-serif mb-4 md:mb-6">
-              FEATURED ARTICLE
-            </p>
-            <h2 className="font-serif text-[24px] md:text-[30px] font-bold leading-[1.25] text-[#1a1a1a] mb-3 md:mb-4">
+          <article className="card relative p-8 md:p-13">
+            <div className="flex justify-between items-center mb-7">
+              <span className="eyebrow">
+                Featured Article{featuredArticle ? ' · Issue' : ''}
+              </span>
+              <span className="font-mono text-[10px] tracking-[0.24em] uppercase text-[color:var(--gray-500)]">
+                Long read
+              </span>
+            </div>
+
+            <h2 className="font-serif text-[32px] md:text-[44px] leading-[1.08] tracking-[-0.015em] text-[color:var(--ink)] font-semibold mb-6 max-w-[18ch]">
               {featuredArticle?.title ?? 'Featured Article'}
             </h2>
-            <div className="h-px bg-[#E0E0E0] mb-4 md:mb-6" />
-            {featuredArticle?.author && (
-              <p className="text-[12px] md:text-[13px] text-[#999] mb-6 md:mb-8">
-                By {featuredArticle.author}
-              </p>
-            )}
+
+            <div className="hairline my-1 mb-7" />
+
             {featuredArticle?.pullquote && (
-              <blockquote className="border-l-2 border-[#1a1a1a] pl-6 md:pl-10 mb-6 md:mb-8">
-                <p className="font-serif text-[14px] md:text-[16px] italic leading-[1.6] text-[#555]">
+              <blockquote className="m-0 pl-7 border-l-2 border-[color:var(--ink)]">
+                <p className="font-serif italic text-[18px] md:text-[20px] leading-[1.5] text-[color:var(--gray-700)] max-w-[46ch] m-0">
                   &ldquo;{featuredArticle.pullquote}&rdquo;
                 </p>
               </blockquote>
             )}
-            <Link
-              href={featuredArticle ? `/shoot/${featuredArticle.shootSlug}/article` : '/issues'}
-              className="text-[10px] md:text-[11px] tracking-[1.5px] font-medium text-[#1a1a1a] hover:text-[#666] transition-colors"
-            >
-              CONTINUE READING →
-            </Link>
-          </div>
 
-          {/* Categories list */}
-          <div className="border border-[#EAEAEA] rounded-sm bg-white p-6 md:p-10">
-            <p className="text-[11px] md:text-[12px] tracking-[2.5px] uppercase text-[#999] font-serif mb-6 md:mb-8">
-              CATEGORIES
-            </p>
-            <div className="space-y-0">
+            <div className="flex items-center justify-between mt-9">
+              {featuredArticle?.author ? (
+                <div className="flex items-center gap-3.5">
+                  <div
+                    className="w-[38px] h-[38px] rounded-full grid place-items-center text-white font-serif italic font-semibold text-[14px]"
+                    style={{ background: 'linear-gradient(135deg,#2b2a28,#0e0d0b)' }}
+                    aria-hidden="true"
+                  >
+                    {featuredArticle.author
+                      .split(' ')
+                      .map((s) => s[0])
+                      .join('')
+                      .slice(0, 2)}
+                  </div>
+                  <div>
+                    <div className="font-mono text-[9.5px] tracking-[0.22em] uppercase text-[color:var(--gray-500)]">
+                      By
+                    </div>
+                    <div className="font-serif text-[16px] font-semibold text-[color:var(--ink)]">
+                      {featuredArticle.author}
+                    </div>
+                  </div>
+                </div>
+              ) : (
+                <span />
+              )}
+              <Link
+                href={featuredArticle ? `/shoot/${featuredArticle.shootSlug}/article` : '/issues'}
+                className="readmore"
+              >
+                Continue reading <span className="arrow">→</span>
+              </Link>
+            </div>
+
+            <span
+              aria-hidden="true"
+              className="absolute top-5 right-5 font-serif italic text-[44px] leading-none text-[color:var(--gray-200)]"
+            >
+              §
+            </span>
+          </article>
+
+          {/* Categories */}
+          <aside className="card p-8 md:p-11">
+            <div className="flex justify-between items-center mb-7">
+              <span className="eyebrow">Categories</span>
+              <span className="font-mono text-[10px] tracking-[0.24em] uppercase text-[color:var(--gray-400)]">
+                05 · sections
+              </span>
+            </div>
+            <div>
               {[
                 { name: 'Architecture' },
                 { name: 'Sustainability' },
                 { name: 'Experimentalism' },
                 { name: 'Commercialism' },
                 { name: 'Community' },
-              ].map((cat) => (
+              ].map((cat, i) => (
                 <Link
                   key={cat.name}
                   href={`/category/${cat.name.toLowerCase()}`}
-                  className="flex items-center justify-between py-4 md:py-5 border-b border-[#EAEAEA] last:border-b-0 group"
+                  className="cat-row"
                 >
-                  <span className="text-[17px] md:text-[20px] font-bold text-[#1a1a1a] group-hover:text-[#666] transition-colors" style={{ fontFamily: 'Cochin, Georgia, serif' }}>
-                    {cat.name}
-                  </span>
-                  <span className="text-[14px] text-[#AAA]">
-                    →
-                  </span>
+                  <span className="num">{String(i + 1).padStart(2, '0')}</span>
+                  <span className="name">{cat.name}</span>
+                  <span className="arr">→</span>
                 </Link>
               ))}
             </div>
-          </div>
+          </aside>
         </div>
       </section>
 
