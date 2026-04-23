@@ -4,6 +4,7 @@ import Image from 'next/image';
 import { getShootBySlug, getIssueForShoot, getIssues, getIssueMosaicData } from '@/lib/supabase/queries';
 import { mockShootArticle } from '@/lib/data/mock';
 import type { ContentBlock } from '@/lib/supabase/types';
+import TrackView from '@/components/analytics/TrackView';
 
 export const revalidate = 3600;
 
@@ -165,6 +166,7 @@ export default async function ShootArticlePage({ params }: ShootArticlePageProps
 
   return (
     <div className="min-h-screen">
+      {!useMock && <TrackView kind="article" slug={slug} />}
       {/* ===== FULL SPREAD HERO ===== */}
       <section className="relative w-full" style={{ height: '700px' }}>
         {heroImageUrl ? (
