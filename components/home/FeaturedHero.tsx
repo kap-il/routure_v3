@@ -55,7 +55,7 @@ export default function FeaturedHero({
       onBlur={() => setPaused(false)}
     >
       <div className="mx-auto max-w-[1440px] px-6 md:px-10 mt-8">
-        <div className="grid grid-cols-1 md:grid-cols-[minmax(0,1.6fr)_minmax(0,1fr)] rounded-sm overflow-hidden md:h-[560px]">
+        <div className="grid grid-cols-1 md:grid-cols-[minmax(0,1.6fr)_minmax(0,1fr)] rounded-sm overflow-hidden md:h-[560px] border border-[color:var(--ink)]">
           {/* Image side */}
           <Link
             href={active ? `/shoot/${active.slug}` : '/issues'}
