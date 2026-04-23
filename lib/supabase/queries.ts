@@ -160,6 +160,20 @@ export async function getFeaturedShoot(): Promise<{
   heroImageUrl: string;
   imageCount: number;
 } | null> {
+  const [first] = await getFeaturedShoots(1);
+  return first ?? null;
+}
+
+/**
+ * Returns up to `count` randomly-selected shoots that have non-article photos,
+ * for the cycling hero on the home page.
+ */
+export async function getFeaturedShoots(count: number): Promise<Array<{
+  title: string;
+  slug: string;
+  heroImageUrl: string;
+  imageCount: number;
+}>> {
   const supabase = createServerClient();
 
   const { data: shoots, error } = await supabase
@@ -168,26 +182,33 @@ export async function getFeaturedShoot(): Promise<{
     .eq('section_type', 'shoot')
     .order('position', { ascending: true });
 
-  if (error || !shoots || shoots.length === 0) return null;
+  if (error || !shoots || shoots.length === 0) return [];
 
-  // Pick a random shoot that has photos
-  const candidates = shoots.filter(s => {
-    const photos = ((s.shoot_images as ShootImage[]) ?? []).filter(img => !img.is_article_page);
+  const candidates = shoots.filter((s) => {
+    const photos = ((s.shoot_images as ShootImage[]) ?? []).filter((img) => !img.is_article_page);
     return photos.length > 0;
   });
 
-  if (candidates.length === 0) return null;
-  const shoot = candidates[Math.floor(Math.random() * candidates.length)];
-  const photos = ((shoot.shoot_images as ShootImage[]) ?? [])
-    .filter((img: ShootImage) => !img.is_article_page)
-    .sort((a: ShootImage, b: ShootImage) => a.position - b.position);
+  if (candidates.length === 0) return [];
 
-  return {
-    title: shoot.title,
-    slug: shoot.slug,
-    heroImageUrl: photos[0].image_url,
-    imageCount: photos.length,
-  };
+  // Fisher-Yates shuffle, then take the first `count` items.
+  const pool = candidates.slice();
+  for (let i = pool.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [pool[i], pool[j]] = [pool[j], pool[i]];
+  }
+
+  return pool.slice(0, Math.max(1, count)).map((shoot) => {
+    const photos = ((shoot.shoot_images as ShootImage[]) ?? [])
+      .filter((img: ShootImage) => !img.is_article_page)
+      .sort((a: ShootImage, b: ShootImage) => a.position - b.position);
+    return {
+      title: shoot.title,
+      slug: shoot.slug,
+      heroImageUrl: photos[0].image_url,
+      imageCount: photos.length,
+    };
+  });
 }
 
 // ============================================================

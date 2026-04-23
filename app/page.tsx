@@ -2,22 +2,24 @@ import Link from 'next/link';
 import Image from 'next/image';
 import IntroSplash from '@/components/IntroSplash';
 import NewsletterInline from '@/components/home/NewsletterInline';
-import { getIssues, getFeaturedShoot, getFeaturedArticle } from '@/lib/supabase/queries';
+import FeaturedHero, { type FeaturedShoot } from '@/components/home/FeaturedHero';
+import { getIssues, getFeaturedShoots, getFeaturedArticle } from '@/lib/supabase/queries';
 
 export const revalidate = 3600;
 
 export default async function Home() {
   let latestIssue: { title: string; slug: string; issue_number: number; cover_image_url: string | null; description: string | null } | null = null;
   let previousIssue: { title: string; slug: string; issue_number: number; cover_image_url: string | null } | null = null;
-  let featuredShoot: { title: string; slug: string; heroImageUrl: string; imageCount: number } | null = null;
+  let featuredShoots: FeaturedShoot[] = [];
   let featuredArticle: { title: string; shootSlug: string; author: string | null; pullquote: string | null } | null = null;
   try {
-    const [issues, shoot, article] = await Promise.all([getIssues(), getFeaturedShoot(), getFeaturedArticle()]);
+    const [issues, shoots, article] = await Promise.all([getIssues(), getFeaturedShoots(3), getFeaturedArticle()]);
     if (issues.length > 0) latestIssue = issues[0];
     if (issues.length > 1) previousIssue = issues[1];
-    featuredShoot = shoot;
+    featuredShoots = shoots;
     featuredArticle = article;
   } catch { /* fallback to mock */ }
+  const featuredShoot: FeaturedShoot | null = featuredShoots[0] ?? null;
   const todayFmt = new Date().toLocaleDateString('en-GB', {
     weekday: 'long', day: 'numeric', month: 'long', year: 'numeric',
   });
@@ -45,73 +47,8 @@ export default async function Home() {
         <div className="hairline-ink mt-5" />
       </div>
 
-      {/* ===== HERO — Featured Shoot, split layout ===== */}
-      <section>
-        <div className="mx-auto max-w-[1440px] px-6 md:px-10 mt-8 md:mt-8">
-          <div className="grid grid-cols-1 md:grid-cols-[minmax(0,1.6fr)_minmax(0,1fr)] rounded-sm overflow-hidden md:h-[560px]">
-            {/* Image side */}
-            <Link
-              href={featuredShoot ? `/shoot/${featuredShoot.slug}` : '/issues'}
-              className="tile relative block min-h-[360px] md:min-h-0 overflow-hidden"
-            >
-              {featuredShoot ? (
-                <Image
-                  src={featuredShoot.heroImageUrl}
-                  alt={featuredShoot.title}
-                  fill
-                  sizes="(min-width: 768px) 62vw, 100vw"
-                  className="object-cover"
-                  priority
-                  fetchPriority="high"
-                />
-              ) : (
-                <div className="absolute inset-0 bg-gradient-to-br from-[#2b2a28] to-[#0e0d0b]" />
-              )}
-              <div className="absolute inset-0 pointer-events-none" style={{ background: 'linear-gradient(to right, rgba(0,0,0,0.28), transparent 40%)' }} />
-              <div className="absolute top-6 left-6 flex items-center gap-2.5 text-white/80">
-                <span className="w-2 h-2 rounded-full bg-white" />
-                <span className="font-mono text-[10px] tracking-[0.28em] uppercase">Now reading</span>
-              </div>
-            </Link>
-
-            {/* Dark meta side */}
-            <div className="bg-[#0F0E0D] text-white flex flex-col justify-between p-8 md:p-12">
-              <div>
-                <div className="font-mono text-[10.5px] tracking-[0.28em] uppercase text-white/50 mb-7">
-                  Featured Shoot
-                </div>
-                <h1 className="font-serif text-[44px] md:text-[64px] leading-[1.02] tracking-[-0.015em] font-semibold text-white mb-6">
-                  {featuredShoot?.title ?? 'Explore Our Shoots'}
-                </h1>
-                <div className="w-10 h-px bg-white/35 mb-6" />
-                <div className="grid grid-cols-2 gap-5 mb-6">
-                  <MetaPair
-                    label="Frames"
-                    value={featuredShoot ? String(featuredShoot.imageCount).padStart(2, '0') : '—'}
-                  />
-                  <MetaPair label="Issue" value={`No. ${issueNo}`} />
-                  <MetaPair label="Section" value="Shoot" />
-                  <MetaPair label="Series" value={issueTitle} />
-                </div>
-              </div>
-              <div className="flex items-center justify-between">
-                <Link
-                  href={featuredShoot ? `/shoot/${featuredShoot.slug}` : '/issues'}
-                  className="readmore"
-                  style={{ color: 'rgba(255,255,255,0.9)' }}
-                >
-                  View shoot <span className="arrow">→</span>
-                </Link>
-                <div className="flex gap-1.5">
-                  {[0, 1, 2].map((i) => (
-                    <span key={i} className="block h-px w-[18px]" style={{ background: i === 0 ? '#fff' : 'rgba(255,255,255,0.25)' }} />
-                  ))}
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-      </section>
+      {/* ===== HERO — Featured Shoot, split layout with cycling ===== */}
+      <FeaturedHero shoots={featuredShoots} issueNo={issueNo} issueTitle={issueTitle} />
 
       {/* ===== TICKER RIBBON ===== */}
       <div className="mt-9 border-y border-[color:var(--rule)] bg-[#FAFAF8] overflow-hidden">
@@ -371,18 +308,5 @@ export default async function Home() {
       </section>
     </div>
     </IntroSplash>
-  );
-}
-
-function MetaPair({ label, value }: { label: string; value: string }) {
-  return (
-    <div>
-      <div className="font-mono text-[9.5px] tracking-[0.24em] uppercase text-white/40 mb-1.5">
-        {label}
-      </div>
-      <div className="font-serif text-[18px] font-medium text-white tracking-[-0.005em]">
-        {value}
-      </div>
-    </div>
   );
 }
