@@ -85,13 +85,13 @@ export default async function Home() {
                 </h1>
                 <div className="w-10 h-px bg-white/35 mb-6" />
                 <div className="grid grid-cols-2 gap-5 mb-6">
-                  <MetaPair label="Photographer" value={featuredShoot ? '—' : '—'} />
-                  <MetaPair label="Location" value={featuredShoot ? '—' : '—'} />
                   <MetaPair
                     label="Frames"
                     value={featuredShoot ? String(featuredShoot.imageCount).padStart(2, '0') : '—'}
                   />
                   <MetaPair label="Issue" value={`No. ${issueNo}`} />
+                  <MetaPair label="Section" value="Shoot" />
+                  <MetaPair label="Series" value={issueTitle} />
                 </div>
               </div>
               <div className="flex items-center justify-between">
