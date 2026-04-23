@@ -18,16 +18,19 @@ export function Header() {
   return (
     <header className="fixed top-0 left-0 right-0 z-50 bg-white border-b border-[#EEEEE8]">
       <nav className="mx-auto flex max-w-7xl items-center justify-between px-6 py-4 lg:px-8">
-        {/* Logo */}
-        <Link href="/" className="flex items-center">
+        {/* Logo — R mark + ROUTURE wordmark (Argue Regular, uppercase) */}
+        <Link href="/" className="flex items-center gap-2.5" aria-label="Routure — Home">
           <Image
-            src="/images/routure-logo.webp"
-            alt="Routure"
-            width={180}
+            src="/routure_icon_black_resize.png"
+            alt=""
+            width={40}
             height={40}
-            className="h-8 w-auto"
+            className="h-7 w-auto"
             priority
           />
+          <span className="font-argue text-[22px] leading-none tracking-[0.08em] uppercase text-[#1A1A1A]">
+            Routure
+          </span>
         </Link>
 
         {/* Desktop Navigation */}
