@@ -3,7 +3,8 @@ import Image from 'next/image';
 import IntroSplash from '@/components/IntroSplash';
 import NewsletterInline from '@/components/home/NewsletterInline';
 import FeaturedHero, { type FeaturedShoot } from '@/components/home/FeaturedHero';
-import { getIssues, getFeaturedShoots, getFeaturedArticle } from '@/lib/supabase/queries';
+import WeeklyReading from '@/components/home/WeeklyReading';
+import { getIssues, getFeaturedShoots, getFeaturedArticle, getWeeklyReads, type WeeklyRead } from '@/lib/supabase/queries';
 
 export const revalidate = 3600;
 
@@ -12,12 +13,19 @@ export default async function Home() {
   let previousIssue: { title: string; slug: string; issue_number: number; cover_image_url: string | null } | null = null;
   let featuredShoots: FeaturedShoot[] = [];
   let featuredArticle: { title: string; shootSlug: string; author: string | null; pullquote: string | null } | null = null;
+  let weeklyReads: WeeklyRead[] = [];
   try {
-    const [issues, shoots, article] = await Promise.all([getIssues(), getFeaturedShoots(3), getFeaturedArticle()]);
+    const [issues, shoots, article, reads] = await Promise.all([
+      getIssues(),
+      getFeaturedShoots(3),
+      getFeaturedArticle(),
+      getWeeklyReads(4),
+    ]);
     if (issues.length > 0) latestIssue = issues[0];
     if (issues.length > 1) previousIssue = issues[1];
     featuredShoots = shoots;
     featuredArticle = article;
+    weeklyReads = reads;
   } catch { /* fallback to mock */ }
   const todayFmt = new Date().toLocaleDateString('en-GB', {
     weekday: 'long', day: 'numeric', month: 'long', year: 'numeric',
@@ -145,6 +153,9 @@ export default async function Home() {
           </aside>
         </div>
       </section>
+
+      {/* ===== THIS WEEK IN READING ===== */}
+      <WeeklyReading reads={weeklyReads} />
 
       {/* ===== LATEST ISSUE SECTION ===== */}
       <section id="latest" className="mx-auto max-w-[1440px] px-6 md:px-10 pt-20 md:pt-24">
