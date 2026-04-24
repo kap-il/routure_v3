@@ -1,28 +1,27 @@
-import '../plan-c/tokens.css';
-import CustomCursor from '@/components/plan-c/primitives/CustomCursor';
-import Masthead from '@/components/plan-c/sections/Masthead';
-import Hero from '@/components/plan-c/sections/Hero';
-import ShootGallery from '@/components/plan-c/sections/ShootGallery';
-import PullquoteBand from '@/components/plan-c/sections/PullquoteBand';
-import CategoryArchive from '@/components/plan-c/sections/CategoryArchive';
-import LetterFromBoard from '@/components/plan-c/sections/LetterFromBoard';
-import MegaFooter from '@/components/plan-c/sections/MegaFooter';
-
 export const metadata = {
-  title: 'Routure — Continuous (Plan C)',
+  title: 'Routure — Continuous Scroll (Plan C)',
 };
 
-export default function Continuous() {
+// The continuous-scroll experience is the un-ported mockup at
+// overhaul/plan-c-extracted/Routure - Continuous Scroll.html — mirrored
+// into public/plan-c/ by the prior commit. Render it in a full-viewport
+// iframe so /continuous shows the exact file the design doc points at,
+// with no porting or interpretation.
+export default function ContinuousScroll() {
+  const src = '/plan-c/Routure%20-%20Continuous%20Scroll.html';
   return (
-    <div data-routure="plan-c">
-      <CustomCursor />
-      <Masthead />
-      <Hero />
-      <ShootGallery />
-      <PullquoteBand />
-      <CategoryArchive />
-      <LetterFromBoard />
-      <MegaFooter />
-    </div>
+    <iframe
+      title="Routure — Continuous Scroll"
+      src={src}
+      style={{
+        position: 'fixed',
+        inset: 0,
+        width: '100vw',
+        height: '100vh',
+        border: 0,
+        background: '#111',
+        zIndex: 40,
+      }}
+    />
   );
 }
