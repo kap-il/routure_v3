@@ -13,6 +13,8 @@
   --paper-2: #E8E2D4;
   --hot: #FF3D1F;
   --hot-2: #FF6A3D;
+  --acid: #FF3D1F;       /* alias — mockup calls it "acid" */
+  --acid-deep: #C9280E;
   --rule: rgba(10, 10, 10, 0.18);
   --rule-paper: rgba(242, 238, 229, 0.22);
 
@@ -128,4 +130,109 @@
   letter-spacing: 0.14em;
   text-transform: uppercase;
   opacity: 0.7;
+}
+
+/* Type helpers used across sections (ported from the mockup) */
+[data-routure="plan-c"] .t-mono {
+  font-family: var(--f-mono);
+  font-size: 10px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+[data-routure="plan-c"] .t-mono-lg {
+  font-family: var(--f-mono);
+  font-size: 12px;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+[data-routure="plan-c"] .t-disp {
+  font-family: var(--f-display);
+  font-weight: 400;
+  line-height: 0.86;
+  letter-spacing: -0.02em;
+}
+[data-routure="plan-c"] .t-disp-ital {
+  font-family: var(--f-display);
+  font-style: italic;
+  font-weight: 500;
+  letter-spacing: -0.015em;
+}
+[data-routure="plan-c"] .t-sans-cond {
+  font-family: var(--f-sans);
+  font-weight: 600;
+  letter-spacing: 0.02em;
+  text-transform: uppercase;
+}
+[data-routure="plan-c"] a { color: inherit; text-decoration: none; }
+
+/* Placeholder palette variants */
+[data-routure="plan-c"] .ph.p-night {
+  background:
+    repeating-linear-gradient(45deg, rgba(242, 238, 229, 0.06) 0 6px, rgba(0, 0, 0, 0) 6px 14px),
+    linear-gradient(180deg, #1b1a22, #05050a);
+  color: var(--paper);
+}
+[data-routure="plan-c"] .ph.p-clay {
+  background:
+    repeating-linear-gradient(45deg, rgba(10, 10, 10, 0.08) 0 6px, rgba(0, 0, 0, 0) 6px 14px),
+    linear-gradient(180deg, #c8a38a, #8a5a42);
+  color: #1a1a1a;
+}
+[data-routure="plan-c"] .ph.p-moss {
+  background:
+    repeating-linear-gradient(45deg, rgba(10, 10, 10, 0.1) 0 6px, rgba(0, 0, 0, 0) 6px 14px),
+    linear-gradient(180deg, #7b8c6c, #2c3a25);
+  color: var(--paper);
+}
+[data-routure="plan-c"] .ph.p-pool {
+  background:
+    repeating-linear-gradient(45deg, rgba(10, 10, 10, 0.1) 0 6px, rgba(0, 0, 0, 0) 6px 14px),
+    linear-gradient(180deg, #6d95a6, #1c3a4a);
+  color: var(--paper);
+}
+[data-routure="plan-c"] .ph.p-plum {
+  background:
+    repeating-linear-gradient(45deg, rgba(242, 238, 229, 0.06) 0 6px, rgba(0, 0, 0, 0) 6px 14px),
+    linear-gradient(180deg, #4a2a3c, #1a0b14);
+  color: var(--paper);
+}
+[data-routure="plan-c"] .ph.p-ember {
+  background:
+    repeating-linear-gradient(45deg, rgba(0, 0, 0, 0.15) 0 6px, rgba(0, 0, 0, 0) 6px 14px),
+    linear-gradient(180deg, #ff5a3f, #6b1400);
+  color: var(--ink);
+}
+[data-routure="plan-c"] .ph.p-bone {
+  background:
+    repeating-linear-gradient(45deg, rgba(10, 10, 10, 0.06) 0 6px, rgba(0, 0, 0, 0) 6px 14px),
+    linear-gradient(180deg, #e6dfce, #b8ae98);
+  color: #1a1a1a;
+}
+[data-routure="plan-c"] .ph.p-ash {
+  background:
+    repeating-linear-gradient(45deg, rgba(10, 10, 10, 0.1) 0 6px, rgba(0, 0, 0, 0) 6px 14px),
+    linear-gradient(180deg, #8a8785, #2a2726);
+  color: var(--paper);
+}
+[data-routure="plan-c"] .ph.p-acid {
+  background:
+    repeating-linear-gradient(45deg, rgba(0, 0, 0, 0.12) 0 6px, rgba(0, 0, 0, 0) 6px 14px),
+    linear-gradient(180deg, #ff6a3d, #c9280e);
+  color: var(--ink);
+}
+
+[data-routure="plan-c"] .ph .ph-label {
+  position: absolute;
+  left: 10px;
+  bottom: 10px;
+  padding: 4px 8px;
+  border: 1px solid currentColor;
+  background: transparent;
+  pointer-events: none;
+}
+[data-routure="plan-c"] .ph .ph-label.tr {
+  left: auto;
+  right: 10px;
+  top: 10px;
+  bottom: auto;
 }
