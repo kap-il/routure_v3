@@ -1,0 +1,131 @@
+/* ROUTURE — Plan-C design tokens (Phase 1 foundation)
+ *
+ * Source of truth for the continuous-scroll redesign. A successor can swap
+ * font families and hues in this file without touching any component.
+ *
+ * Mapped from overhaul/plan-c-extracted/styles/routure.css.
+ */
+
+[data-routure="plan-c"] {
+  /* Ink & surface */
+  --ink: #0A0A0A;
+  --paper: #F2EEE5;
+  --paper-2: #E8E2D4;
+  --hot: #FF3D1F;
+  --hot-2: #FF6A3D;
+  --rule: rgba(10, 10, 10, 0.18);
+  --rule-paper: rgba(242, 238, 229, 0.22);
+
+  /* Type — driven by next/font vars set in layout.tsx.
+   * Licensed upgrade path: swap --font-fraunces for Bodoni 72 and
+   * --font-barlow-condensed for Helvetica Neue Condensed in layout.tsx. */
+  --f-display: var(--font-fraunces), "Bodoni 72", "Didot", "GFS Didot", ui-serif, Georgia, serif;
+  --f-sans: var(--font-barlow-condensed), "Helvetica Neue", "Arial Narrow", ui-sans-serif, system-ui, sans-serif;
+  --f-mono: var(--font-jetbrains-mono), ui-monospace, "IBM Plex Mono", Menlo, monospace;
+
+  background: var(--paper);
+  color: var(--ink);
+  font-family: var(--f-sans);
+  font-feature-settings: "ss01", "cv11";
+}
+
+[data-routure="plan-c"] .r-display {
+  font-family: var(--f-display);
+  font-weight: 400;
+  letter-spacing: -0.02em;
+  line-height: 0.86;
+}
+[data-routure="plan-c"] .r-serif-italic {
+  font-family: var(--f-display);
+  font-style: italic;
+  font-weight: 400;
+}
+[data-routure="plan-c"] .r-mono {
+  font-family: var(--f-mono);
+  font-size: 10px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+[data-routure="plan-c"] .r-cond {
+  font-family: var(--f-sans);
+  font-stretch: 75%;
+  font-weight: 600;
+  letter-spacing: 0.02em;
+  text-transform: uppercase;
+}
+[data-routure="plan-c"] .r-smallcaps {
+  font-family: var(--f-sans);
+  font-variant: small-caps;
+  letter-spacing: 0.14em;
+  text-transform: lowercase;
+}
+
+[data-routure="plan-c"] .rule { height: 1px; background: var(--rule); }
+[data-routure="plan-c"] .rule-paper { height: 1px; background: var(--rule-paper); }
+
+/* Placeholder tiles — used until real imagery is hooked up */
+[data-routure="plan-c"] .ph {
+  background:
+    repeating-linear-gradient(45deg, rgba(10, 10, 10, 0.07) 0 6px, rgba(10, 10, 10, 0) 6px 14px),
+    linear-gradient(180deg, #c8bfae, #9c927f);
+  color: #1a1a1a;
+  position: relative;
+  display: grid;
+  place-items: center;
+  font-family: var(--f-mono);
+  font-size: 11px;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  overflow: hidden;
+}
+[data-routure="plan-c"] .ph--dark {
+  background:
+    repeating-linear-gradient(45deg, rgba(242, 238, 229, 0.06) 0 6px, rgba(0, 0, 0, 0) 6px 14px),
+    linear-gradient(180deg, #2a2726, #0e0d0c);
+  color: var(--paper);
+}
+[data-routure="plan-c"] .ph--hot {
+  background:
+    repeating-linear-gradient(45deg, rgba(0, 0, 0, 0.15) 0 6px, rgba(0, 0, 0, 0) 6px 14px),
+    linear-gradient(180deg, #ff5a3f, #c9280e);
+  color: var(--ink);
+}
+
+/* Custom-cursor ring (full-size DOM node positioned by client component) */
+[data-routure="plan-c"] .routure-cursor {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 28px;
+  height: 28px;
+  border: 1px solid currentColor;
+  border-radius: 50%;
+  pointer-events: none;
+  z-index: 9999;
+  mix-blend-mode: difference;
+  color: var(--paper);
+  transform: translate(-50%, -50%);
+  transition: width 0.25s ease, height 0.25s ease, border-color 0.2s ease;
+  display: grid;
+  place-items: center;
+  font-family: var(--f-mono);
+  font-size: 9px;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+}
+[data-routure="plan-c"] .routure-cursor.is-big {
+  width: 88px;
+  height: 88px;
+}
+@media (hover: none), (pointer: coarse) {
+  [data-routure="plan-c"] .routure-cursor { display: none; }
+}
+
+/* Masthead / folio helpers kept minimal for Phase 1 */
+[data-routure="plan-c"] .routure-folio {
+  font-family: var(--f-mono);
+  font-size: 10px;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  opacity: 0.7;
+}

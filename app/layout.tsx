@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
-import { Playfair_Display } from "next/font/google";
+import { Playfair_Display, Fraunces, Barlow_Condensed, JetBrains_Mono } from "next/font/google";
 import localFont from "next/font/local";
 import { Header } from "@/components/layout/Header";
 import { Footer } from "@/components/layout/Footer";
@@ -33,6 +33,28 @@ const argue = localFont({
   ],
   variable: "--font-argue",
   display: "swap",
+});
+
+// Plan-C foundation fonts. Open-source substitutes for Bodoni 72 / Helvetica
+// Neue Condensed. A successor with Adobe CC access can swap to the licensed
+// faces in this file — nothing else references the families directly.
+const fraunces = Fraunces({
+  variable: "--font-fraunces",
+  subsets: ["latin"],
+  weight: ["400", "500", "600", "700"],
+  style: ["normal", "italic"],
+});
+
+const barlowCondensed = Barlow_Condensed({
+  variable: "--font-barlow-condensed",
+  subsets: ["latin"],
+  weight: ["400", "500", "600", "700"],
+});
+
+const jetbrainsMono = JetBrains_Mono({
+  variable: "--font-jetbrains-mono",
+  subsets: ["latin"],
+  weight: ["400", "500"],
 });
 
 export const viewport = {
@@ -94,7 +116,7 @@ export default function RootLayout({
         <link rel="dns-prefetch" href="https://routure-issues.s3.us-east-1.amazonaws.com" />
         <link rel="preconnect" href="https://routure-issues.s3.us-east-1.amazonaws.com" crossOrigin="anonymous" />
       </head>
-      <body className={`${geistSans.variable} ${geistMono.variable} ${playfair.variable} ${argue.variable} antialiased bg-[#FAFAF8]`}>
+      <body className={`${geistSans.variable} ${geistMono.variable} ${playfair.variable} ${argue.variable} ${fraunces.variable} ${barlowCondensed.variable} ${jetbrainsMono.variable} antialiased bg-[#FAFAF8]`}>
         <Header />
         <main className="bg-[#FAFAF8]" style={{ paddingTop: '88px' }}>
           {children}
