@@ -1,0 +1,176 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <title>Routure — Continuous Scroll (All 17 panels)</title>
+  <meta name="viewport" content="width=1440" />
+  <link rel="stylesheet" href="styles/routure.css" />
+  <style>
+    html, body {
+      margin: 0;
+      padding: 0;
+      background: #0A0A0A;
+      color: #F2EEE5;
+      font-family: ui-sans-serif, system-ui, sans-serif;
+    }
+    body {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+    /* Separator hairline between panels so the 1440×900 frames read clearly */
+    #app > * + * {
+      border-top: 1px solid rgba(255, 255, 255, 0.08);
+    }
+    /* Sticky floor progress indicator */
+    .sticky-progress {
+      position: fixed;
+      left: 20px;
+      bottom: 20px;
+      font-family: ui-monospace, Menlo, monospace;
+      font-size: 10px;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      color: #FF3D1F;
+      background: #0A0A0A;
+      border: 1px solid #FF3D1F;
+      padding: 8px 12px;
+      z-index: 999;
+      pointer-events: none;
+    }
+  </style>
+  <script src="https://unpkg.com/react@18.3.1/umd/react.development.js" integrity="sha384-hD6/rw4ppMLGNu3tX5cjIb+uRZ7UkRJ6BPkLpg4hAu/6onKUg4lLsHAs9EBPT82L" crossorigin="anonymous"></script>
+  <script src="https://unpkg.com/react-dom@18.3.1/umd/react-dom.development.js" integrity="sha384-u6aeetuaXnQ38mYT8rp6sbXaQe3NL9t+IBXmnYxwkUI2Hw4bsp2Wvmx4yRQF1uAm" crossorigin="anonymous"></script>
+  <script src="https://unpkg.com/@babel/standalone@7.29.0/babel.min.js" integrity="sha384-m08KidiNqLdpJqLq95G/LEi8Qvjl/xUYll3QILypMoQ65QorJ9Lvtp2RXYGBFj1y" crossorigin="anonymous"></script>
+</head>
+<body>
+  <div id="app"></div>
+  <div class="sticky-progress" id="progress">Panel 01 / 18</div>
+
+  <!-- Viewport sources live alongside this file (copied from
+       overhaul/plan-c-extracted/). -->
+  <script type="text/babel" src="viewports/act1.jsx"></script>
+  <script type="text/babel" src="viewports/act2.jsx"></script>
+  <script type="text/babel" src="viewports/act3.jsx"></script>
+  <script type="text/babel" src="viewports/act4.jsx"></script>
+  <script type="text/babel" src="viewports/shoot-slug.jsx"></script>
+
+  <script type="text/babel">
+    // CoverPlate lifted from Routure - Continuous Scroll.html so the stitched
+    // page opens on the same overview card as the design canvas does.
+    function CoverPlate() {
+      return (
+        <div style={{
+          width: 1440, height: 540, background: '#0A0A0A', color: '#F2EEE5',
+          padding: 40, display: 'flex', justifyContent: 'space-between',
+          fontFamily: 'var(--f-sans)', position: 'relative'
+        }}>
+          <div style={{ maxWidth: 720, display: 'flex', flexDirection: 'column', justifyContent: 'space-between' }}>
+            <div>
+              <div className="r-mono" style={{ color: '#FF3D1F' }}>Digital publication · approach C · continuous scroll</div>
+              <div className="r-display" style={{ fontSize: 180, fontStyle: 'italic', letterSpacing: '-0.04em', lineHeight: 0.86, marginTop: 14 }}>
+                Routure<span style={{ color: '#FF3D1F' }}>,</span><br />
+                the site <br />is the <span style={{ color: '#FF3D1F' }}>issue</span>.
+              </div>
+            </div>
+            <div className="r-mono" style={{ opacity: 0.7, maxWidth: 620, lineHeight: 1.6 }}>
+              17 desktop panels at 1440×900, stitched top to bottom for a real continuous scroll.
+              Act I through the tail — every viewport from the design canvas, in order.
+            </div>
+          </div>
+          <div style={{ width: 360, display: 'flex', flexDirection: 'column', justifyContent: 'space-between' }}>
+            <div>
+              <div className="r-mono" style={{ color: '#FF3D1F' }}>System</div>
+              <dl className="r-mono" style={{ lineHeight: 1.9, marginTop: 10 }}>
+                <div className="flex between"><dt>Display</dt><dd style={{ margin: 0 }}>Bodoni-class serif, italic</dd></div>
+                <div className="flex between"><dt>Sans</dt><dd style={{ margin: 0 }}>Helvetica Neue cond.</dd></div>
+                <div className="flex between"><dt>Mono</dt><dd style={{ margin: 0 }}>system ui-monospace</dd></div>
+                <div className="flex between"><dt>Ink</dt><dd style={{ margin: 0 }}>#0A0A0A</dd></div>
+                <div className="flex between"><dt>Paper</dt><dd style={{ margin: 0 }}>#F2EEE5</dd></div>
+                <div className="flex between"><dt>Signature</dt><dd style={{ margin: 0, color: '#FF3D1F' }}>#FF3D1F</dd></div>
+              </dl>
+            </div>
+            <div>
+              <div className="r-mono" style={{ color: '#FF3D1F' }}>Stack</div>
+              <div className="r-mono" style={{ marginTop: 8, opacity: 0.8, lineHeight: 1.7 }}>
+                Next.js 16 · React 19 · Tailwind 4<br />
+                Motion · Lenis · Supabase · Vercel
+              </div>
+            </div>
+          </div>
+        </div>
+      );
+    }
+
+    const PANELS = [
+      { label: 'Cover · system · intent', el: <CoverPlate /> },
+      { label: '01 · wordmark assembles', el: <V01_Entry /> },
+      { label: '02 · editorial premise', el: <V02_Premise /> },
+      { label: '03 · shoot 01 · title assembly', el: <V03_ShootIntro /> },
+      { label: '04 · full-bleed + margin credits', el: <V04_FullBleed /> },
+      { label: '05 · article interleave', el: <V05_ArticleInterleave /> },
+      { label: '06 · transition · color wipe + type morph', el: <V06_Transition /> },
+      { label: '07 · shoot 02 · paired grid', el: <V07_ShootTwoGrid /> },
+      { label: '08 · editor’s letter · serif column', el: <V08_EditorialBand /> },
+      { label: '09 · category sweep · 03 / 05', el: <V09_CategorySweep /> },
+      { label: '10 · casting call · inline interrupt', el: <V10_CastingCall /> },
+      { label: '11 · merch drop · hold-to-buy', el: <V11_MerchInline /> },
+      { label: '12 · axis flip · scroll turns sideways', el: <V12_ArchiveFlip /> },
+      { label: '13 · archive posters · hover reveals shoots', el: <V13_ArchivePosters /> },
+      { label: '14 · masthead + / search overlay', el: <V14_GestureOverlay /> },
+      { label: '15 · read-as-text · linear mode', el: <V15_ReadAsText /> },
+      { label: '16 · /shoot/salt-cathedral · standalone', el: <V16_ShootSlug /> },
+      { label: '17 · colophon + subscribe', el: <V17_Colophon /> },
+    ];
+
+    function App() {
+      return (
+        <>
+          {PANELS.map((p, i) => (
+            <div key={i} data-panel-index={i} data-panel-label={p.label}>
+              {p.el}
+            </div>
+          ))}
+        </>
+      );
+    }
+
+    ReactDOM.createRoot(document.getElementById('app')).render(<App />);
+
+    // Panel-progress indicator — fires once per frame to show which panel
+    // is crossing the viewport midpoint.
+    (function () {
+      let raf = null;
+      const el = document.getElementById('progress');
+      function update() {
+        const panels = document.querySelectorAll('[data-panel-index]');
+        if (!panels.length) { raf = null; return; }
+        const mid = window.innerHeight / 2 + window.scrollY;
+        let best = 0;
+        let bestDist = Infinity;
+        panels.forEach((p) => {
+          const top = p.getBoundingClientRect().top + window.scrollY;
+          const bottom = top + p.offsetHeight;
+          const center = (top + bottom) / 2;
+          const dist = Math.abs(center - mid);
+          if (dist < bestDist) {
+            bestDist = dist;
+            best = Number(p.getAttribute('data-panel-index')) || 0;
+          }
+        });
+        const label = panels[best]?.getAttribute('data-panel-label') || '';
+        el.textContent =
+          'Panel ' + String(best + 1).padStart(2, '0') + ' / ' + String(panels.length).padStart(2, '0') +
+          ' — ' + label;
+        raf = null;
+      }
+      function onScroll() {
+        if (raf == null) raf = requestAnimationFrame(update);
+      }
+      window.addEventListener('scroll', onScroll, { passive: true });
+      window.addEventListener('resize', onScroll);
+      setTimeout(update, 300);
+    })();
+  </script>
+</body>
+</html>

@@ -8,7 +8,10 @@ export const metadata = {
 // iframe so /continuous shows the exact file the design doc points at,
 // with no porting or interpretation.
 export default function ContinuousScroll() {
-  const src = '/plan-c/Routure%20-%20Continuous%20Scroll.html';
+  // Stitched file renders all 17 panels vertically for a real continuous
+  // scroll (vs the design-canvas arrangement in "Routure - Continuous
+  // Scroll.html"). Source lives in public/plan-c/continuous-stitched.html.
+  const src = '/plan-c/continuous-stitched.html';
   return (
     <iframe
       title="Routure — Continuous Scroll"
