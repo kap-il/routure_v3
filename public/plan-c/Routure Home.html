@@ -1,0 +1,128 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover" />
+<title>Routure — Home</title>
+
+<!-- Fonts: Cochin isn't on Google, so use local-if-present + close serif fallback.
+     Geist for sans, IBM Plex Mono as mono, Cormorant Garamond as a Cochin-like serif fallback. -->
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;0,700;1,400;1,500&family=Geist:wght@300;400;500;600;700&family=IBM+Plex+Mono:wght@300;400;500&family=Playfair+Display:ital,wght@0,400;0,500;0,600;0,700;1,400&display=swap" rel="stylesheet">
+
+<script src="https://unpkg.com/react@18.3.1/umd/react.development.js" integrity="sha384-hD6/rw4ppMLGNu3tX5cjIb+uRZ7UkRJ6BPkLpg4hAu/6onKUg4lLsHAs9EBPT82L" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/react-dom@18.3.1/umd/react-dom.development.js" integrity="sha384-u6aeetuaXnQ38mYT8rp6sbXaQe3NL9t+IBXmnYxwkUI2Hw4bsp2Wvmx4yRQF1uAm" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/@babel/standalone@7.29.0/babel.min.js" integrity="sha384-m08KidiNqLdpJqLq95G/LEi8Qvjl/xUYll3QILypMoQ65QorJ9Lvtp2RXYGBFj1y" crossorigin="anonymous"></script>
+
+<style>
+  :root{
+    --bg:#FAFAF8;
+    --fg:#0A0A0A;
+    --ink:#1A1A1A;
+    --gray-900:#333333;
+    --gray-700:#666666;
+    --gray-500:#999999;
+    --gray-400:#B5B5B0;
+    --gray-300:#CCCCCC;
+    --gray-200:#E0E0E0;
+    --gray-100:#EAEAEA;
+    --paper:#F0EFED;
+    --rule:#E5E3DE;
+    --serif:"Cormorant Garamond","Cochin","Times New Roman",Georgia,serif;
+    --sans:"Geist",-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,"Helvetica Neue",Arial,sans-serif;
+    --mono:"IBM Plex Mono",ui-monospace,SFMono-Regular,"SF Mono",Menlo,Consolas,monospace;
+  }
+  html,body{background:var(--bg);color:var(--fg);}
+  body{font-family:var(--sans);-webkit-font-smoothing:antialiased;-moz-osx-font-smoothing:grayscale;margin:0;font-feature-settings:"kern" 1,"liga" 1;text-rendering:optimizeLegibility;}
+  *{box-sizing:border-box;}
+  a{color:inherit;text-decoration:none;}
+  button{font-family:inherit;}
+  h1,h2,h3,h4,h5,h6{font-family:var(--serif);font-weight:600;letter-spacing:-0.01em;margin:0;}
+  .serif{font-family:var(--serif);}
+  .sans{font-family:var(--sans);}
+  .mono{font-family:var(--mono);}
+  ::selection{background:#000;color:#fff;}
+
+  /* Editorial rules */
+  .hairline{height:1px;background:var(--rule);}
+  .hairline-ink{height:1px;background:var(--ink);}
+
+  /* Utility: eyebrow label */
+  .eyebrow{font-family:var(--mono);font-size:10px;letter-spacing:.24em;text-transform:uppercase;color:var(--gray-500);}
+  .eyebrow-ink{color:var(--ink);}
+
+  /* Link underline hover */
+  .readmore{display:inline-flex;align-items:center;gap:.5rem;font-family:var(--mono);font-size:10.5px;letter-spacing:.18em;text-transform:uppercase;color:var(--ink);}
+  .readmore .arrow{transition:transform .35s cubic-bezier(.2,.7,.2,1);}
+  .readmore:hover .arrow{transform:translateX(4px);}
+
+  /* Card elements */
+  .card{background:#fff;border:1px solid var(--gray-100);border-radius:2px;}
+  .paper{background:var(--paper);}
+
+  /* Subtle hover for image tiles */
+  .tile img{transition:transform 1.1s cubic-bezier(.2,.7,.2,1),filter .6s ease;}
+  .tile:hover img{transform:scale(1.03);}
+  .tile .overlay{background:linear-gradient(to bottom,rgba(0,0,0,.78),rgba(0,0,0,.35) 45%,rgba(0,0,0,.05) 75%,transparent);}
+  .tile-light:hover{background:#EBE9E4;}
+
+  /* Category row */
+  .cat-row{display:grid;grid-template-columns:40px 1fr auto;align-items:center;gap:18px;padding:18px 0;border-top:1px solid var(--gray-100);transition:padding .3s ease;}
+  .cat-row:last-child{border-bottom:1px solid var(--gray-100);}
+  .cat-row:hover{padding-left:6px;}
+  .cat-row .num{font-family:var(--mono);font-size:10px;letter-spacing:.2em;color:var(--gray-400);}
+  .cat-row .name{font-family:var(--serif);font-weight:600;color:var(--ink);font-size:22px;letter-spacing:-.005em;}
+  .cat-row .arr{font-size:13px;color:var(--gray-400);transition:transform .35s ease,color .35s ease;}
+  .cat-row:hover .arr{color:var(--ink);transform:translateX(4px);}
+
+  /* Newsletter input */
+  .nl-input{background:transparent;border:none;border-bottom:1px solid rgba(255,255,255,.25);color:#fff;padding:14px 0;font-family:var(--sans);font-size:14px;width:100%;outline:none;transition:border-color .25s;}
+  .nl-input::placeholder{color:rgba(255,255,255,.35);}
+  .nl-input:focus{border-color:rgba(255,255,255,.7);}
+
+  /* Marquee ribbon */
+  .marquee{display:flex;gap:48px;white-space:nowrap;animation:marquee 60s linear infinite;}
+  @keyframes marquee{from{transform:translateX(0)}to{transform:translateX(-50%)}}
+
+  /* Placeholder image (striped) */
+  .placeholder{background:
+    repeating-linear-gradient(135deg,rgba(255,255,255,.04) 0 10px,rgba(255,255,255,0) 10px 22px),
+    linear-gradient(140deg,#2b2a28 0%,#191815 60%,#0e0d0b 100%);}
+  .placeholder-light{background:
+    repeating-linear-gradient(135deg,rgba(0,0,0,.04) 0 10px,rgba(0,0,0,0) 10px 22px),
+    linear-gradient(140deg,#E9E7E1 0%,#D8D5CE 100%);}
+  .placeholder-label{position:absolute;inset:0;display:flex;align-items:flex-end;justify-content:flex-start;padding:16px;font-family:var(--mono);font-size:10px;letter-spacing:.18em;text-transform:uppercase;color:rgba(255,255,255,.55);pointer-events:none;}
+  .placeholder-label.dark{color:rgba(0,0,0,.4);}
+
+  /* Fade in on load */
+  @keyframes riseIn{from{opacity:0;transform:translateY(16px)}to{opacity:1;transform:none}}
+  .rise{animation:riseIn .9s cubic-bezier(.2,.7,.2,1) both;}
+  .rise-2{animation-delay:.08s;}
+  .rise-3{animation-delay:.16s;}
+  .rise-4{animation-delay:.24s;}
+
+  /* Button — minimal outline */
+  .btn-ghost{display:inline-flex;align-items:center;gap:10px;padding:12px 22px;border:1px solid rgba(255,255,255,.35);border-radius:999px;font-family:var(--mono);font-size:10.5px;letter-spacing:.2em;text-transform:uppercase;color:rgba(255,255,255,.85);transition:background .3s,border-color .3s,color .3s;}
+  .btn-ghost:hover{border-color:#fff;color:#fff;background:rgba(255,255,255,.06);}
+  .btn-solid{display:inline-flex;align-items:center;gap:10px;padding:14px 26px;background:#fff;color:#000;font-family:var(--mono);font-size:10.5px;letter-spacing:.2em;text-transform:uppercase;transition:background .3s;}
+  .btn-solid:hover{background:#EDEBE5;}
+  .btn-ink{display:inline-flex;align-items:center;gap:10px;padding:14px 26px;background:var(--ink);color:#fff;font-family:var(--mono);font-size:10.5px;letter-spacing:.2em;text-transform:uppercase;transition:background .3s;}
+  .btn-ink:hover{background:#000;}
+
+  /* Tweak-driven root scales */
+  .density-cozy { --section-pad: 72px; }
+  .density-normal { --section-pad: 96px; }
+  .density-airy { --section-pad: 128px; }
+
+  /* Focus ring for a11y on links */
+  a:focus-visible, button:focus-visible { outline:2px solid var(--ink); outline-offset:3px; }
+</style>
+</head>
+<body class="density-normal">
+  <div id="root"></div>
+
+  <script type="text/babel" src="tweaks-panel.jsx"></script>
+  <script type="text/babel" src="home.jsx"></script>
+</body>
+</html>

@@ -1,0 +1,161 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <title>Routure — Continuous Scroll (Approach C)</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <link rel="stylesheet" href="styles/routure.css" />
+  <style>
+    html, body { background: #111; color: #ddd; font-family: ui-sans-serif, system-ui, sans-serif; }
+    /* Canvas chrome override */
+    .dc-shell { background: #151515; }
+    .dc-section-title { font-family: ui-monospace, Menlo, monospace !important; letter-spacing: 0.12em; text-transform: uppercase; font-size: 12px !important; color: #FF3D1F !important; }
+    .dc-artboard-label { font-family: ui-monospace, Menlo, monospace !important; letter-spacing: 0.1em; text-transform: uppercase; font-size: 11px !important; color: #d0c9bc !important; }
+  </style>
+  <script src="https://unpkg.com/react@18.3.1/umd/react.development.js" integrity="sha384-hD6/rw4ppMLGNu3tX5cjIb+uRZ7UkRJ6BPkLpg4hAu/6onKUg4lLsHAs9EBPT82L" crossorigin="anonymous"></script>
+  <script src="https://unpkg.com/react-dom@18.3.1/umd/react-dom.development.js" integrity="sha384-u6aeetuaXnQ38mYT8rp6sbXaQe3NL9t+IBXmnYxwkUI2Hw4bsp2Wvmx4yRQF1uAm" crossorigin="anonymous"></script>
+  <script src="https://unpkg.com/@babel/standalone@7.29.0/babel.min.js" integrity="sha384-m08KidiNqLdpJqLq95G/LEi8Qvjl/xUYll3QILypMoQ65QorJ9Lvtp2RXYGBFj1y" crossorigin="anonymous"></script>
+</head>
+<body>
+  <div id="root"></div>
+
+  <script type="text/babel" src="design-canvas.jsx"></script>
+  <script type="text/babel" src="viewports/act1.jsx"></script>
+  <script type="text/babel" src="viewports/act2.jsx"></script>
+  <script type="text/babel" src="viewports/act3.jsx"></script>
+  <script type="text/babel" src="viewports/act4.jsx"></script>
+  <script type="text/babel" src="viewports/shoot-slug.jsx"></script>
+
+  <script type="text/babel">
+    const W = 1440, H = 900;
+
+    function CoverPlate() {
+      return (
+        <div style={{
+          width: 1440, height: 540, background: '#0A0A0A', color: '#F2EEE5',
+          padding: 40, display: 'flex', justifyContent: 'space-between',
+          fontFamily: 'var(--f-sans)', position: 'relative'
+        }}>
+          <div style={{ maxWidth: 720, display: 'flex', flexDirection: 'column', justifyContent: 'space-between' }}>
+            <div>
+              <div className="r-mono" style={{ color: '#FF3D1F' }}>Digital publication · approach C · continuous scroll</div>
+              <div className="r-display" style={{ fontSize: 180, fontStyle: 'italic', letterSpacing: '-0.04em', lineHeight: 0.86, marginTop: 14 }}>
+                Routure<span style={{ color: '#FF3D1F' }}>,</span><br/>
+                the site <br/>is the <span style={{ color: '#FF3D1F' }}>issue</span>.
+              </div>
+            </div>
+            <div className="r-mono" style={{ opacity: 0.7, maxWidth: 620, lineHeight: 1.6 }}>
+              17 desktop mockups at 1440×900. One continuous scroll at "/" broken into four acts
+              plus the shareable /shoot/[slug] page. Annotations flag motion, gesture and data moments.
+            </div>
+          </div>
+          <div style={{ width: 360, display: 'flex', flexDirection: 'column', justifyContent: 'space-between' }}>
+            <div>
+              <div className="r-mono" style={{ color: '#FF3D1F' }}>System</div>
+              <dl className="r-mono" style={{ lineHeight: 1.9, marginTop: 10 }}>
+                <div className="flex between"><dt>Display</dt><dd style={{ margin: 0 }}>Bodoni-class serif, italic</dd></div>
+                <div className="flex between"><dt>Sans</dt><dd style={{ margin: 0 }}>Helvetica Neue cond.</dd></div>
+                <div className="flex between"><dt>Mono</dt><dd style={{ margin: 0 }}>system ui-monospace</dd></div>
+                <div className="flex between"><dt>Ink</dt><dd style={{ margin: 0 }}>#0A0A0A</dd></div>
+                <div className="flex between"><dt>Paper</dt><dd style={{ margin: 0 }}>#F2EEE5</dd></div>
+                <div className="flex between"><dt>Signature</dt><dd style={{ margin: 0, color: '#FF3D1F' }}>#FF3D1F</dd></div>
+              </dl>
+            </div>
+            <div>
+              <div className="r-mono" style={{ color: '#FF3D1F' }}>Stack</div>
+              <div className="r-mono" style={{ marginTop: 8, opacity: 0.8, lineHeight: 1.7 }}>
+                Next.js 16 · React 19 · Tailwind 4<br/>
+                Motion · Lenis · Supabase · Vercel
+              </div>
+            </div>
+          </div>
+        </div>
+      );
+    }
+
+    const app = (
+      <DesignCanvas>
+        <DCSection id="cover" title="Cover plate">
+          <DCArtboard id="cover" label="Overview · system · intent" width={1440} height={540}>
+            <CoverPlate />
+          </DCArtboard>
+        </DCSection>
+
+        <DCSection id="act1" title="Act I — Entry (viewports 1–2)">
+          <DCArtboard id="v01" label="01 · wordmark assembles" width={W} height={H}>
+            <V01_Entry />
+          </DCArtboard>
+          <DCArtboard id="v02" label="02 · editorial premise" width={W} height={H}>
+            <V02_Premise />
+          </DCArtboard>
+        </DCSection>
+
+        <DCSection id="act2" title="Act II — The Issue (shoots unfold)">
+          <DCArtboard id="v03" label="03 · shoot 01 · title assembly" width={W} height={H}>
+            <V03_ShootIntro />
+          </DCArtboard>
+          <DCArtboard id="v04" label="04 · full-bleed + margin credits" width={W} height={H}>
+            <V04_FullBleed />
+          </DCArtboard>
+          <DCArtboard id="v05" label="05 · article interleave" width={W} height={H}>
+            <V05_ArticleInterleave />
+          </DCArtboard>
+          <DCArtboard id="v06" label="06 · transition · color wipe + type morph" width={W} height={H}>
+            <V06_Transition />
+          </DCArtboard>
+          <DCArtboard id="v07" label="07 · shoot 02 · paired grid" width={W} height={H}>
+            <V07_ShootTwoGrid />
+          </DCArtboard>
+        </DCSection>
+
+        <DCSection id="act3" title="Act III — Editorial band + categories + inline surfaces">
+          <DCArtboard id="v08" label="08 · editor's letter · serif column" width={W} height={H}>
+            <V08_EditorialBand />
+          </DCArtboard>
+          <DCArtboard id="v09" label="09 · category sweep · 03 / 05" width={W} height={H}>
+            <V09_CategorySweep />
+          </DCArtboard>
+          <DCArtboard id="v10" label="10 · casting call · inline interrupt" width={W} height={H}>
+            <V10_CastingCall />
+          </DCArtboard>
+          <DCArtboard id="v11" label="11 · merch drop · hold-to-buy" width={W} height={H}>
+            <V11_MerchInline />
+          </DCArtboard>
+        </DCSection>
+
+        <DCSection id="act4" title="Act IV — Living Archive (horizontal)">
+          <DCArtboard id="v12" label="12 · axis flip · scroll turns sideways" width={W} height={H}>
+            <V12_ArchiveFlip />
+          </DCArtboard>
+          <DCArtboard id="v13" label="13 · archive posters · hover reveals shoots" width={W} height={H}>
+            <V13_ArchivePosters />
+          </DCArtboard>
+        </DCSection>
+
+        <DCSection id="ui" title="Gestural UI — masthead pull, search, read-as-text">
+          <DCArtboard id="v14" label="14 · masthead + / search overlay" width={W} height={H}>
+            <V14_GestureOverlay />
+          </DCArtboard>
+          <DCArtboard id="v15" label="15 · read-as-text · linear mode" width={W} height={H}>
+            <V15_ReadAsText />
+          </DCArtboard>
+        </DCSection>
+
+        <DCSection id="slug" title="Shareable shoot page · /shoot/[slug] (SEO)">
+          <DCArtboard id="v16" label="16 · /shoot/salt-cathedral · standalone" width={W} height={H}>
+            <V16_ShootSlug />
+          </DCArtboard>
+        </DCSection>
+
+        <DCSection id="tail" title="Tail — end of issue">
+          <DCArtboard id="v17" label="17 · colophon + subscribe" width={W} height={H}>
+            <V17_Colophon />
+          </DCArtboard>
+        </DCSection>
+      </DesignCanvas>
+    );
+
+    ReactDOM.createRoot(document.getElementById('root')).render(app);
+  </script>
+</body>
+</html>

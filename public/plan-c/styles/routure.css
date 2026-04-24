@@ -1,0 +1,216 @@
+/* ROUTURE — design tokens + primitives */
+:root {
+  --ink: #0A0A0A;
+  --paper: #F2EEE5;
+  --paper-2: #E8E2D4;
+  --hot: #FF3D1F;      /* signature hue */
+  --hot-2: #FF6A3D;
+  --rule: rgba(10,10,10,0.18);
+  --rule-paper: rgba(242,238,229,0.22);
+
+  --f-display: "Bodoni 72", "Didot", "GFS Didot", "Playfair Display", ui-serif, Georgia, serif;
+  --f-sans: "Helvetica Neue", "Inter Tight", "Arial Narrow", ui-sans-serif, system-ui, sans-serif;
+  --f-mono: ui-monospace, "JetBrains Mono", "IBM Plex Mono", Menlo, monospace;
+}
+
+* { box-sizing: border-box; }
+html, body { margin: 0; padding: 0; }
+
+/* Artboard body defaults — each artboard is 1440 wide, one viewport tall (900) */
+.rv {
+  width: 1440px;
+  height: 900px;
+  background: var(--paper);
+  color: var(--ink);
+  font-family: var(--f-sans);
+  position: relative;
+  overflow: hidden;
+  font-feature-settings: "ss01", "cv11";
+}
+.rv--dark { background: var(--ink); color: var(--paper); }
+.rv--hot  { background: var(--hot); color: var(--ink); }
+
+/* Type helpers */
+.r-display {
+  font-family: var(--f-display);
+  font-weight: 400;
+  letter-spacing: -0.02em;
+  line-height: 0.86;
+}
+.r-serif-italic { font-family: var(--f-display); font-style: italic; font-weight: 400; }
+.r-mono { font-family: var(--f-mono); font-size: 10px; letter-spacing: 0.08em; text-transform: uppercase; }
+.r-cond {
+  font-family: var(--f-sans);
+  font-stretch: 75%;
+  font-weight: 600;
+  letter-spacing: 0.02em;
+  text-transform: uppercase;
+}
+.r-smallcaps {
+  font-family: var(--f-sans);
+  font-variant: small-caps;
+  letter-spacing: 0.14em;
+  text-transform: lowercase;
+}
+
+/* Hairline rule */
+.rule { background: var(--rule); }
+.rv--dark .rule { background: var(--rule-paper); }
+
+/* Page margin numbers (print reference) */
+.folio {
+  position: absolute;
+  font-family: var(--f-mono);
+  font-size: 10px;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  opacity: 0.7;
+}
+
+/* Annotation pills shown floating outside artboards in canvas */
+.anno {
+  position: absolute;
+  font-family: var(--f-mono);
+  font-size: 10px;
+  line-height: 1.4;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--hot);
+  background: #0A0A0A;
+  border: 1px solid var(--hot);
+  padding: 6px 9px 6px 9px;
+  max-width: 220px;
+  z-index: 50;
+  pointer-events: none;
+}
+.anno::before {
+  content: "◉ ";
+  color: var(--hot);
+}
+.anno--bl { left: 16px; bottom: 16px; }
+.anno--br { right: 16px; bottom: 16px; }
+.anno--tl { left: 16px; top: 16px; }
+.anno--tr { right: 16px; top: 16px; }
+
+/* Cursor ring (depicted) */
+.cursor-ring {
+  position: absolute;
+  width: 56px; height: 56px;
+  border: 1px solid currentColor;
+  border-radius: 50%;
+  display: grid; place-items: center;
+  font-family: var(--f-mono);
+  font-size: 9px; letter-spacing: 0.1em; text-transform: uppercase;
+  mix-blend-mode: difference;
+  pointer-events: none;
+}
+.cursor-ring::after {
+  content: "";
+  position: absolute;
+  inset: -14px;
+  border: 1px dashed currentColor;
+  border-radius: 50%;
+  opacity: 0.35;
+}
+
+/* Section progress marker (depicted) */
+.wayfind {
+  position: absolute;
+  right: 32px;
+  bottom: 32px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-family: var(--f-mono);
+  font-size: 10px;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+}
+.wayfind .dot {
+  width: 6px; height: 6px; border-radius: 50%;
+  background: var(--hot);
+}
+.wayfind .bar {
+  width: 120px; height: 1px; background: currentColor; opacity: 0.4; position: relative;
+}
+.wayfind .bar::after {
+  content: ""; position: absolute; left: 0; top: -1px; height: 3px;
+  background: var(--hot);
+}
+
+/* Masthead pulldown (depicted) */
+.masthead {
+  position: absolute; left: 0; right: 0; top: 0;
+  padding: 22px 40px 20px;
+  display: flex; justify-content: space-between; align-items: flex-end;
+  border-bottom: 1px solid currentColor;
+  background: inherit;
+}
+.masthead nav { display: flex; gap: 28px; }
+.masthead nav a {
+  font-family: var(--f-sans); font-weight: 600; font-stretch: 75%;
+  text-transform: uppercase; letter-spacing: 0.08em; font-size: 13px;
+  text-decoration: none; color: currentColor;
+}
+.masthead nav a.active { color: var(--hot); }
+
+/* Image placeholder (NO hand-drawn illustrations) */
+.ph {
+  background:
+    repeating-linear-gradient(45deg,
+      rgba(10,10,10,0.07) 0 6px,
+      rgba(10,10,10,0) 6px 14px),
+    linear-gradient(180deg, #c8bfae, #9c927f);
+  color: #1a1a1a;
+  position: relative;
+  display: grid; place-items: center;
+  font-family: var(--f-mono); font-size: 11px; letter-spacing: 0.14em;
+  text-transform: uppercase;
+  overflow: hidden;
+}
+.ph--dark {
+  background:
+    repeating-linear-gradient(45deg,
+      rgba(242,238,229,0.06) 0 6px,
+      rgba(0,0,0,0) 6px 14px),
+    linear-gradient(180deg, #2a2726, #0e0d0c);
+  color: var(--paper);
+}
+.ph--hot {
+  background:
+    repeating-linear-gradient(45deg,
+      rgba(0,0,0,0.15) 0 6px,
+      rgba(0,0,0,0) 6px 14px),
+    linear-gradient(180deg, #ff5a3f, #c9280e);
+  color: var(--ink);
+}
+.ph .label {
+  padding: 4px 8px;
+  border: 1px solid currentColor;
+  background: transparent;
+}
+.ph .cornerL, .ph .cornerR {
+  position: absolute; font-family: var(--f-mono); font-size: 10px; letter-spacing: 0.12em;
+  text-transform: uppercase;
+}
+.ph .cornerL { top: 10px; left: 10px; }
+.ph .cornerR { bottom: 10px; right: 10px; }
+
+/* Big outlined number used in folios/markers */
+.bignum {
+  font-family: var(--f-display);
+  font-size: 220px;
+  line-height: 0.8;
+  font-style: italic;
+}
+
+/* Inline link arrow */
+.arr::after { content: " →"; }
+
+/* Utility */
+.flex { display: flex; }
+.col { display: flex; flex-direction: column; }
+.between { justify-content: space-between; }
+.center { align-items: center; }
+.grow { flex: 1 1 auto; }
+.abs-fill { position: absolute; inset: 0; }

@@ -1,0 +1,201 @@
+/* ROUTURE — core styles */
+@import url('https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght,SOFT@0,9..144,100..900,0..100;1,9..144,100..900,0..100&family=Archivo:ital,wdth,wght@0,62..125,100..900;1,62..125,100..900&family=Anton&family=JetBrains+Mono:ital,wght@0,100..800;1,100..800&display=swap');
+
+:root {
+  --paper: #ece7de;
+  --paper-2: #e3dcce;
+  --ink: #0b0a08;
+  --ink-2: #2a2722;
+  --acid: oklch(0.92 0.22 118);      /* chartreuse — signature */
+  --acid-deep: oklch(0.78 0.22 118);
+  --rule: rgba(11,10,8,0.22);
+  --rule-2: rgba(11,10,8,0.08);
+
+  --f-display: 'Fraunces', 'Times New Roman', serif;
+  --f-cond:    'Anton', 'Archivo', sans-serif;
+  --f-sans:    'Archivo', 'Helvetica Neue', Arial, sans-serif;
+  --f-mono:    'JetBrains Mono', ui-monospace, monospace;
+}
+
+* { box-sizing: border-box; margin: 0; padding: 0; }
+
+html, body {
+  background: var(--paper);
+  color: var(--ink);
+  font-family: var(--f-sans);
+  font-size: 14px;
+  line-height: 1.35;
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+}
+
+body { overflow-x: hidden; }
+
+img, svg { display: block; max-width: 100%; }
+
+a { color: inherit; text-decoration: none; }
+
+/* ————————————— type utilities ————————————— */
+
+.t-mono  { font-family: var(--f-mono); font-size: 11px; letter-spacing: 0.04em; text-transform: uppercase; }
+.t-mono-lg { font-family: var(--f-mono); font-size: 13px; letter-spacing: 0.02em; }
+.t-sans-cond {
+  font-family: var(--f-sans);
+  font-stretch: 62%;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.02em;
+}
+.t-disp {
+  font-family: var(--f-display);
+  font-weight: 400;
+  font-variation-settings: "opsz" 144, "SOFT" 30;
+  letter-spacing: -0.03em;
+  line-height: 0.88;
+}
+.t-disp-ital {
+  font-family: var(--f-display);
+  font-style: italic;
+  font-weight: 300;
+  font-variation-settings: "opsz" 144, "SOFT" 80;
+}
+.t-cond {
+  font-family: var(--f-cond);
+  text-transform: uppercase;
+  letter-spacing: -0.01em;
+  line-height: 0.9;
+}
+
+.rule-t { border-top: 1px solid var(--ink); }
+.rule-b { border-bottom: 1px solid var(--ink); }
+
+/* ————————————— image placeholders ————————————— */
+/* Striped monochrome placeholders, labelled. Full-color "shoots" get a hue tint overlay to differentiate. */
+.ph {
+  position: relative;
+  background: var(--ink);
+  color: var(--paper);
+  overflow: hidden;
+  isolation: isolate;
+}
+.ph::before {
+  content: '';
+  position: absolute; inset: 0;
+  background:
+    repeating-linear-gradient(
+      135deg,
+      rgba(236,231,222,0.0) 0 14px,
+      rgba(236,231,222,0.08) 14px 15px
+    ),
+    var(--ph-bg, #3a332a);
+  z-index: 0;
+}
+.ph::after {
+  content: '';
+  position: absolute; inset: 0;
+  background: var(--ph-tint, transparent);
+  mix-blend-mode: multiply;
+  z-index: 1;
+  pointer-events: none;
+}
+.ph > .ph-label {
+  position: absolute;
+  left: 12px; bottom: 12px;
+  font-family: var(--f-mono);
+  font-size: 10px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--paper);
+  z-index: 2;
+  max-width: calc(100% - 24px);
+  mix-blend-mode: difference;
+}
+.ph > .ph-label.tr { left: auto; bottom: auto; right: 12px; top: 12px; }
+
+/* explicit palette variants so striped placeholders don't all look identical */
+.ph.p-clay     { --ph-bg: #5a3a2a; }
+.ph.p-moss     { --ph-bg: #2d3a24; }
+.ph.p-night    { --ph-bg: #0e1420; }
+.ph.p-ember    { --ph-bg: #66251c; }
+.ph.p-bone     { --ph-bg: #b8ae99; color: var(--ink); }
+.ph.p-bone .ph-label { color: var(--ink); }
+.ph.p-plum     { --ph-bg: #2a1a2a; }
+.ph.p-pool     { --ph-bg: #1a3540; }
+.ph.p-acid     { --ph-bg: #c7d300; color: var(--ink); }
+.ph.p-acid .ph-label { color: var(--ink); }
+.ph.p-ash      { --ph-bg: #3a3a38; }
+
+/* ————————————— cursor ————————————— */
+.custom-cursor {
+  position: fixed;
+  top: 0; left: 0;
+  width: 14px; height: 14px;
+  border: 1px solid var(--ink);
+  border-radius: 50%;
+  pointer-events: none;
+  z-index: 9999;
+  transform: translate(-50%, -50%);
+  mix-blend-mode: difference;
+  transition: width 180ms cubic-bezier(.2,.8,.2,1), height 180ms cubic-bezier(.2,.8,.2,1), background-color 180ms;
+}
+.custom-cursor.lg { width: 60px; height: 60px; background: var(--acid); border-color: transparent; mix-blend-mode: normal; }
+.custom-cursor .cursor-label {
+  position: absolute; inset: 0;
+  display: grid; place-items: center;
+  font-family: var(--f-mono); font-size: 10px; color: var(--ink);
+  opacity: 0; transition: opacity 150ms;
+  text-transform: uppercase; letter-spacing: 0.08em;
+}
+.custom-cursor.lg .cursor-label { opacity: 1; }
+
+@media (max-width: 900px) {
+  .custom-cursor { display: none; }
+}
+
+/* ————————————— annotations overlay ————————————— */
+.anno-toggle {
+  position: fixed;
+  bottom: 18px; left: 18px;
+  z-index: 1000;
+  background: var(--ink); color: var(--paper);
+  font-family: var(--f-mono); font-size: 10px;
+  padding: 10px 14px;
+  border: none; cursor: pointer;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+}
+.anno-toggle.active { background: var(--acid); color: var(--ink); }
+
+.anno {
+  position: absolute;
+  z-index: 800;
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity 200ms;
+}
+body.show-anno .anno { opacity: 1; }
+.anno .anno-dot {
+  width: 14px; height: 14px;
+  border-radius: 50%;
+  background: var(--acid);
+  outline: 2px solid var(--ink);
+  outline-offset: 2px;
+  box-shadow: 0 0 0 6px rgba(236,231,222,0.6);
+}
+.anno .anno-text {
+  position: absolute;
+  top: 28px; left: 0;
+  width: 220px;
+  font-family: var(--f-mono);
+  font-size: 10px;
+  line-height: 1.45;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: var(--ink);
+  background: var(--acid);
+  padding: 8px 10px;
+}
+.anno.right .anno-text { left: auto; right: 0; }
+
+/* ————————————— selection ————————————— */
+::selection { background: var(--acid); color: var(--ink); }
