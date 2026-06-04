@@ -82,6 +82,7 @@ export interface IssueMosaicItem {
   src: string;
   thumbnailSrc: string;
   aspectRatio: number;
+  width: number;
   shootId: string;
   shootSlug: string;
   shootTitle: string;

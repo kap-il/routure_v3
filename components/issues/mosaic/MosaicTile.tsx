@@ -37,17 +37,21 @@ export function MosaicTile({ image, issueId, className = '' }: MosaicTileProps) 
     <>
       <Wrapper
         {...wrapperProps as any}
-        className={`group relative block overflow-hidden rounded-[3px] ${className}`}
+        className={`group relative block overflow-hidden rounded-[3px] mx-auto ${className}`}
+        // Never upscale: cap the tile at the image's native pixel width so a
+        // low-res image renders at most at its real resolution (centered)
+        // instead of being stretched full-bleed and going grainy.
+        style={image.width ? { maxWidth: `${image.width}px` } : undefined}
       >
         {/* Actual image from S3 — uses natural aspect ratio */}
         {image.src ? (
           <Image
             src={image.src}
             alt={image.articleTitle ?? `Image ${image.issuePosition}`}
-            width={800}
-            height={Math.round(800 / image.aspectRatio)}
+            width={image.width || 800}
+            height={Math.round((image.width || 800) / image.aspectRatio)}
             className="w-full h-auto block group-hover:scale-[1.02] transition-transform duration-500"
-            sizes="(max-width: 768px) 100vw, (max-width: 1280px) 50vw, 600px"
+            sizes="(max-width: 768px) 100vw, 1280px"
             placeholder="blur"
             blurDataURL="data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNjAwIiBoZWlnaHQ9IjQwMCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48cmVjdCB3aWR0aD0iMTAwJSIgaGVpZ2h0PSIxMDAlIiBmaWxsPSIjZThlOGU2Ii8+PC9zdmc+"
           />

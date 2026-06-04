@@ -95,6 +95,7 @@ export async function getIssueMosaicData(issueId: string): Promise<IssueMosaicIt
         src: img.image_url,
         thumbnailSrc: img.thumbnail_url,
         aspectRatio: Number(img.aspect_ratio),
+        width: Number(img.width) || 0,
         shootId: shoot.id,
         shootSlug: shoot.slug,
         shootTitle: shoot.title,

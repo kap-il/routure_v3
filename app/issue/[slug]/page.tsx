@@ -40,7 +40,7 @@ export default async function IssueViewPage({ params }: IssueViewProps) {
   let photoCount = mockIssue.photoCount;
   let articleCount = mockIssue.articleCount;
   let useMock = true;
-  let realItems: { id: string; src: string; aspectRatio: number; shootId: string; shootTitle?: string; hasArticle: boolean; articleTitle?: string; articleCategory?: string; issuePosition: number }[] = [];
+  let realItems: { id: string; src: string; aspectRatio: number; width: number; shootId: string; shootTitle?: string; hasArticle: boolean; articleTitle?: string; articleCategory?: string; issuePosition: number }[] = [];
   let editorialItems: IssueEditorialItem[] = [];
   let letterSlug: string | null = null;
 
@@ -66,6 +66,7 @@ export default async function IssueViewPage({ params }: IssueViewProps) {
           id: item.id,
           src: item.src,
           aspectRatio: item.aspectRatio,
+          width: item.width,
           shootId: item.shootSlug,
           shootTitle: item.shootTitle,
           hasArticle: item.hasArticle,

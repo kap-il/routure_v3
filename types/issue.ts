@@ -27,6 +27,9 @@ export interface MosaicImage {
   id: string;
   src: string;
   aspectRatio: number;
+  /** Native pixel width of the source image. Used to cap rendering so images
+   *  are never upscaled (downscale-only). Optional for mock data. */
+  width?: number;
   shootId: string;
   shootTitle?: string;
   hasArticle: boolean;
