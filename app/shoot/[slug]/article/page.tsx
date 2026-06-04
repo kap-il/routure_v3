@@ -4,6 +4,18 @@ import Image from 'next/image';
 import { getShootBySlug, getIssueForShoot, getIssues, getIssueMosaicData } from '@/lib/supabase/queries';
 import { mockShootArticle } from '@/lib/data/mock';
 import type { ContentBlock } from '@/lib/supabase/types';
+import type { ReactNode } from 'react';
+
+/** Render inline **bold** markup safely (no dangerouslySetInnerHTML).
+ *  Splits on `**` toggles; odd segments are bold. Robust to stray single `*`. */
+function renderInline(text: string): ReactNode {
+  const segs = text.split('**');
+  return segs.map((s, i) =>
+    i % 2 === 1
+      ? <strong key={i} className="font-semibold text-[#1a1a1a]">{s}</strong>
+      : s,
+  );
+}
 
 export const revalidate = 3600;
 
@@ -64,6 +76,8 @@ function blocksToSections(blocks: ContentBlock[]): { type: 'text' | 'header' | '
       sections.push({ type: 'header', content: '', heading: block.text });
     } else if (block.type === 'pullquote') {
       sections.push({ type: 'pullquote', content: block.text });
+    } else if ((block.type as string) === 'subheading') {
+      sections.push({ type: 'header', content: '', subtitle: block.text });
     } else if (block.text.trim()) {
       sections.push({ type: 'text', content: block.text.trim() });
     }
@@ -214,24 +228,24 @@ export default async function ShootArticlePage({ params }: ShootArticlePageProps
                         )}
                         {section.subtitle && (
                           <p className="font-serif text-[16px] italic text-[#666] mb-2">
-                            {section.subtitle}
+                            {renderInline(section.subtitle)}
                           </p>
                         )}
                         {section.content && (
                           <p className="text-[13px] tracking-[1px] text-[#999] uppercase">
-                            {section.content}
+                            {renderInline(section.content)}
                           </p>
                         )}
                       </div>
                     ) : section.type === 'pullquote' ? (
-                      <blockquote className="border-l-2 border-[#1a1a1a] pl-6 py-2">
-                        <p className="font-serif text-[20px] italic leading-[1.6] text-[#333]">
-                          {section.content}
+                      <blockquote className="my-6 py-6 border-y border-[#E0E0E0] text-center">
+                        <p className="font-serif text-[24px] md:text-[28px] italic leading-[1.4] text-[#1a1a1a]">
+                          {renderInline(section.content)}
                         </p>
                       </blockquote>
                     ) : (
                       <p className="text-[14px] leading-[1.85] text-[#555]">
-                        {section.content}
+                        {renderInline(section.content)}
                       </p>
                     )}
                   </div>
