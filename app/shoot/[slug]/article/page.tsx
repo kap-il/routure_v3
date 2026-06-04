@@ -61,7 +61,13 @@ function blocksToSections(blocks: ContentBlock[]): { type: 'text' | 'header' | '
   while (i < blocks.length && blocks[i].type !== 'paragraph') {
     const b = blocks[i];
     if (b.type === 'heading') heading = b.text;
-    else if ((b.type as string) === 'subheading') subtitle = b.text;
+    else if ((b.type as string) === 'subheading') {
+      // Only the first leading subheading is the article subtitle. A second one
+      // (e.g. a section header like "APPETIZER") belongs in the body — stop here
+      // and let the main loop render it as its own section.
+      if (subtitle) break;
+      subtitle = b.text;
+    }
     else if (b.type === 'caption') caption = b.text;
     i++;
   }
