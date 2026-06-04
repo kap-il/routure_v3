@@ -11,14 +11,14 @@ interface MosaicGridProps {
 }
 
 // Justified-gallery tuning.
-const TARGET_ROW_HEIGHT = 460; // preferred row height; rows flex around this to fill width
+const TARGET_ROW_HEIGHT = 460; // natural height for a leftover row that can't fill
 const MAX_ROW_HEIGHT = 880;    // never let a sparse row balloon taller than this
 const DEFAULT_WIDTH = 1520;    // SSR / pre-measure fallback (matches max-w-[1600px] - padding)
 
 interface JustifiedRow {
   images: MosaicImage[];
   height: number;
-  fills: boolean; // true if the row spans the full container width
+  center: boolean; // true for a leftover row that can't fill — center it (balanced gaps)
 }
 
 /** Largest height a row can take without upscaling ANY of its images
@@ -32,42 +32,39 @@ function maxRowHeight(row: MosaicImage[]): number {
 }
 
 /**
- * Pack images into rows that fill the full container width. Each row's height is
- * solved so the row spans the width exactly, then capped so no image is ever scaled
- * beyond its native resolution. Result: edge-to-edge mosaic, no whitespace, no upscaling.
+ * Pack images into rows that fill the full container width edge-to-edge WITHOUT
+ * upscaling. A row keeps accepting images until it can fill the width at a height
+ * that's within every image's native resolution (and not too tall). Low-res tiles
+ * therefore get packed denser instead of leaving whitespace. A leftover final row
+ * that genuinely can't fill (e.g. a lone low-res cover) is centered.
  */
 function buildJustifiedRows(images: MosaicImage[], containerW: number, gap: number): JustifiedRow[] {
   const rows: JustifiedRow[] = [];
   let row: MosaicImage[] = [];
   let arSum = 0;
 
-  const closeRow = (isLast: boolean) => {
-    if (!row.length) return;
-    const totalGap = gap * (row.length - 1);
-    const fillHeight = (containerW - totalGap) / arSum;     // height that fills the width exactly
-    const cap = maxRowHeight(row);                           // no-upscale ceiling
-    let height: number;
-    let fills: boolean;
-    if (isLast && fillHeight > TARGET_ROW_HEIGHT && row.length <= 2) {
-      // A sparse final row: don't stretch a couple of images across the whole width.
-      height = Math.min(TARGET_ROW_HEIGHT, cap);
-      fills = false;
-    } else {
-      height = Math.min(fillHeight, cap, MAX_ROW_HEIGHT);
-      fills = height >= fillHeight - 0.5;                    // capped rows won't fully fill
-    }
-    rows.push({ images: row, height, fills });
-    row = [];
-    arSum = 0;
-  };
-
   for (const img of images) {
     row.push(img);
     arSum += img.aspectRatio;
-    const naturalW = arSum * TARGET_ROW_HEIGHT + gap * (row.length - 1);
-    if (naturalW >= containerW) closeRow(false);
+    const fillHeight = (containerW - gap * (row.length - 1)) / arSum; // height to fill width exactly
+    const cap = maxRowHeight(row);                                    // no-upscale ceiling
+    // Aim for the ~TARGET-height rhythm (fillHeight <= TARGET ≈ enough images to be
+    // dense), but only close once the row can actually fill at native resolution
+    // (fillHeight <= cap). Low-res rows keep packing more tiles instead of leaving
+    // whitespace. A long row is force-closed as a safety valve.
+    if ((fillHeight <= TARGET_ROW_HEIGHT && fillHeight <= cap) || row.length >= 6) {
+      rows.push({ images: row, height: Math.min(fillHeight, cap, MAX_ROW_HEIGHT), center: false });
+      row = [];
+      arSum = 0;
+    }
   }
-  closeRow(true);
+  // Leftover: a final row that can't fill the width without upscaling — center it.
+  if (row.length) {
+    const cap = maxRowHeight(row);
+    const fillHeight = (containerW - gap * (row.length - 1)) / arSum;
+    const height = Math.min(fillHeight, cap, MAX_ROW_HEIGHT);
+    rows.push({ images: row, height, center: height < fillHeight - 0.5 });
+  }
   return rows;
 }
 
@@ -89,7 +86,7 @@ export function MosaicGrid({ images, issueId, gap = 16 }: MosaicGridProps) {
   return (
     <div ref={ref} className="flex flex-col" style={{ gap }}>
       {rows.map((row, idx) => (
-        <div key={idx} className="flex" style={{ gap, height: row.height }}>
+        <div key={idx} className={`flex ${row.center ? 'justify-center' : ''}`} style={{ gap, height: row.height }}>
           {row.images.map((img) => (
             <div key={img.id} style={{ width: row.height * img.aspectRatio, flexShrink: 0 }}>
               <MosaicTile image={img} issueId={issueId} />
