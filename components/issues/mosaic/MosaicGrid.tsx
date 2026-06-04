@@ -1,6 +1,6 @@
 'use client';
 
-import { useMemo } from 'react';
+import { useMemo, useRef, useState, useEffect } from 'react';
 import type { MosaicImage } from '@/types/issue';
 import { MosaicTile } from './MosaicTile';
 
@@ -10,99 +10,93 @@ interface MosaicGridProps {
   gap?: number;
 }
 
-/**
- * Row layout types. Each row consumes N images and arranges them
- * using flexbox with aspect-ratio-based widths (no cropping).
- */
-type RowType = 'full' | 'two' | 'three';
+// Justified-gallery tuning.
+const TARGET_ROW_HEIGHT = 460; // preferred row height; rows flex around this to fill width
+const MAX_ROW_HEIGHT = 880;    // never let a sparse row balloon taller than this
+const DEFAULT_WIDTH = 1520;    // SSR / pre-measure fallback (matches max-w-[1600px] - padding)
 
-interface MosaicRow {
-  type: RowType;
+interface JustifiedRow {
   images: MosaicImage[];
+  height: number;
+  fills: boolean; // true if the row spans the full container width
+}
+
+/** Largest height a row can take without upscaling ANY of its images
+ *  (display height <= native height for every image). */
+function maxRowHeight(row: MosaicImage[]): number {
+  let h = Infinity;
+  for (const img of row) {
+    if (img.width) h = Math.min(h, img.width / img.aspectRatio); // native height = width / AR
+  }
+  return h;
 }
 
 /**
- * Pattern sequence for visual variety.
- * Cycles through: full → 3 → 2 → full → 2 → 3 → 2 → full
+ * Pack images into rows that fill the full container width. Each row's height is
+ * solved so the row spans the width exactly, then capped so no image is ever scaled
+ * beyond its native resolution. Result: edge-to-edge mosaic, no whitespace, no upscaling.
  */
-const patternSequence: { type: RowType; count: number }[] = [
-  { type: 'full', count: 1 },
-  { type: 'three', count: 3 },
-  { type: 'two', count: 2 },
-  { type: 'full', count: 1 },
-  { type: 'two', count: 2 },
-  { type: 'three', count: 3 },
-  { type: 'two', count: 2 },
-  { type: 'full', count: 1 },
-];
+function buildJustifiedRows(images: MosaicImage[], containerW: number, gap: number): JustifiedRow[] {
+  const rows: JustifiedRow[] = [];
+  let row: MosaicImage[] = [];
+  let arSum = 0;
 
-function buildRows(images: MosaicImage[]): MosaicRow[] {
-  const rows: MosaicRow[] = [];
-  let cursor = 0;
-  let patternIdx = 0;
+  const closeRow = (isLast: boolean) => {
+    if (!row.length) return;
+    const totalGap = gap * (row.length - 1);
+    const fillHeight = (containerW - totalGap) / arSum;     // height that fills the width exactly
+    const cap = maxRowHeight(row);                           // no-upscale ceiling
+    let height: number;
+    let fills: boolean;
+    if (isLast && fillHeight > TARGET_ROW_HEIGHT && row.length <= 2) {
+      // A sparse final row: don't stretch a couple of images across the whole width.
+      height = Math.min(TARGET_ROW_HEIGHT, cap);
+      fills = false;
+    } else {
+      height = Math.min(fillHeight, cap, MAX_ROW_HEIGHT);
+      fills = height >= fillHeight - 0.5;                    // capped rows won't fully fill
+    }
+    rows.push({ images: row, height, fills });
+    row = [];
+    arSum = 0;
+  };
 
-  while (cursor < images.length) {
-    const pattern = patternSequence[patternIdx % patternSequence.length];
-    const remaining = images.length - cursor;
-
-    // Adapt if not enough images for this pattern
-    const count = Math.min(pattern.count, remaining);
-    const type: RowType = count === 1 ? 'full' : count === 2 ? 'two' : 'three';
-
-    rows.push({
-      type,
-      images: images.slice(cursor, cursor + count),
-    });
-
-    cursor += count;
-    patternIdx++;
+  for (const img of images) {
+    row.push(img);
+    arSum += img.aspectRatio;
+    const naturalW = arSum * TARGET_ROW_HEIGHT + gap * (row.length - 1);
+    if (naturalW >= containerW) closeRow(false);
   }
-
+  closeRow(true);
   return rows;
 }
 
 export function MosaicGrid({ images, issueId, gap = 16 }: MosaicGridProps) {
-  const rows = useMemo(() => buildRows(images), [images]);
+  const ref = useRef<HTMLDivElement>(null);
+  const [width, setWidth] = useState(DEFAULT_WIDTH);
+
+  useEffect(() => {
+    const el = ref.current;
+    if (!el) return;
+    setWidth(el.clientWidth);
+    const ro = new ResizeObserver(([entry]) => setWidth(entry.contentRect.width));
+    ro.observe(el);
+    return () => ro.disconnect();
+  }, []);
+
+  const rows = useMemo(() => buildJustifiedRows(images, width, gap), [images, width, gap]);
 
   return (
-    <div className="flex flex-col" style={{ gap }}>
+    <div ref={ref} className="flex flex-col" style={{ gap }}>
       {rows.map((row, idx) => (
-        <MosaicRowRenderer key={idx} row={row} issueId={issueId} gap={gap} />
+        <div key={idx} className="flex" style={{ gap, height: row.height }}>
+          {row.images.map((img) => (
+            <div key={img.id} style={{ width: row.height * img.aspectRatio, flexShrink: 0 }}>
+              <MosaicTile image={img} issueId={issueId} />
+            </div>
+          ))}
+        </div>
       ))}
-    </div>
-  );
-}
-
-function MosaicRowRenderer({
-  row,
-  issueId,
-  gap,
-}: {
-  row: MosaicRow;
-  issueId: string;
-  gap: number;
-}) {
-  if (row.type === 'full') {
-    return (
-      <MosaicTile image={row.images[0]} issueId={issueId} />
-    );
-  }
-
-  // For multi-image rows, distribute width proportional to aspect ratio
-  // so each image gets width proportional to how wide it is relative to its height.
-  // This means all images in a row will have the same rendered height.
-  const totalAR = row.images.reduce((sum, img) => sum + img.aspectRatio, 0);
-
-  return (
-    <div className="flex" style={{ gap }}>
-      {row.images.map((img) => {
-        const widthPercent = (img.aspectRatio / totalAR) * 100;
-        return (
-          <div key={img.id} style={{ width: `${widthPercent}%` }}>
-            <MosaicTile image={img} issueId={issueId} />
-          </div>
-        );
-      })}
     </div>
   );
 }
