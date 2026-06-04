@@ -59,6 +59,26 @@ export async function getIssueBySlug(slug: string): Promise<Issue | null> {
  * Joins shoots → shoot_images → articles (LEFT JOIN).
  * Sorted by shoot.position ASC, then shoot_images.position ASC.
  */
+/**
+ * Effective mosaic ordering for an image. Normally an image sorts by its shoot's
+ * position, then its own position within the shoot. Exception: the Recess FORTRESS
+ * shoot's fashion spreads (PDF p38–40, uploaded as `cont-NN.webp`) are PRINTED AFTER
+ * the yearbook section in the magazine. They belong to fortress — so they link to /
+ * appear on the fortress shoot page — but in the mosaic they read after yearbook.
+ * Pin them just past yearbook (issuePosition 8) without disturbing fortress's own
+ * slot (position 7). imagePosition base 50 keeps them after yearbook's images while
+ * staying < 100 so the page's `issuePosition*100 + imagePosition` key doesn't overflow.
+ */
+function mosaicOrder(
+  imageUrl: string,
+  shootPosition: number,
+  imagePosition: number,
+): { issuePosition: number; imagePosition: number } {
+  const m = imageUrl.match(/\/recess\/shoots\/fortress\/images\/cont-(\d+)\.webp/);
+  if (m) return { issuePosition: 8, imagePosition: 50 + Number(m[1]) };
+  return { issuePosition: shootPosition, imagePosition };
+}
+
 export async function getIssueMosaicData(issueId: string): Promise<IssueMosaicItem[]> {
   const supabase = createServerClient();
 
@@ -90,6 +110,7 @@ export async function getIssueMosaicData(issueId: string): Promise<IssueMosaicIt
       // Skip article text pages — only show photos in the mosaic
       if (img.is_article_page) continue;
 
+      const order = mosaicOrder(img.image_url, shoot.position, img.position);
       items.push({
         id: img.id,
         src: img.image_url,
@@ -102,8 +123,8 @@ export async function getIssueMosaicData(issueId: string): Promise<IssueMosaicIt
         hasArticle: article !== null,
         articleTitle: article?.title ?? null,
         articleCategory: article?.category ?? null,
-        issuePosition: shoot.position,
-        imagePosition: img.position,
+        issuePosition: order.issuePosition,
+        imagePosition: order.imagePosition,
         isHero: img.is_hero,
         isFirstInShoot: isFirst,
         isCover: sectionType === 'cover',
@@ -111,6 +132,11 @@ export async function getIssueMosaicData(issueId: string): Promise<IssueMosaicIt
       isFirst = false;
     }
   }
+
+  // Sort by effective order so per-image overrides (fortress spreads that print
+  // after yearbook) land in the right place. Stable + a no-op for normal images,
+  // which keep their original (shoot.position, img.position) iteration order.
+  items.sort((a, b) => a.issuePosition - b.issuePosition || a.imagePosition - b.imagePosition);
 
   return items;
 }
