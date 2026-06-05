@@ -66,17 +66,26 @@ export function FlipbookReader({ issueSlug, issueTitle, pageCount, pages }: Flip
   );
 
   const toggleFullscreen = useCallback(async () => {
-    if (!containerRef.current) return;
+    const el = containerRef.current;
+    if (!el) return;
+    // iOS Safari (iPhone) has no Fullscreen API on non-<video> elements, so fall
+    // back to CSS pseudo-fullscreen (the container already renders fixed inset-0
+    // when isFullscreen). Use native fullscreen only where it's actually enabled.
+    const supportsNative = !!(document.fullscreenEnabled && el.requestFullscreen);
+    if (!supportsNative) {
+      setIsFullscreen((v) => !v);
+      return;
+    }
     try {
       if (!document.fullscreenElement) {
-        await containerRef.current.requestFullscreen();
+        await el.requestFullscreen();
         setIsFullscreen(true);
       } else {
         await document.exitFullscreen();
         setIsFullscreen(false);
       }
-    } catch (err) {
-      console.error('Fullscreen error:', err);
+    } catch {
+      setIsFullscreen((v) => !v); // native call blocked → pseudo-fullscreen
     }
   }, []);
 
@@ -93,7 +102,7 @@ export function FlipbookReader({ issueSlug, issueTitle, pageCount, pages }: Flip
           break;
         case 'Escape':
           if (isFullscreen) {
-            document.exitFullscreen();
+            if (document.fullscreenElement) document.exitFullscreen().catch(() => {});
             setIsFullscreen(false);
           }
           break;
@@ -123,10 +132,25 @@ export function FlipbookReader({ issueSlug, issueTitle, pageCount, pages }: Flip
   }, [nextPage, prevPage]);
 
   useEffect(() => {
-    const handleFullscreenChange = () => setIsFullscreen(!!document.fullscreenElement);
+    // Only sync from native events when the browser is actually in native fullscreen,
+    // so a stray event can't drop us out of CSS pseudo-fullscreen on mobile.
+    const handleFullscreenChange = () => {
+      if (document.fullscreenElement) setIsFullscreen(true);
+      else if (document.fullscreenEnabled) setIsFullscreen(false);
+    };
     document.addEventListener('fullscreenchange', handleFullscreenChange);
     return () => document.removeEventListener('fullscreenchange', handleFullscreenChange);
   }, []);
+
+  // Lock background scroll while (pseudo-)fullscreen so the page behind doesn't move on mobile.
+  useEffect(() => {
+    if (!isFullscreen) return;
+    const prev = document.body.style.overflow;
+    document.body.style.overflow = 'hidden';
+    return () => {
+      document.body.style.overflow = prev;
+    };
+  }, [isFullscreen]);
 
   useEffect(() => {
     localStorage.setItem(`routure-reading-${issueSlug}`, String(currentPage));
@@ -147,7 +171,7 @@ export function FlipbookReader({ issueSlug, issueTitle, pageCount, pages }: Flip
   return (
     <div
       ref={containerRef}
-      className={`flex flex-col bg-gray-100 ${isFullscreen ? 'fixed inset-0 z-50' : 'h-[85vh]'}`}
+      className={`flex flex-col bg-gray-100 ${isFullscreen ? 'fixed inset-0 z-[100]' : 'flex-1 min-h-0'}`}
     >
       <div className="flex-1 relative overflow-hidden">
         <button
