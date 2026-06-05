@@ -32,7 +32,7 @@ export default async function IssuesPage() {
             Issues
           </h1>
           <p className="text-gray-700 text-lg md:text-xl max-w-2xl leading-relaxed animate-fade-in">
-            The Archive.
+            The Latest and Greatest.
           </p>
         </div>
       </section>
@@ -60,7 +60,7 @@ export default async function IssuesPage() {
             <IssueGrid
               issues={archiveIssues}
               title="Archive"
-              subtitle="Past Issues"
+              subtitle="Oldies but Goldies."
             />
           </div>
         </section>
