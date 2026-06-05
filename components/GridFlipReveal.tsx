@@ -23,17 +23,25 @@ const SPLIT_DUR = 1400;    // ms for the diagonal reveal
 const CELL_TARGET = 165;   // px — target cell size when sizing the grid
 
 export default function GridFlipReveal({ children, flashImages = [] }: GridFlipRevealProps) {
-  const [phase, setPhase] = useState<Phase>(flashImages.length ? 'gridShow' : 'done');
+  // Only intro on a full page load / reload — the layout injects #intro-block then.
+  // On client-side re-navigation there's no blocker, so start 'done' (no overlay
+  // frame) and skip the animation. Avoids it firing every time you click "Issues".
+  const [phase, setPhase] = useState<Phase>(() => {
+    if (typeof document === 'undefined') return flashImages.length ? 'gridShow' : 'done';
+    if (!document.getElementById('intro-block')) return 'done';
+    return flashImages.length ? 'gridShow' : 'done';
+  });
   const [grid, setGrid] = useState<Grid | null>(null);
   const gridRef = useRef<HTMLDivElement>(null);
 
   // Mount: build a screen-filling grid + start the timeline
   useEffect(() => {
     const blocker = document.getElementById('intro-block');
-    if (!flashImages.length) { setPhase('done'); blocker?.remove(); return; }
+    // No blocker = client-side re-navigation → skip the intro entirely.
+    if (!blocker || !flashImages.length) { setPhase('done'); blocker?.remove(); return; }
     // Reveal the body (the blocker hid it to avoid a white flash) but keep the
     // html background black so the overlay sits on black until the split.
-    if (blocker) blocker.textContent = 'html{background:#000!important}';
+    blocker.textContent = 'html{background:#000!important}';
 
     const cols = Math.max(3, Math.round(window.innerWidth / CELL_TARGET));
     const rows = Math.max(3, Math.round(window.innerHeight / CELL_TARGET));
