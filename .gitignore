@@ -74,3 +74,4 @@ manifest.json
 
 # Supabase local files (leading slash so lib/supabase/ is NOT excluded)
 /supabase/
+.gstack/

@@ -20,7 +20,7 @@ export function FeaturedArticles({ articles }: FeaturedArticlesProps) {
             </h2>
           </div>
           <Link
-            href="/issues"
+            href="/articles"
             className="hidden sm:inline-flex items-center gap-2 text-sm font-medium tracking-wide uppercase hover:text-gray-600 transition-colors"
           >
             View All
@@ -77,7 +77,7 @@ export function FeaturedArticles({ articles }: FeaturedArticlesProps) {
         {/* Mobile view all link */}
         <div className="mt-12 text-center sm:hidden">
           <Link
-            href="/issues"
+            href="/articles"
             className="inline-flex items-center gap-2 text-sm font-medium tracking-wide uppercase hover:text-gray-600 transition-colors"
           >
             View All Articles

@@ -16,10 +16,10 @@ export default function CommunityPage() {
       {/* Hero */}
       <section className="px-6 pt-32 pb-20 md:px-12 lg:px-24">
         <div className="max-w-[1400px] mx-auto">
-          <h1 className="text-[clamp(2.5rem,6vw,5rem)] leading-[0.95] tracking-[-0.03em] mb-6">
+          <h1 className="text-[clamp(2.5rem,6vw,5rem)] leading-[0.95] tracking-[-0.03em] mb-6 animate-slide-up">
             Community
           </h1>
-          <p className="text-gray-700 text-lg md:text-xl max-w-2xl leading-relaxed">
+          <p className="text-gray-700 text-lg md:text-xl max-w-2xl leading-relaxed animate-fade-in">
             Stay connected with Routure. Get notified when new issues drop,
             submit your questions, and follow us across platforms.
           </p>

@@ -378,22 +378,26 @@ export interface CategoryArticle {
   heroImageUrl: string | null;
 }
 
+/** Article row shape selected for the category/all-articles listings. */
+type RawArticleRow = {
+  id: string;
+  title: string;
+  slug: string;
+  author: string | null;
+  category: string | null;
+  shoot_id: string;
+};
+
 /**
- * Returns all articles that match a given category,
- * joined with their shoot slug + issue metadata + hero image.
+ * Join raw article rows with their shoot slug + issue metadata + hero image.
+ * Batches shoots and issues (3 queries total, no N+1). Shared by the
+ * per-category and all-articles listings.
  */
-export async function getArticlesByCategory(category: string): Promise<CategoryArticle[]> {
+async function enrichArticles(articles: RawArticleRow[]): Promise<CategoryArticle[]> {
+  if (articles.length === 0) return [];
   const supabase = createServerClient();
 
-  const { data: articles, error } = await supabase
-    .from('articles')
-    .select('id, title, slug, author, category, shoot_id')
-    .ilike('category', category);
-
-  if (error) throw error;
-  if (!articles || articles.length === 0) return [];
-
-  // Batch: get all shoots at once (3 queries instead of N+1)
+  // Batch: get all shoots at once
   const shootIds = [...new Set(articles.map(a => a.shoot_id))];
   const { data: shoots } = await supabase
     .from('shoots')
@@ -430,6 +434,41 @@ export async function getArticlesByCategory(category: string): Promise<CategoryA
       heroImageUrl: images[0]?.image_url ?? null,
     };
   });
+}
+
+/**
+ * Returns all articles that match a given category,
+ * joined with their shoot slug + issue metadata + hero image.
+ */
+export async function getArticlesByCategory(category: string): Promise<CategoryArticle[]> {
+  const supabase = createServerClient();
+
+  const { data: articles, error } = await supabase
+    .from('articles')
+    .select('id, title, slug, author, category, shoot_id')
+    .ilike('category', category);
+
+  if (error) throw error;
+  return enrichArticles((articles ?? []) as RawArticleRow[]);
+}
+
+/**
+ * Returns every article (across all categories/issues), joined with shoot +
+ * issue metadata + hero image, newest issue first. Powers the /articles index.
+ * Not filtered by category, so it includes any article regardless of tag.
+ */
+export async function getAllArticles(): Promise<CategoryArticle[]> {
+  const supabase = createServerClient();
+
+  const { data: articles, error } = await supabase
+    .from('articles')
+    .select('id, title, slug, author, category, shoot_id');
+
+  if (error) throw error;
+  const enriched = await enrichArticles((articles ?? []) as RawArticleRow[]);
+  return enriched.sort(
+    (a, b) => b.issueNumber - a.issueNumber || a.title.localeCompare(b.title),
+  );
 }
 
 // ============================================================

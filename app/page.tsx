@@ -150,13 +150,9 @@ export default async function Home() {
 
           {/* Categories list */}
           <div className="border border-[#EAEAEA] rounded-sm bg-white p-6 md:p-10">
-            <Link
-              href="/articles"
-              className="group flex items-center gap-2 mb-6 md:mb-8 text-[11px] md:text-[12px] tracking-[2.5px] uppercase text-[#999] font-serif hover:text-[#1a1a1a] transition-colors"
-            >
-              ARTICLES
-              <span className="text-[#BBB] group-hover:text-[#1a1a1a] transition-colors">→</span>
-            </Link>
+            <p className="mb-6 md:mb-8 text-[11px] md:text-[12px] tracking-[2.5px] uppercase text-[#999] font-serif">
+              CATEGORIES
+            </p>
             <div className="space-y-0">
               {[
                 { name: 'Architecture' },
@@ -178,6 +174,17 @@ export default async function Home() {
                   </span>
                 </Link>
               ))}
+            </div>
+
+            {/* Articles button — primary CTA into the full archive */}
+            <div className="mt-7 md:mt-9">
+              <Link
+                href="/articles"
+                className="group inline-flex items-center gap-3 px-6 py-3.5 md:px-7 md:py-4 border border-[#1a1a1a] text-[11px] md:text-[12px] tracking-[2px] uppercase text-[#1a1a1a] font-medium hover:bg-[#1a1a1a] hover:text-white transition-colors"
+              >
+                View All Articles
+                <span className="text-current transition-transform group-hover:translate-x-0.5">→</span>
+              </Link>
             </div>
           </div>
         </div>
