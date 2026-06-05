@@ -41,7 +41,7 @@ export default async function FlipbookPage({ params }: ReadProps) {
   const pages = getFlipbookPages(issue);
 
   return (
-    <div className="flex flex-col min-h-svh bg-gray-100">
+    <div className="bg-gray-100">
       <div className="flex items-center justify-between px-4 sm:px-8 py-4">
         <Link
           href={`/issue/${slug}`}

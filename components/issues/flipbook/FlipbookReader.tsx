@@ -171,7 +171,7 @@ export function FlipbookReader({ issueSlug, issueTitle, pageCount, pages }: Flip
   return (
     <div
       ref={containerRef}
-      className={`flex flex-col bg-gray-100 ${isFullscreen ? 'fixed inset-0 z-[100]' : 'flex-1 min-h-0'}`}
+      className={`flex flex-col bg-gray-100 ${isFullscreen ? 'fixed inset-0 z-[100]' : 'h-[85vh]'}`}
     >
       <div className="flex-1 relative overflow-hidden">
         <button
