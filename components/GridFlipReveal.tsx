@@ -22,14 +22,19 @@ const HOLD_AFTER_FLIP = 400; // ms the full image grid holds before the split
 const SPLIT_DUR = 1400;    // ms for the diagonal reveal
 const CELL_TARGET = 165;   // px — target cell size when sizing the grid
 
+// Module-scoped: resets on every full page load/reload (fresh JS context) but
+// persists across client-side navigations. So the intro plays the FIRST time
+// /issues is reached in a page lifecycle (first soft-nav OR hard load) and on
+// reload, but not on repeat re-navigations back to /issues. Set only once the
+// intro actually completes (at 'split'), which also keeps it correct under React
+// StrictMode's double-invoked effects in dev.
+let introPlayed = false;
+
 export default function GridFlipReveal({ children, flashImages = [] }: GridFlipRevealProps) {
-  // Only intro on a full page load / reload — the layout injects #intro-block then.
-  // On client-side re-navigation there's no blocker, so start 'done' (no overlay
-  // frame) and skip the animation. Avoids it firing every time you click "Issues".
   const [phase, setPhase] = useState<Phase>(() => {
     if (typeof document === 'undefined') return flashImages.length ? 'gridShow' : 'done';
-    if (!document.getElementById('intro-block')) return 'done';
-    return flashImages.length ? 'gridShow' : 'done';
+    if (introPlayed || !flashImages.length) return 'done';
+    return 'gridShow';
   });
   const [grid, setGrid] = useState<Grid | null>(null);
   const gridRef = useRef<HTMLDivElement>(null);
@@ -37,11 +42,11 @@ export default function GridFlipReveal({ children, flashImages = [] }: GridFlipR
   // Mount: build a screen-filling grid + start the timeline
   useEffect(() => {
     const blocker = document.getElementById('intro-block');
-    // No blocker = client-side re-navigation → skip the intro entirely.
-    if (!blocker || !flashImages.length) { setPhase('done'); blocker?.remove(); return; }
-    // Reveal the body (the blocker hid it to avoid a white flash) but keep the
-    // html background black so the overlay sits on black until the split.
-    blocker.textContent = 'html{background:#000!important}';
+    // Already played this page lifecycle (a re-nav) → skip the intro entirely.
+    if (introPlayed || !flashImages.length) { setPhase('done'); blocker?.remove(); return; }
+    // Reveal the body (the blocker hid it on hard load to avoid a white flash)
+    // but keep the html background black so the overlay sits on black until split.
+    if (blocker) blocker.textContent = 'html{background:#000!important}';
 
     const cols = Math.max(3, Math.round(window.innerWidth / CELL_TARGET));
     const rows = Math.max(3, Math.round(window.innerHeight / CELL_TARGET));
@@ -84,9 +89,10 @@ export default function GridFlipReveal({ children, flashImages = [] }: GridFlipR
     return () => { clearTimeout(fallback); clearTimeout(pauseTimer); };
   }, [phase, grid]);
 
-  // Split: drop the html-black blocker and finish
+  // Split: mark the intro as played (so re-navs skip it), drop the blocker, finish
   useEffect(() => {
     if (phase !== 'split') return;
+    introPlayed = true;
     document.getElementById('intro-block')?.remove();
     const t = setTimeout(() => setPhase('done'), SPLIT_DUR);
     return () => clearTimeout(t);
