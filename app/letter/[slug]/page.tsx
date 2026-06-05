@@ -4,6 +4,8 @@ import Image from 'next/image';
 import { getLetterBySlug, getIssues, getLettersByIssueId } from '@/lib/supabase/queries';
 
 export const revalidate = 3600;
+// Unknown slugs return a static 404 from the edge — no function call, no DB query.
+export const dynamicParams = false;
 
 export async function generateStaticParams() {
   try {

@@ -5,6 +5,8 @@ import { getShootBySlug, getIssueForShoot, getIssues, getIssueMosaicData } from 
 import { mockShootConcept } from '@/lib/data/mock';
 
 export const revalidate = 3600;
+// Unknown slugs return a static 404 from the edge — no function call, no DB query.
+export const dynamicParams = false;
 
 export async function generateStaticParams() {
   try {

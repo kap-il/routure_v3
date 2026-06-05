@@ -1,6 +1,7 @@
 'use server';
 
 import { createServerClient } from '@/lib/supabase/client';
+import { rateLimit } from '@/lib/ratelimit';
 
 export async function handleContactSubmission(formData: FormData) {
   const name = formData.get('name') as string;
@@ -10,6 +11,10 @@ export async function handleContactSubmission(formData: FormData) {
   const honeypot = formData.get('website') as string;
 
   if (honeypot) return { success: true }; // Bot trap
+
+  const { success: allowed } = await rateLimit('contact');
+  if (!allowed) return { success: false, error: 'Too many requests. Please try again in a minute.' };
+
   if (!name || !email || !message) return { success: false, error: 'Name, email, and message are required.' };
   if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) return { success: false, error: 'Invalid email.' };
 

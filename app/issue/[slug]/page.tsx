@@ -6,6 +6,9 @@ import { MosaicGrid } from '@/components/issues/mosaic/MosaicGrid';
 import type { IssueEditorialItem } from '@/lib/supabase/types';
 
 export const revalidate = 3600;
+// Unknown slugs return a static 404 from the edge — no function call, no DB query.
+// New issues appear after the deploy that includes them (redeploy-on-publish).
+export const dynamicParams = false;
 
 interface IssueViewProps {
   params: Promise<{ slug: string }>;

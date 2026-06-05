@@ -1,7 +1,11 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { createServerClient } from '@/lib/supabase/client';
+import { rateLimit } from '@/lib/ratelimit';
 
 export async function GET(req: NextRequest) {
+  const { success } = await rateLimit('unsubscribe');
+  if (!success) return new NextResponse('Too many requests.', { status: 429 });
+
   const emailParam = req.nextUrl.searchParams.get('email');
   if (!emailParam) return new NextResponse('Missing email.', { status: 400 });
 

@@ -51,7 +51,11 @@ export function MosaicTile({ image, issueId, className = '' }: MosaicTileProps) 
             width={image.width || 800}
             height={Math.round((image.width || 800) / image.aspectRatio)}
             className="w-full h-auto block group-hover:scale-[1.02] transition-transform duration-500"
-            sizes="(max-width: 768px) 100vw, 1280px"
+            // Justified-gallery tiles render at most ~half the 1600px container
+            // (rowHeight×AR). 50vw lets the loader pick a right-sized variant
+            // (~w828 on 1x desktop) instead of always w1920 — ~3.6× less data on
+            // the image-heavy issue pages. Retina still gets w1920 for sharpness.
+            sizes="(max-width: 768px) 100vw, 50vw"
             placeholder="blur"
             blurDataURL="data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNjAwIiBoZWlnaHQ9IjQwMCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48cmVjdCB3aWR0aD0iMTAwJSIgaGVpZ2h0PSIxMDAlIiBmaWxsPSIjZThlOGU2Ii8+PC9zdmc+"
           />

@@ -3,6 +3,12 @@ import withBundleAnalyzer from "@next/bundle-analyzer";
 
 const nextConfig: NextConfig = {
   images: {
+    // Custom loader: serve pre-generated WebP variants straight from S3/CloudFront,
+    // bypassing Vercel's optimizer. No /_next/image, so no per-image transformation
+    // cost and no 5,000/month Hobby cap. Variants are built once by
+    // scripts/generate-image-variants.mjs and live next to each original in S3.
+    loader: "custom",
+    loaderFile: "./lib/image/loader.ts",
     remotePatterns: [
       {
         protocol: "https",
@@ -10,13 +16,20 @@ const nextConfig: NextConfig = {
         pathname: "/**",
       },
     ],
-    // AVIF is 30-50% smaller than WebP. Browser falls back to WebP if no AVIF support.
-    formats: ["image/avif", "image/webp"],
-    // Tuned for your layouts: hero (1920), desktop (1200/1080), tablet (828/750), mobile (640)
+    // deviceSizes drive which widths the loader is asked for — must stay in sync
+    // with the LADDER in the loader + the generator script.
     deviceSizes: [640, 750, 828, 1080, 1200, 1920],
     imageSizes: [16, 32, 48, 64, 96, 128, 256, 384],
-    // Cache optimized images for 30 days. S3 URLs are immutable — no reason to re-process.
-    minimumCacheTTL: 2592000,
+  },
+  // Legacy URL shapes → canonical routes, handled at the edge (308, no function
+  // invocation, no DB). Replaces the old /issues/[slug] redirect page shims so a
+  // crawler spraying these paths can't run up function usage.
+  async redirects() {
+    return [
+      { source: "/issues/:slug/shoots/:shootSlug", destination: "/shoot/:shootSlug", permanent: true },
+      { source: "/issues/:slug/articles/:articleSlug", destination: "/issue/:slug", permanent: true },
+      { source: "/issues/:slug", destination: "/issue/:slug", permanent: true },
+    ];
   },
   // Gzip + Brotli compression on all server responses
   compress: true,

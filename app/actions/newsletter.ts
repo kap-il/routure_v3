@@ -1,6 +1,7 @@
 'use server';
 
 import { createServerClient } from '@/lib/supabase/client';
+import { rateLimit } from '@/lib/ratelimit';
 
 const BLOCKED_DOMAINS = [
   'tempmail.com','throwaway.email','guerrillamail.com','mailinator.com',
@@ -11,6 +12,10 @@ const BLOCKED_DOMAINS = [
 ];
 
 export async function subscribeNewsletter(email: string) {
+  const { success: allowed } = await rateLimit('newsletter');
+  if (!allowed)
+    return { success: false, error: 'Too many requests. Please try again in a minute.' };
+
   if (!email || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email))
     return { success: false, error: 'Please enter a valid email address.' };
 
