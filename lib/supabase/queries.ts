@@ -50,6 +50,35 @@ export async function getIssueBySlug(slug: string): Promise<Issue | null> {
   return data;
 }
 
+export interface FlipbookPage {
+  page_number: number;
+  image_url: string;
+  thumbnail_url: string;
+}
+
+/**
+ * Synthesise the flipbook `pages[]` from `page_count` + the convention path
+ * `issues/<slug>/pages/NNN.webp` (rendered by scripts/ingest_flipbook_pages.py).
+ * No per-page table: a single int per issue drives the whole page-turner. The S3
+ * origin is derived from an existing url so it tracks the cover host (loader/CDN).
+ */
+export function getFlipbookPages(
+  issue: Pick<Issue, 'slug' | 'page_count' | 'cover_image_url'>,
+): FlipbookPage[] {
+  if (!issue.page_count || issue.page_count < 1) return [];
+  const origin =
+    issue.cover_image_url?.match(/^https?:\/\/[^/]+/)?.[0] ??
+    'https://routure-issues.s3.us-east-1.amazonaws.com';
+  return Array.from({ length: issue.page_count }, (_, i) => {
+    const n = String(i + 1).padStart(3, '0');
+    return {
+      page_number: i + 1,
+      image_url: `${origin}/issues/${issue.slug}/pages/${n}.webp`,
+      thumbnail_url: '',
+    };
+  });
+}
+
 // ============================================================
 // Issue View: Mosaic Data
 // ============================================================

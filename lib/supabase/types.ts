@@ -13,6 +13,10 @@ export interface Issue {
   is_featured: boolean;
   created_at: string;
   updated_at: string;
+  // Flipbook (page-turner): rendered page images live at the convention path
+  // issues/<slug>/pages/NNN.webp; the pages[] array is synthesised from page_count.
+  page_count: number | null;
+  pdf_url: string | null;
 }
 
 export type SectionType = 'shoot' | 'editorial' | 'toc' | 'cover' | 'credits' | 'divider';

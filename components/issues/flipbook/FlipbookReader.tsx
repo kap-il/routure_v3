@@ -17,66 +17,53 @@ interface FlipbookReaderProps {
   pages: PageData[];
 }
 
+/**
+ * One full PDF page per turn. The Routure magazines are exported as pre-composed
+ * spreads (interior pages are landscape full-bleed spreads; first/last are the
+ * portrait covers), so we show each rendered page intact and flip one at a time —
+ * never splitting a spread down the gutter.
+ */
 export function FlipbookReader({ issueSlug, issueTitle, pageCount, pages }: FlipbookReaderProps) {
-  const [currentSpread, setCurrentSpread] = useState(0);
+  const [currentPage, setCurrentPage] = useState(0);
   const [isFullscreen, setIsFullscreen] = useState(false);
   const [isFlipping, setIsFlipping] = useState(false);
   const [flipDirection, setFlipDirection] = useState<'next' | 'prev' | null>(null);
   const containerRef = useRef<HTMLDivElement>(null);
-  const totalPages = pageCount;
+  const total = pageCount;
 
-  const totalSpreads = Math.ceil((totalPages + 1) / 2);
+  const getPageData = (pageIndex: number): PageData | undefined =>
+    pages.find((p) => p.page_number === pageIndex + 1);
 
-  const getSpreadPages = (spread: number): { left: number | null; right: number | null } => {
-    if (spread === 0) {
-      return { left: null, right: 0 };
-    }
-    const leftPage = spread * 2 - 1;
-    const rightPage = spread * 2;
-    return {
-      left: leftPage < totalPages ? leftPage : null,
-      right: rightPage < totalPages ? rightPage : null,
-    };
-  };
-
-  // Get page data by 0-indexed page number
-  const getPageData = (pageIndex: number): PageData | undefined => {
-    // pages array uses 1-indexed page_number
-    return pages.find((p) => p.page_number === pageIndex + 1);
-  };
-
-  const currentPage = currentSpread === 0 ? 0 : Math.min(currentSpread * 2 - 1, totalPages - 1);
-
-  const goToPage = useCallback((page: number) => {
-    if (page >= 0 && page < totalPages && !isFlipping) {
-      const spread = page === 0 ? 0 : Math.ceil(page / 2);
-      setCurrentSpread(spread);
-    }
-  }, [totalPages, isFlipping]);
-
-  const nextSpread = useCallback(() => {
-    if (currentSpread < totalSpreads - 1 && !isFlipping) {
+  const nextPage = useCallback(() => {
+    if (currentPage < total - 1 && !isFlipping) {
       setIsFlipping(true);
       setFlipDirection('next');
       setTimeout(() => {
-        setCurrentSpread(prev => prev + 1);
+        setCurrentPage((p) => p + 1);
         setIsFlipping(false);
         setFlipDirection(null);
-      }, 300);
+      }, 240);
     }
-  }, [currentSpread, totalSpreads, isFlipping]);
+  }, [currentPage, total, isFlipping]);
 
-  const prevSpread = useCallback(() => {
-    if (currentSpread > 0 && !isFlipping) {
+  const prevPage = useCallback(() => {
+    if (currentPage > 0 && !isFlipping) {
       setIsFlipping(true);
       setFlipDirection('prev');
       setTimeout(() => {
-        setCurrentSpread(prev => prev - 1);
+        setCurrentPage((p) => p - 1);
         setIsFlipping(false);
         setFlipDirection(null);
-      }, 300);
+      }, 240);
     }
-  }, [currentSpread, isFlipping]);
+  }, [currentPage, total, isFlipping]);
+
+  const goToPage = useCallback(
+    (page: number) => {
+      if (page >= 0 && page < total && !isFlipping) setCurrentPage(page);
+    },
+    [total, isFlipping],
+  );
 
   const toggleFullscreen = useCallback(async () => {
     if (!containerRef.current) return;
@@ -98,11 +85,11 @@ export function FlipbookReader({ issueSlug, issueTitle, pageCount, pages }: Flip
       switch (e.key) {
         case 'ArrowRight':
         case 'PageDown':
-          nextSpread();
+          nextPage();
           break;
         case 'ArrowLeft':
         case 'PageUp':
-          prevSpread();
+          prevPage();
           break;
         case 'Escape':
           if (isFullscreen) {
@@ -114,23 +101,18 @@ export function FlipbookReader({ issueSlug, issueTitle, pageCount, pages }: Flip
     };
     window.addEventListener('keydown', handleKeyDown);
     return () => window.removeEventListener('keydown', handleKeyDown);
-  }, [nextSpread, prevSpread, isFullscreen]);
+  }, [nextPage, prevPage, isFullscreen]);
 
   useEffect(() => {
     const container = containerRef.current;
     if (!container) return;
     let touchStartX = 0;
-    let touchEndX = 0;
     const handleTouchStart = (e: TouchEvent) => {
       touchStartX = e.changedTouches[0].screenX;
     };
     const handleTouchEnd = (e: TouchEvent) => {
-      touchEndX = e.changedTouches[0].screenX;
-      const diff = touchStartX - touchEndX;
-      if (Math.abs(diff) > 50) {
-        if (diff > 0) nextSpread();
-        else prevSpread();
-      }
+      const diff = touchStartX - e.changedTouches[0].screenX;
+      if (Math.abs(diff) > 50) (diff > 0 ? nextPage : prevPage)();
     };
     container.addEventListener('touchstart', handleTouchStart);
     container.addEventListener('touchend', handleTouchEnd);
@@ -138,47 +120,41 @@ export function FlipbookReader({ issueSlug, issueTitle, pageCount, pages }: Flip
       container.removeEventListener('touchstart', handleTouchStart);
       container.removeEventListener('touchend', handleTouchEnd);
     };
-  }, [nextSpread, prevSpread]);
+  }, [nextPage, prevPage]);
 
   useEffect(() => {
-    const handleFullscreenChange = () => {
-      setIsFullscreen(!!document.fullscreenElement);
-    };
+    const handleFullscreenChange = () => setIsFullscreen(!!document.fullscreenElement);
     document.addEventListener('fullscreenchange', handleFullscreenChange);
     return () => document.removeEventListener('fullscreenchange', handleFullscreenChange);
   }, []);
 
   useEffect(() => {
-    localStorage.setItem(`routure-reading-${issueSlug}`, String(currentSpread));
-  }, [currentSpread, issueSlug]);
+    localStorage.setItem(`routure-reading-${issueSlug}`, String(currentPage));
+  }, [currentPage, issueSlug]);
 
   useEffect(() => {
     const saved = localStorage.getItem(`routure-reading-${issueSlug}`);
     if (saved) {
-      const spread = parseInt(saved, 10);
-      if (!isNaN(spread) && spread >= 0 && spread < totalSpreads) {
-        setCurrentSpread(spread);
-      }
+      const page = parseInt(saved, 10);
+      if (!isNaN(page) && page >= 0 && page < total) setCurrentPage(page);
     }
-  }, [issueSlug, totalSpreads]);
+  }, [issueSlug, total]);
 
-  const { left: leftPage, right: rightPage } = getSpreadPages(currentSpread);
-  const isCoverSpread = currentSpread === 0;
-
-  const leftPageData = leftPage !== null ? getPageData(leftPage) : undefined;
-  const rightPageData = rightPage !== null ? getPageData(rightPage) : undefined;
+  const pageData = getPageData(currentPage);
+  // First and last pages are the portrait covers; interior pages are landscape spreads.
+  const isPortrait = currentPage === 0 || currentPage === total - 1;
 
   return (
     <div
       ref={containerRef}
-      className={`flex flex-col bg-gray-100 ${isFullscreen ? 'fixed inset-0 z-50' : 'h-[80vh]'}`}
+      className={`flex flex-col bg-gray-100 ${isFullscreen ? 'fixed inset-0 z-50' : 'h-[85vh]'}`}
     >
       <div className="flex-1 relative overflow-hidden">
         <button
-          onClick={prevSpread}
-          disabled={currentSpread === 0}
+          onClick={prevPage}
+          disabled={currentPage === 0}
           className="absolute left-0 top-0 bottom-0 w-1/4 z-20 cursor-w-resize disabled:cursor-default group"
-          aria-label="Previous spread"
+          aria-label="Previous page"
         >
           <div className="absolute left-4 top-1/2 -translate-y-1/2 opacity-0 group-hover:opacity-100 transition-opacity">
             <div className="p-2 bg-black/50 rounded-full">
@@ -190,10 +166,10 @@ export function FlipbookReader({ issueSlug, issueTitle, pageCount, pages }: Flip
         </button>
 
         <button
-          onClick={nextSpread}
-          disabled={currentSpread >= totalSpreads - 1}
+          onClick={nextPage}
+          disabled={currentPage >= total - 1}
           className="absolute right-0 top-0 bottom-0 w-1/4 z-20 cursor-e-resize disabled:cursor-default group"
-          aria-label="Next spread"
+          aria-label="Next page"
         >
           <div className="absolute right-4 top-1/2 -translate-y-1/2 opacity-0 group-hover:opacity-100 transition-opacity">
             <div className="p-2 bg-black/50 rounded-full">
@@ -204,76 +180,36 @@ export function FlipbookReader({ issueSlug, issueTitle, pageCount, pages }: Flip
           </div>
         </button>
 
-        <div className="absolute inset-4 sm:inset-8 flex items-center justify-center">
+        <div className="absolute inset-0 flex items-center justify-center p-4 sm:p-8">
           <div
             className={`
-              relative w-full h-full max-h-full flex
+              relative h-full w-auto max-w-full bg-white shadow-2xl
               transition-transform duration-300 ease-out
-              ${flipDirection === 'next' ? 'translate-x-[-1%]' : ''}
-              ${flipDirection === 'prev' ? 'translate-x-[1%]' : ''}
-              justify-center
+              ${flipDirection === 'next' ? 'translate-x-[-1.5%]' : ''}
+              ${flipDirection === 'prev' ? 'translate-x-[1.5%]' : ''}
             `}
+            style={{ aspectRatio: isPortrait ? '0.773' : '1.55' }}
           >
-            <div
-              className={`
-                relative flex shadow-2xl
-                ${isCoverSpread ? 'w-auto' : 'w-full max-w-6xl'}
-                h-full max-h-[calc(100vh-200px)]
-              `}
-              style={{ aspectRatio: isCoverSpread ? '8.5/11' : '17/11' }}
-            >
-              {!isCoverSpread && (
-                <div className="relative w-1/2 h-full bg-white border-r border-gray-200">
-                  {leftPage !== null ? (
-                    <PageRenderer
-                      pageNumber={leftPage}
-                      totalPages={totalPages}
-                      issueTitle={issueTitle}
-                      position="left"
-                      imageUrl={leftPageData?.image_url}
-                      thumbnailUrl={leftPageData?.thumbnail_url}
-                    />
-                  ) : (
-                    <div className="w-full h-full bg-gray-50" />
-                  )}
-                  <div className="absolute top-0 right-0 bottom-0 w-8 bg-gradient-to-l from-black/5 to-transparent pointer-events-none" />
-                </div>
-              )}
-
-              {!isCoverSpread && (
-                <div className="absolute left-1/2 top-0 bottom-0 w-1 -translate-x-1/2 bg-gradient-to-r from-gray-300 via-gray-200 to-gray-300 z-10" />
-              )}
-
-              <div className={`relative ${isCoverSpread ? 'w-full' : 'w-1/2'} h-full bg-white`}>
-                {rightPage !== null ? (
-                  <PageRenderer
-                    pageNumber={rightPage}
-                    totalPages={totalPages}
-                    issueTitle={issueTitle}
-                    position={isCoverSpread ? 'cover' : 'right'}
-                    imageUrl={rightPageData?.image_url}
-                    thumbnailUrl={rightPageData?.thumbnail_url}
-                  />
-                ) : (
-                  <div className="w-full h-full bg-gray-50" />
-                )}
-                {!isCoverSpread && (
-                  <div className="absolute top-0 left-0 bottom-0 w-8 bg-gradient-to-r from-black/5 to-transparent pointer-events-none" />
-                )}
-              </div>
-
-              <div className="absolute -left-2 top-2 bottom-2 w-2 bg-gradient-to-r from-transparent to-black/10 rounded-l" />
-              <div className="absolute -right-2 top-2 bottom-2 w-2 bg-gradient-to-l from-transparent to-black/10 rounded-r" />
-            </div>
+            {pageData ? (
+              <PageRenderer
+                pageNumber={currentPage}
+                totalPages={total}
+                issueTitle={issueTitle}
+                position="cover"
+                imageUrl={pageData.image_url}
+              />
+            ) : (
+              <div className="w-full h-full bg-gray-50" />
+            )}
           </div>
         </div>
       </div>
 
       <FlipbookControls
         currentPage={currentPage}
-        totalPages={totalPages}
-        onPrevious={prevSpread}
-        onNext={nextSpread}
+        totalPages={total}
+        onPrevious={prevPage}
+        onNext={nextPage}
         onGoToPage={goToPage}
         onToggleFullscreen={toggleFullscreen}
         isFullscreen={isFullscreen}

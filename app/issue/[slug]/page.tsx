@@ -46,12 +46,14 @@ export default async function IssueViewPage({ params }: IssueViewProps) {
   let realItems: { id: string; src: string; aspectRatio: number; width: number; shootId: string; shootTitle?: string; hasArticle: boolean; articleTitle?: string; articleCategory?: string; issuePosition: number }[] = [];
   let editorialItems: IssueEditorialItem[] = [];
   let letterSlug: string | null = null;
+  let hasFlipbook = false;
 
   try {
     const issue = await getIssueBySlug(slug);
     if (issue) {
       issueTitle = issue.title;
       issueNumber = issue.issue_number;
+      hasFlipbook = (issue.page_count ?? 0) > 0;
       const [items, editorials, letters] = await Promise.all([
         getIssueMosaicData(issue.id),
         getIssueEditorialItems(issue.id),
@@ -146,11 +148,25 @@ export default async function IssueViewPage({ params }: IssueViewProps) {
         </div>
       )}
 
-      {/* Click hint */}
+      {/* Right-corner actions: page-turner CTA + click hint */}
       <div className="mx-auto max-w-[1280px] px-3 md:px-[80px] mb-6">
-        <p className="text-right text-[9px] tracking-[1.5px] text-[#CCC] uppercase">
-          CLICK ANY IMAGE TO VIEW
-        </p>
+        <div className="flex flex-col items-end gap-1.5">
+          {hasFlipbook && (
+            <Link
+              href={`/issue/${slug}/read`}
+              className="group inline-flex items-center gap-2 text-[11px] tracking-[1.5px] uppercase text-[#666] hover:text-[#1a1a1a] transition-colors"
+            >
+              <svg className="w-3.5 h-3.5 text-[#999] group-hover:text-[#1a1a1a] transition-colors" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor">
+                <path strokeLinecap="round" strokeLinejoin="round" d="M12 6.042A8.967 8.967 0 006 3.75c-1.052 0-2.062.18-3 .512v14.25A8.987 8.987 0 016 18c2.305 0 4.408.867 6 2.292m0-14.25a8.966 8.966 0 016-2.292c1.052 0 2.062.18 3 .512v14.25A8.987 8.987 0 0018 18a8.967 8.967 0 00-6 2.292m0-14.25v14.25" />
+              </svg>
+              Legacy book
+              <span className="transition-transform group-hover:translate-x-0.5">→</span>
+            </Link>
+          )}
+          <p className="text-[9px] tracking-[1.5px] text-[#CCC] uppercase">
+            CLICK ANY IMAGE TO VIEW
+          </p>
+        </div>
       </div>
 
       {/* ===== MOSAIC GRID ===== */}
