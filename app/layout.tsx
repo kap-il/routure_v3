@@ -84,7 +84,7 @@ export default function RootLayout({
     <html lang="en" className="bg-[#FAFAF8]">
       <head>
         <script dangerouslySetInnerHTML={{ __html: `
-          if (window.location.pathname === '/') {
+          if (window.location.pathname === '/' || window.location.pathname === '/issues') {
             var s = document.createElement('style');
             s.id = 'intro-block';
             s.textContent = 'body{visibility:hidden!important}html{background:#000!important}';

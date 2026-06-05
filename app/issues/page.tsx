@@ -1,19 +1,21 @@
 import { Metadata } from 'next';
 import { IssueCard } from '@/components/issues/IssueCard';
 import { IssueGrid } from '@/components/issues/IssueGrid';
-import { getIssues } from '@/lib/supabase/queries';
+import GridFlipReveal from '@/components/GridFlipReveal';
+import { getIssues, getShootHeroPool } from '@/lib/supabase/queries';
 
 export const revalidate = 3600;
 
 export const metadata: Metadata = {
   title: 'Issues | Routure',
-  description: 'Browse current and past issues of Routure magazine. Experience our interactive page-turning reader.',
+  description: 'Browse current and past issues of Routure magazine.',
 };
 
 export default async function IssuesPage() {
   let allIssues: Awaited<ReturnType<typeof getIssues>> = [];
+  let heroPool: string[] = [];
   try {
-    allIssues = await getIssues();
+    [allIssues, heroPool] = await Promise.all([getIssues(), getShootHeroPool()]);
   } catch {
     // Tables may not exist yet
   }
@@ -21,16 +23,17 @@ export default async function IssuesPage() {
   const archiveIssues = allIssues.slice(1);
 
   return (
+    <GridFlipReveal flashImages={heroPool}>
     <div className="min-h-screen">
-      {/* Hero Section */}
-      <section className="pt-12 pb-8 border-b border-gray-100">
-        <div className="mx-auto max-w-7xl px-6 lg:px-8">
-          <p className="text-sm tracking-[0.3em] uppercase text-gray-500 mb-4 animate-fade-in">
-            The Collection
-          </p>
-          <h1 className="font-serif text-5xl sm:text-6xl lg:text-7xl font-normal animate-slide-up">
+      {/* Hero — matches Community page header style */}
+      <section className="px-6 pt-32 pb-20 md:px-12 lg:px-24">
+        <div className="max-w-[1400px] mx-auto">
+          <h1 className="text-[clamp(2.5rem,6vw,5rem)] leading-[0.95] tracking-[-0.03em] mb-6 animate-slide-up">
             Issues
           </h1>
+          <p className="text-gray-700 text-lg md:text-xl max-w-2xl leading-relaxed animate-fade-in">
+            The Archive.
+          </p>
         </div>
       </section>
 
@@ -91,5 +94,6 @@ export default async function IssuesPage() {
         </div>
       </section>
     </div>
+    </GridFlipReveal>
   );
 }
