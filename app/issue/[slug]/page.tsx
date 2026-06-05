@@ -160,17 +160,19 @@ export default async function IssueViewPage({ params }: IssueViewProps) {
         <div className="h-px bg-[#E0E0E0] mb-8" />
         <div className="flex flex-col gap-3">
           <div className="flex items-center gap-3">
-            <div className="w-[30px] h-[12px] rounded-[1px] bg-[#111]/[0.88]" />
+            <div className="w-[34px] h-[14px] rounded-full bg-[#111]/[0.88]" />
             <span className="text-[11px] text-[#999]">
-              = Image has an attached article (clickable → Shoot with Article view)
+              = keep reading
             </span>
           </div>
           <div className="flex items-center gap-3">
-            <div className="w-4 h-4 rounded-full border border-[#DDD] flex items-center justify-center">
-              <span className="text-[8px] text-[#AAA]">↗</span>
+            <div className="w-[18px] h-[18px] rounded-full border border-[#DDD] flex items-center justify-center">
+              <svg className="w-[10px] h-[10px] text-[#AAA]" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor">
+                <path strokeLinecap="round" strokeLinejoin="round" d="M21 21l-5.197-5.197m0 0A7.5 7.5 0 105.196 5.196a7.5 7.5 0 0010.607 10.607zM10.5 7.5v6m3-3h-6" />
+              </svg>
             </div>
             <span className="text-[11px] text-[#999]">
-              = Photo only (clickable → Shoot Concept view)
+              = zoom
             </span>
           </div>
         </div>
