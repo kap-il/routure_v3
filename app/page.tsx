@@ -1,7 +1,7 @@
 import Link from 'next/link';
 import Image from 'next/image';
 import IntroSplash from '@/components/IntroSplash';
-import { getIssues, getFeaturedShoot, getFeaturedArticle } from '@/lib/supabase/queries';
+import { getIssues, getFeaturedShoot, getFeaturedArticle, getShootHeroPool } from '@/lib/supabase/queries';
 
 export const revalidate = 3600;
 
@@ -10,15 +10,17 @@ export default async function Home() {
   let previousIssue: { title: string; slug: string; issue_number: number; cover_image_url: string | null } | null = null;
   let featuredShoot: { title: string; slug: string; heroImageUrl: string; imageCount: number } | null = null;
   let featuredArticle: { title: string; shootSlug: string; author: string | null; pullquote: string | null } | null = null;
+  let heroPool: string[] = [];
   try {
-    const [issues, shoot, article] = await Promise.all([getIssues(), getFeaturedShoot(), getFeaturedArticle()]);
+    const [issues, shoot, article, pool] = await Promise.all([getIssues(), getFeaturedShoot(), getFeaturedArticle(), getShootHeroPool()]);
     if (issues.length > 0) latestIssue = issues[0];
     if (issues.length > 1) previousIssue = issues[1];
     featuredShoot = shoot;
     featuredArticle = article;
+    heroPool = pool;
   } catch { /* fallback to mock */ }
   return (
-    <IntroSplash>
+    <IntroSplash flashImages={heroPool}>
     <div className="min-h-screen">
       {/* ===== HERO — Featured Shoot ===== */}
       <section>

@@ -299,6 +299,34 @@ export async function getShootBySlug(slug: string): Promise<ShootWithImages | nu
 }
 
 /**
+ * Returns a pool of shoot hero thumbnails (one per shoot, distinct shoots) for
+ * the home-page intro flash-cards. Thumbnails (~600px) so they preload fast enough
+ * to flip through. Only real photo shoots — excludes covers, dividers, article pages.
+ * The caller shuffles client-side and picks 3 for per-load variety.
+ */
+export async function getShootHeroPool(limit = 24): Promise<string[]> {
+  const supabase = createServerClient();
+
+  const { data, error } = await supabase
+    .from('shoots')
+    .select('id, shoot_images(thumbnail_url, image_url, position, is_hero, is_article_page)')
+    .eq('section_type', 'shoot');
+
+  if (error || !data) return [];
+
+  const heroes: string[] = [];
+  for (const shoot of data) {
+    const imgs = ((shoot.shoot_images as ShootImage[]) ?? [])
+      .filter((img) => !img.is_article_page)
+      .sort((a, b) => a.position - b.position);
+    const hero = imgs.find((img) => img.is_hero) ?? imgs[0];
+    const url = hero?.thumbnail_url ?? hero?.image_url;
+    if (url) heroes.push(url);
+  }
+  return heroes.slice(0, limit);
+}
+
+/**
  * Get the issue that a shoot belongs to (for back-navigation).
  */
 export async function getIssueForShoot(shootSlug: string): Promise<Issue | null> {
