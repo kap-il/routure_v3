@@ -2,18 +2,17 @@
 
 import Link from 'next/link';
 import Image from 'next/image';
-import { useRouter } from 'next/navigation';
 import { useState } from 'react';
 
 const navigation = [
   { name: 'Issues', href: '/issues' },
   { name: 'Shop', href: '/coming-soon' },
   { name: 'Community', href: '/community' },
+  { name: 'Apply', href: '/community#apply' },
 ];
 
 export function Header() {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
-  const router = useRouter();
 
   return (
     <header className="fixed top-0 left-0 right-0 z-50 bg-white border-b border-[#EEEEE8]">
